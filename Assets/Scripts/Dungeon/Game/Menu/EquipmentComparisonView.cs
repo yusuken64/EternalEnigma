@@ -182,7 +182,7 @@ public sealed class EquipmentComparisonView : MonoBehaviour
     private TMP_Text Label(string name, Transform parent, float size, Color color)
     {
         var label = Rect(name, parent).gameObject.AddComponent<TextMeshProUGUI>();
-        label.font = description.font;
+        GameTypography.Apply(label, GameTextRole.Interface);
         label.fontSize = size; label.fontSizeMax = size; label.fontSizeMin = 14; label.enableAutoSizing = true;
         label.color = color; label.raycastTarget = false;
         label.alignment = TextAlignmentOptions.Midline;

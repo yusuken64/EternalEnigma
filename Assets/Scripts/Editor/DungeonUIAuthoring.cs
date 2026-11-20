@@ -199,6 +199,7 @@ public static class DungeonUIAuthoring
             var ribbon=Surface(menu.Panel,"Heading ribbon",DungeonVisualRole.Heading,.035f,.88f,.88f,.995f);ribbon.transform.SetSiblingIndex(1);
             var title=GameUISkin.Label(menu.Panel,"Party",new Vector2(.1f,.905f),new Vector2(.83f,.97f),30);title.font=TMP_Settings.defaultFontAsset;title.alignment=TextAlignmentOptions.Center;
             title.enableAutoSizing=true;title.fontSizeMin=24;title.fontSizeMax=30;
+            ribbon.GetComponent<DungeonUIRole>().Caption=title;
             CloseButton(menu.Panel,menu);
         });
         Theme.DungeonPickerPrefab=Variant("Assets/Resources/UI/Authored/PartyPicker.prefab","PartyPicker",root=>
@@ -260,6 +261,7 @@ public static class DungeonUIAuthoring
             foreach(var hud in scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<DungeonHud>(true)))
             {
                 foreach(var button in hud.PartyRoot.parent.GetComponentsInChildren<Button>(true))ButtonRole(button,DungeonVisualRole.WoodButton);
+                foreach(var card in hud.PartyRoot.GetComponentsInChildren<DungeonPartyCard>(true))card.ApplyStatusPresentation();
                 var header=(TMP_Text)new SerializedObject(hud).FindProperty("header").objectReferenceValue;
                 scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<Minimap>(true)).Single().AuthorLocationLabel(header);
                 var backing=hud.PartyRoot.parent.GetComponentsInChildren<RectTransform>(true).FirstOrDefault(t=>t.name=="Floor label parchment");
@@ -386,8 +388,9 @@ public static class DungeonUIAuthoring
             var scaler=root.GetComponent<CanvasScaler>();scaler.referenceResolution=new Vector2(1920,1080);scaler.matchWidthOrHeight=.5f;
             GameUISkin.Rect("Input shield",root.transform,Vector2.zero,Vector2.one).gameObject.AddComponent<Image>().color=Color.clear;
             var panel=Surface(root.transform,"Inventory picker panel",DungeonVisualRole.Wood,0,0,1,1).rectTransform;Dock(panel,root.transform);
-            Surface(panel,"Heading ribbon",DungeonVisualRole.Heading,.04f,.89f,.89f,.98f);
+            var ribbon=Surface(panel,"Heading ribbon",DungeonVisualRole.Heading,.04f,.88f,.89f,.98f);
             var title=GameUISkin.Label(panel,"Choose an item",new Vector2(.08f,.89f),new Vector2(.85f,.98f),30);title.font=TMP_Settings.defaultFontAsset;title.alignment=TextAlignmentOptions.Center;
+            ribbon.GetComponent<DungeonUIRole>().Caption=title;
             menu.scrollView.transform.SetParent(panel,false);menu.scrollView.gameObject.SetActive(true);Fit(menu.scrollView.transform,.04f,.44f,.96f,.86f);
             Role(GameUISkin.PanelGraphic(menu.scrollView.transform),DungeonVisualRole.Paper);
             Fit(menu.scrollView.content,0,1,1,1);menu.scrollView.content.pivot=new Vector2(.5f,1);
@@ -405,7 +408,8 @@ public static class DungeonUIAuthoring
             menu.DetailsControl=viewport.gameObject.AddComponent<TrainerPreviewScroll>();menu.DetailsControl.Scroll=scroll;menu.DetailsControl.targetGraphic=hit;
             ButtonRole(menu.DetailsControl,DungeonVisualRole.InputSurface);
             var back=GameUISkin.Button(panel,"Back",new Vector2(.04f,.025f),new Vector2(.30f,.10f),null,SelectToActivateButton.SoundRole.Cancel);ButtonRole(back,DungeonVisualRole.Secondary);back.gameObject.AddComponent<DungeonDialogClose>();
-            var hint=GameUISkin.Label(panel,"Select: choose item\nCancel: back   Right: details",new Vector2(.34f,.025f),new Vector2(.96f,.105f),20);hint.color=GameUITheme.LightInk;
+            // The corner close replaces the legacy footer Back button at runtime.
+            var hint=GameUISkin.Label(panel,"Choose an item to continue.\nPress Back to return or Right for details.",new Vector2(.06f,.025f),new Vector2(.96f,.105f),20);hint.color=GameUITheme.LightInk;
             CloseButton(panel,menu);
         });
     }
@@ -418,8 +422,9 @@ public static class DungeonUIAuthoring
             var safe=GameUISkin.Rect("Safe area",canvas.transform,Vector2.zero,Vector2.one);safe.gameObject.AddComponent<SafeAreaPanel>();
             var dialog=canvas.gameObject.AddComponent<EventHistoryDialog>();
             dialog.Panel=Surface(safe,"History panel",DungeonVisualRole.Wood,0,0,1,1).rectTransform;
-            Surface(dialog.Panel,"Heading ribbon",DungeonVisualRole.Heading,.04f,.88f,.89f,.98f);
+            var ribbon=Surface(dialog.Panel,"Heading ribbon",DungeonVisualRole.Heading,.04f,.88f,.89f,.98f);
             var title=GameUISkin.Label(dialog.Panel,"Event history",new Vector2(.08f,.885f),new Vector2(.85f,.975f),32);title.font=TMP_Settings.defaultFontAsset;title.alignment=TextAlignmentOptions.Center;
+            ribbon.GetComponent<DungeonUIRole>().Caption=title;
             var paper=Surface(dialog.Panel,"History parchment",DungeonVisualRole.Paper,.04f,.13f,.96f,.87f);
             var viewport=GameUISkin.Rect("Viewport",paper.transform,new Vector2(.06f,.04f),new Vector2(.94f,.96f));viewport.gameObject.AddComponent<RectMask2D>();
             var hit=viewport.gameObject.AddComponent<Image>();hit.color=Color.clear;

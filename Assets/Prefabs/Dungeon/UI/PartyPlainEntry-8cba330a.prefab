@@ -97,6 +97,10 @@ PrefabInstance:
       value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_fontSizeMax
       value: 24
       objectReference: {fileID: 0}
@@ -104,6 +108,10 @@ PrefabInstance:
       propertyPath: m_fontSizeMin
       value: 19
       objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
     - target: {fileID: 8395137042286762100, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_Name
       value: PartyPlainEntry-8cba330a
@@ -165,13 +173,34 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8395137042286762100, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3488541474638689940}
+    - targetCorrespondingSourceObject: {fileID: 4109537972982438963, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 870834615228786657}
   m_SourcePrefab: {fileID: 100100000, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+--- !u!1 &4518538286363239512 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4109537972982438963, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+  m_PrefabInstance: {fileID: 557621319705180267}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &870834615228786657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4518538286363239512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!114 &5188754228054337036 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
   m_PrefabInstance: {fileID: 557621319705180267}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 4518538286363239512}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
@@ -239,4 +268,4 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 

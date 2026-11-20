@@ -508,7 +508,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             foreach (var node in grid) if (Blocked(new Vector3Int(node.X,node.Y))) node.IsWalkable = false;
             return grid;
         }
-        var next = townRoute.Next(from,target,TownGrid,(a,b) => player.WalkableMap.CanWalkTo(a,b) && !Blocked(b),DiagonalMovement.AllowCornerCutting);
+        var next = townRoute.Next(from,target,TownGrid,(a,b) => player.WalkableMap.CanWalkTo(a,b) && !Blocked(b));
         if (next == null) { Finish("Stalled", "No walkable town path to " + target); return; }
         player.ControllingTownAlly.SetFacing(Character.GetFacing(next.Value - from));
         player.SetAction(new TownMovement(player, from, next.Value)); Log("Town move " + next);
@@ -747,9 +747,10 @@ public sealed partial class AutoplayRunner : MonoBehaviour
             // The regular prompt normally handles this. Re-enter to trigger it if a status effect interrupted arrival.
             ally.currentInteractable = stairs; ally.MovedThisTurn = true; player.StartTurn(); return;
         }
-        bool CanOccupy(Vector3Int cell) => discovered.Contains(cell) && dungeon.IsWalkable(cell) &&
-            dungeon.OverlapsAnyOtherCharacter(ally,Character.ToBounds(ally.FootPrint,cell),true) == null;
-        bool CanStep(Vector3Int a, Vector3Int b) => dungeon.CanWalkTo(a,b) && CanOccupy(b);
+        bool Available(Vector3Int cell) => discovered.Contains(cell) && dungeon.IsWalkable(cell) &&
+            dungeon.OverlapsAnyOtherCharacter(ally,Character.ToBounds(cell),true) == null;
+        bool CanOccupy(Vector3Int center) => Character.ToBounds(ally.FootPrint,center).Cells().All(Available);
+        bool CanStep(Vector3Int a, Vector3Int b) => dungeon.CanWalkTo(a,b,ally.FootPrint,Available);
         AStar.Node[,] DungeonGrid()
         {
             // Reuse the character positioning grid and mask hostile footprints.
@@ -767,7 +768,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         // Approach its nearest footprint edge so normal sight and attack rules can handle it.
         if (next == null)
             foreach (var target in discovered.Where(p => p != ally.TilemapPosition && CanOccupy(p) && game.Enemies.Any(e => e != null && e.Vitals.HP > 0 &&
-                Steps.Any(s => discovered.Contains(p+s) && e.ToBounds().Contains(p+s) && dungeon.CanWalkTo(p, p+s)))).OrderBy(p => (p-ally.TilemapPosition).sqrMagnitude))
+                Steps.Any(s => discovered.Contains(p+s) && e.ToBounds().Contains(p+s) && dungeon.CanReachAdjacent(p, p+s)))).OrderBy(p => (p-ally.TilemapPosition).sqrMagnitude))
                 if ((next = approachRoute.Next(ally.TilemapPosition,target,DungeonGrid,CanStep)).HasValue) { combatObjective = target; break; }
         if (next == null)
         {
@@ -784,7 +785,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         foreach (var enemy in game.Enemies.OfType<Enemy>().Where(e => e != null && e.Vitals.HP > 0 && EnemyBehavior.IsDisguised(e)))
         {
             var interaction = new RevealMimicAction(enemy);
-            if (interaction.IsValid(ally) && game.CurrentDungeon.CanWalkTo(ally.TilemapPosition, enemy.TilemapPosition))
+            if (interaction.IsValid(ally) && game.CurrentDungeon.CanReachAdjacent(ally.TilemapPosition, enemy.TilemapPosition))
             { ally.SetFacingByTargetPosition(enemy.TilemapPosition); return interaction; }
         }
         return null;

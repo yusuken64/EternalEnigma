@@ -183,7 +183,12 @@ internal static class AllyNavigation
                 foreach (var direction in SkillCastOptions.Directions)
                 {
                     var next = cell + direction;
-                    if (!Open(next) || direction.x != 0 && direction.y != 0 &&
+                    if (!Open(next)) continue;
+                    if (dungeon.Floor.Variant == EternalEnigma.Core.World.DungeonVariant.Town)
+                    {
+                        if (!dungeon.CanWalkTo(cell, next, ally.FootPrint, p => !occupied.Any(b => b.Contains(p)))) continue;
+                    }
+                    else if (direction.x != 0 && direction.y != 0 &&
                         (!Open(cell + new Vector3Int(direction.x, 0)) || !Open(cell + new Vector3Int(0, direction.y)))) continue;
                     // Overworld doorway checks duplicate the same ground, gate and diagonal rules above.
                     if (!world && !dungeon.AllowsDoorwayStep(cell, next)) continue;

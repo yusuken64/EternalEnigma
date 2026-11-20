@@ -32,6 +32,7 @@ public sealed class OpeningDungeonGate : MonoBehaviour
         renderer.SetPropertyBlock(tint);
 
         marker.label = new GameObject("Opening status").AddComponent<TextMeshPro>();
+        GameTypography.Apply(marker.label, GameTextRole.Utility);
         marker.label.transform.SetParent(root.transform, false);
         marker.label.transform.localPosition = new Vector3(0, -.8f, -.55f) * size;
         marker.label.rectTransform.sizeDelta = new Vector2(3.5f, .55f) * size;

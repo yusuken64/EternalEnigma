@@ -368,29 +368,48 @@ namespace EternalEnigma.Tests
         [UnityTest] public IEnumerator AuditRealHeldInputAtThirtySixtyAndOneTwentyFrames()
         {
             int frameRate = Application.targetFrameRate, vsync = QualitySettings.vSyncCount;
-            var csv = new System.Text.StringBuilder("targetFps,actionsPerTurn,frame,dt,secondsSinceInput,tileX,worldX,cameraX,animationState,animationTime,turnProcessing\n");
+            var csv = new System.Text.StringBuilder("targetFps,actionsPerTurn,strategy,frame,dt,secondsSinceInput,tileX,worldX,cameraX,animationState,animationTime,turnProcessing\n");
             var report = new System.Text.StringBuilder();
             try
             {
                 QualitySettings.vSyncCount = 0;
                 foreach (int fps in new[] { 30, 60, 120 }) foreach (int actions in new[] { 1, 2 })
+                foreach (var strategy in new[] { AllyStrategy.Follow, AllyStrategy.HoldPosition })
                 {
                     Application.targetFrameRate = fps;
                     Corridor(45);
+                    harness.Ally.AllyStrategy = strategy;
                     foreach (var ally in harness.Game.Allies)
                     {
                         ally.BaseStats.ActionsPerTurnMax = actions; ally.InvalidateCachedStats();
+                        ally.Vitals.HP = ally.FinalStats.HPMax; ally.Vitals.Hunger = ally.FinalStats.HungerMax;
+                        ally.Vitals.HungerAccumulate = 0;
                         ally.Vitals.ActionsPerTurnLeft = actions; ally.SyncDisplayedStats();
                     }
                     yield return new WaitForSecondsRealtime(.2f);
+
+                    // A short tap responds immediately and completes exactly one
+                    // square, even if released before its animation finishes.
+                    var tapOrigin = harness.Ally.TilemapPosition;
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.D));
+                    yield return null; yield return null;
+                    InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+                    yield return null; yield return harness.WaitForIdle();
+                    yield return new WaitForSecondsRealtime(.15f);
+                    Assert.That(harness.Ally.TilemapPosition, Is.EqualTo(tapOrigin + Vector3Int.right), $"{fps}fps/{actions} actions: tap/release");
+                    Assert.That(Vector3.Distance(harness.Ally.transform.position, Dungeon.CellToWorld(harness.Ally.TilemapPosition)), Is.LessThan(.001f));
+
                     double began = Time.realtimeSinceStartupAsDouble, firstMotion = -1, lastMotion = began;
                     float lastX = harness.Ally.transform.position.x;
                     int stationary = 0, frames = 0, commands = 0;
+                    int beganFrame = Time.frameCount, firstCommandFrame = -1, firstMotionFrame = -1;
+                    int walkPlayback = -1;
                     double maximumGap = 0, stationaryTime = 0, firstCommand = -1;
                     void Observe(string kind, Character actor, Skill skill)
                     {
                         if (kind != "CommandAccepted" || actor != harness.Ally) return;
-                        commands++; if (firstCommand < 0) firstCommand = Time.realtimeSinceStartupAsDouble - began;
+                        commands++;
+                        if (firstCommand < 0) { firstCommand = Time.realtimeSinceStartupAsDouble - began; firstCommandFrame = Time.frameCount - beganFrame; }
                     }
                     GameInputDiagnostics.Observed += Observe;
                     try
@@ -403,26 +422,40 @@ namespace EternalEnigma.Tests
                             float x = harness.Ally.transform.position.x;
                             if (Mathf.Abs(x - lastX) > .0001f)
                             {
-                                if (firstMotion < 0) firstMotion = now - began;
+                                if (firstMotion < 0) { firstMotion = now - began; firstMotionFrame = Time.frameCount - beganFrame; }
                                 maximumGap = Math.Max(maximumGap, now - lastMotion); lastMotion = now;
                             }
                             else if (firstMotion >= 0) { stationary++; stationaryTime += Time.unscaledDeltaTime; }
                             lastX = x; frames++;
+                            if (firstMotion >= 0)
+                            {
+                                var animator = harness.Ally.HeroAnimator;
+                                if (walkPlayback < 0) walkPlayback = animator.PlaybackCount;
+                                Assert.That(animator.LastPlayedAction, Is.EqualTo(AnimatedAction.MoveFWD),
+                                    $"{fps}fps/{actions}/{strategy} at {now-began:F3}s: held walk interrupted; food {harness.Ally.Vitals.Hunger}, HP {harness.Ally.Vitals.HP}, input {JuicyChickenGames.Menu.PlayerInputHandler.Instance.moveInput}, can continue {harness.Game.PlayerController.CanContinueHeldWalk}, dialog {MenuManager.Instance.CurrentDialog?.name}, actor {harness.Game.TurnManager.ActiveActor?.CharacterName}.");
+                                Assert.That(animator.PlaybackCount, Is.EqualTo(walkPlayback), "Held walking must preserve the walk cycle, including extra actions.");
+                            }
                             var anim = harness.Ally.HeroAnimator.Animator.GetCurrentAnimatorStateInfo(0);
-                            csv.AppendLine(FormattableString.Invariant($"{fps},{actions},{Time.frameCount},{Time.unscaledDeltaTime:F5},{now - began:F5},{harness.Ally.TilemapPosition.x},{x:F5},{Camera.main.transform.position.x:F5},{anim.fullPathHash},{anim.normalizedTime:F5},{harness.Game.TurnManager.IsProcessingTurn}"));
+                            csv.AppendLine(FormattableString.Invariant($"{fps},{actions},{strategy},{Time.frameCount},{Time.unscaledDeltaTime:F5},{now - began:F5},{harness.Ally.TilemapPosition.x},{x:F5},{Camera.main.transform.position.x:F5},{anim.fullPathHash},{anim.normalizedTime:F5},{harness.Game.TurnManager.IsProcessingTurn}"));
                         }
                     }
                     finally { GameInputDiagnostics.Observed -= Observe; InputSystem.QueueStateEvent(keyboard, new KeyboardState()); }
                     yield return null; yield return harness.WaitForIdle();
-                    report.AppendLine($"Target {fps}fps, actions/turn {actions}: measured {frames / 1.6:F1}fps, first command {firstCommand * 1000:F1}ms, first motion {firstMotion * 1000:F1}ms, {commands} commands, stationary {stationary}/{frames} frames ({stationaryTime * 1000:F1}ms), max movement gap {maximumGap * 1000:F1}ms.");
+                    report.AppendLine($"Target {fps}fps, actions/turn {actions}, {strategy}: measured {frames / 1.6:F1}fps, first command {firstCommand * 1000:F1}ms ({firstCommandFrame} frames), first motion {firstMotion * 1000:F1}ms ({firstMotionFrame} frames), {commands} commands, stationary {stationary}/{frames} frames ({stationaryTime * 1000:F1}ms), max movement gap {maximumGap * 1000:F1}ms.");
                     Assert.That(commands, Is.GreaterThan(2));
+                    Assert.That(firstCommandFrame, Is.InRange(1, 2), "A fresh direction must respond without the old repeat delay.");
+                    Assert.That(firstMotionFrame, Is.InRange(1, 3), "The first step must become visible promptly.");
+                    Assert.That(stationary, Is.LessThanOrEqualTo(1), $"{fps}fps/{actions} actions: adjacent held steps must remain continuous.");
                 }
+                Debug.Log("HELD WALK AUDIT:\n" + report);
+            }
+            finally
+            {
+                Application.targetFrameRate = frameRate; QualitySettings.vSyncCount = vsync;
                 Directory.CreateDirectory("Temp/MovementAudit");
                 File.WriteAllText("Temp/MovementAudit/held-input.csv", csv.ToString());
                 File.WriteAllText("Temp/MovementAudit/held-input.txt", report.ToString());
-                Debug.Log("HELD WALK AUDIT:\n" + report);
             }
-            finally { Application.targetFrameRate = frameRate; QualitySettings.vSyncCount = vsync; }
         }
     }
 

@@ -337,9 +337,18 @@ turn-in-place, completed movement, and town trail recording. It does not
 simulate physical keyboard/controller bindings. Recompile scripts before running
 the harness after adding tests, and confirm the new fixtures appear in the XML.
 
+**Run Town Movement EditMode / PlayMode** checks the town-dungeon exception for
+outdoor tree corners. Coverage includes one or two trees in every diagonal direction,
+tree overlaps with protected terrain, door approaches/openings, full large-actor
+footprints, occupancy, pursuit/follower/autoplay route agreement and replanning,
+and real turn execution in a generated district. Combat reach and sight stay strict.
+
 `GridMovement` owns terrain step rules shared by town, dungeon, A* and BFS.
-Town uses its generated occupancy masks, including furniture, and allows corner cutting; dungeon and
-searches require both diagonal side cells to be open. Occupancy, large-unit
+Town uses its generated occupancy masks, including furniture, and allows corner cutting.
+Dungeons require open diagonal sides, except that town dungeons may pass outdoor tree
+corners through `TileWorldDungeon.CanWalkTo`. Walls, interiors, furniture, doorways and
+boundaries never receive that exception. A* accepts the same step predicate used by
+movement and autoplay, while its default and BFS retain strict corners. Occupancy, large-unit
 hallway behavior, turns, party following and interactions remain in mode-specific
 actions. Coordinate conversion uses the generator's cell size (currently 2).
 Dungeon position searches fall back to their supplied origin when no suitable
@@ -424,9 +433,15 @@ specific combat encounters should explicitly spawn those enemies.
 ## UI audit
 
 **Tools > Eternal Enigma > UI > Validate Saved Menu Fonts** loads saved scenes
-and prefabs, including inactive and inherited labels, and rejects menu fonts other
-than the TMP default. The logo and scene-loading title are excluded. Its report is
+and prefabs, including inactive and inherited labels, and validates each label's
+semantic font from `Assets/TextMesh Pro/FontRules.txt`. Its report is
 `Temp/DialogFontVerification/authored-fonts.txt`.
+
+**Tools > Eternal Enigma > UI > Apply Font Rules** creates the four TMP SDF assets
+from the bundled fonts and assigns semantic roles to production prefabs and scenes.
+**Run Presentation Repair Assets** verifies source fonts, saved assignments, town
+gate placement, and finale bridge masks. **Run Presentation Repairs** covers
+combat playback, duplicate recruitment, UI layouts, and generated final tower materials.
 
 **Tools > Eternal Enigma > Tests > Run Text Containment Audit** checks graphical
 and terminal menus at four window sizes, including every hero, shop confirmations,

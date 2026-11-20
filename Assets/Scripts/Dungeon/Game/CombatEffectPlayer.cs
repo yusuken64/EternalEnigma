@@ -10,6 +10,7 @@ public sealed class CombatEffectPlayer : MonoBehaviour
     {
         internal GameObject Object, Prefab;
         internal ParticleSystem[] Particles;
+        internal ParticleSystem[] IndependentParticles;
         internal Renderer[] Renderers;
         internal float Expires;
         internal Transform Follow;
@@ -122,6 +123,15 @@ public sealed class CombatEffectPlayer : MonoBehaviour
             go.transform.SetParent(transform, false);
             item = new Instance { Object = go, Prefab = stage.Prefab,
                 Particles = go.GetComponentsInChildren<ParticleSystem>(true), Renderers = go.GetComponentsInChildren<Renderer>(true) };
+            var subEmitters = new HashSet<ParticleSystem>();
+            foreach (var particles in item.Particles)
+            {
+                var main = particles.main;
+                main.playOnAwake = false;
+                var subs = particles.subEmitters;
+                for (int i = 0; i < subs.subEmittersCount; i++) subEmitters.Add(subs.GetSubEmitterSystem(i));
+            }
+            item.IndependentParticles = item.Particles.Where(p => !subEmitters.Contains(p)).ToArray();
         }
         item.Object.transform.SetPositionAndRotation(position + stage.Offset, rotation * Quaternion.Euler(stage.Rotation) * stage.Prefab.transform.localRotation);
         float cellSize = Game.Instance?.CurrentDungeon != null ? Mathf.Abs(Game.Instance.CurrentDungeon.CellToWorld(Vector3Int.right).x - Game.Instance.CurrentDungeon.CellToWorld(Vector3Int.zero).x) : 2.5f;
@@ -137,8 +147,8 @@ public sealed class CombatEffectPlayer : MonoBehaviour
             particles.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
             var main = particles.main;
             main.loop = loop; main.useUnscaledTime = true; main.stopAction = ParticleSystemStopAction.None;
-            particles.Play(false);
         }
+        foreach (var particles in item.IndependentParticles) particles.Play(false);
         active.Add(item);
         SetVisibility(item);
         return item.Object;
@@ -160,6 +170,16 @@ public sealed class CombatEffectPlayer : MonoBehaviour
         if (stage?.Prefab == null) yield break;
         if (stage.Delay > 0) yield return new WaitForSecondsRealtime(stage.Delay);
         Rent(stage, point, orientation ?? Quaternion.identity, size: size, visibilityPosition: visibilityPosition);
+    }
+
+    internal static Quaternion StageOrientation(CombatEffectStage stage, CombatVisualSequence sequence)
+    {
+        if (!stage.AlignWithCastDirection) return Quaternion.identity;
+        var direction = sequence.Direction != Vector3.zero ? sequence.Direction : sequence.Center - sequence.Origin;
+        direction.z = 0;
+        return direction.sqrMagnitude > .001f
+            ? Quaternion.Euler(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90)
+            : Quaternion.identity;
     }
 
     internal IEnumerator Cast(CombatVisualSequence sequence)
@@ -205,29 +225,31 @@ public sealed class CombatEffectPlayer : MonoBehaviour
                 {
                     projectile.transform.position = Vector3.Lerp(sequence.Origin, flightDestination, elapsed / duration) + stage.Offset;
                     while (nextImpact < contacts.Count && Vector3.Dot(contacts[nextImpact].point - sequence.Origin, delta) <= delta.sqrMagnitude * elapsed / duration)
-                    { var contact = contacts[nextImpact++]; contact.sound?.Invoke(); if (contact.hit) PlayImpact(profile, contact.point, contact.bounds); }
+                    { var contact = contacts[nextImpact++]; contact.sound?.Invoke(); if (contact.hit) PlayImpact(sequence, contact.point, contact.bounds); }
                     yield return null;
                 }
             }
             finally { Release(projectile); }
-            while (nextImpact < contacts.Count) { var contact = contacts[nextImpact++]; contact.sound?.Invoke(); if (contact.hit) PlayImpact(profile, contact.point, contact.bounds); }
+            while (nextImpact < contacts.Count) { var contact = contacts[nextImpact++]; contact.sound?.Invoke(); if (contact.hit) PlayImpact(sequence, contact.point, contact.bounds); }
         }
         // Continuous flight invokes every recorded recipient at contact. The action's
         // queue guard makes this fallback safe for later recipients and ordinary shots.
         impactSound?.Invoke();
         if (hit && !(impactInFlight && sequence.ContinuousFlight && stage?.Prefab != null))
-            PlayImpact(profile, destination, targetBounds);
+            PlayImpact(sequence, destination, targetBounds);
         sequence.PlayAreaSound(audible);
         if (!sequence.AreaPlayed && profile.Area.Prefab != null)
         {
             sequence.AreaPlayed = true;
-            StartCoroutine(Burst(profile.Area, Ground(sequence.Center), profile.ScaleAreaToRadius ? Mathf.Max(1, sequence.Radius * 2 + 1) : 1));
+            StartCoroutine(Burst(profile.Area, Ground(sequence.Center), profile.ScaleAreaToRadius ? Mathf.Max(1, sequence.Radius * 2 + 1) : 1,
+                StageOrientation(profile.Area, sequence)));
         }
         yield return new WaitForSecondsRealtime(Mathf.Max(profile.ImpactSeconds, Mathf.Max(profile.Impact.Delay, profile.Area.Delay)));
     }
 
-    void PlayImpact(CombatEffectProfile profile, Vector3 destination, Bounds? targetBounds)
+    void PlayImpact(CombatVisualSequence sequence, Vector3 destination, Bounds? targetBounds)
     {
+        var profile = sequence.Profile;
         var point = destination; float size = 1;
         if (profile.Impact.FitToTarget && targetBounds.HasValue)
         {
@@ -239,7 +261,7 @@ public sealed class CombatEffectPlayer : MonoBehaviour
         }
         // Ground footprints stay on the floor; body hits clear the visible mesh surface.
         if (profile.Impact.MinimumDiameterCells > 0) point = Ground(destination);
-        StartCoroutine(Burst(profile.Impact, point, size, visibilityPosition: destination));
+        StartCoroutine(Burst(profile.Impact, point, size, StageOrientation(profile.Impact, sequence), visibilityPosition: destination));
     }
 
     internal void SetStatuses(Character character, Dictionary<string, StatusVisualProfile> snapshot)

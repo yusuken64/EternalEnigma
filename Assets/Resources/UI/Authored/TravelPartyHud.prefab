@@ -172,6 +172,62 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1013110544048214935, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1013110544048214935, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1080092657862576835, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1080092657862576835, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1303206142738637669, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1303206142738637669, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 3041596232317656678, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 3041596232317656678, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 3948404735552817009, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 3948404735552817009, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 4003426470632297676, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 4003426470632297676, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 4498872938874342217, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 4498872938874342217, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
     - target: {fileID: 5398141404505033875, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -184,6 +240,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6621823574659107190, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 6621823574659107190, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
     - target: {fileID: 6975168157126072881, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -264,6 +328,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7170524205189291360, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 7170524205189291360, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
     - target: {fileID: 7743187363744173683, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -272,10 +344,48 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8914099421247551284, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 8914099421247551284, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3228036627405165199, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 194734012356823012}
+    - targetCorrespondingSourceObject: {fileID: 3789322154145143801, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4146135543101371097}
+    - targetCorrespondingSourceObject: {fileID: 8521243958406799361, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3543793377141996714}
+    - targetCorrespondingSourceObject: {fileID: 3807363149398582128, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1211357971988371474}
+    - targetCorrespondingSourceObject: {fileID: 1714792241716270667, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1292993984275334869}
+    - targetCorrespondingSourceObject: {fileID: 4973965452874151882, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8434147572717338355}
+    - targetCorrespondingSourceObject: {fileID: 2390091569731991296, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1981053822385333280}
+    - targetCorrespondingSourceObject: {fileID: 6170170665246677058, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 92467219973527822}
+    - targetCorrespondingSourceObject: {fileID: 433255957183383553, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4330773695337383996}
+    - targetCorrespondingSourceObject: {fileID: 4381362943706597910, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4913006604716870488}
   m_SourcePrefab: {fileID: 100100000, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
 --- !u!114 &328338979009283603 stripped
 MonoBehaviour:
@@ -288,11 +398,191 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fef0190fe552f149a5f4d51e9648cb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &477989072781960538 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3807363149398582128, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3635618879503287850}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1211357971988371474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 477989072781960538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &496012200417795539 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3789322154145143801, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3635618879503287850}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4146135543101371097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496012200417795539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &1061136994929626172 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4381362943706597910, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3635618879503287850}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4913006604716870488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1061136994929626172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &1395869067108725034 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2390091569731991296, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3635618879503287850}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1981053822385333280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1395869067108725034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &2213548003754513573 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3228036627405165199, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3635618879503287850}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &194734012356823012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2213548003754513573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &2718056990472884321 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1714792241716270667, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3635618879503287850}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1292993984275334869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2718056990472884321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &3780609042079256107 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 433255957183383553, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3635618879503287850}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4330773695337383996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3780609042079256107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &4915074400832235051 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8521243958406799361, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3635618879503287850}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3543793377141996714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4915074400832235051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!224 &5960679447318420507 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6975168157126072881, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
   m_PrefabInstance: {fileID: 3635618879503287850}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &7481756187213373032 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6170170665246677058, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3635618879503287850}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &92467219973527822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7481756187213373032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &8607297126895956448 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4973965452874151882, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3635618879503287850}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8434147572717338355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8607297126895956448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!1001 &3663619146692220354
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -305,6 +595,62 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1013110544048214935, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1013110544048214935, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1080092657862576835, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1080092657862576835, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1303206142738637669, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1303206142738637669, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 3041596232317656678, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 3041596232317656678, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 3948404735552817009, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 3948404735552817009, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 4003426470632297676, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 4003426470632297676, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 4498872938874342217, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 4498872938874342217, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
     - target: {fileID: 5398141404505033875, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -317,6 +663,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6621823574659107190, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 6621823574659107190, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
     - target: {fileID: 6975168157126072881, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -397,6 +751,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7170524205189291360, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 7170524205189291360, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
     - target: {fileID: 7743187363744173683, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -405,10 +767,48 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8914099421247551284, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 8914099421247551284, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3228036627405165199, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7451691258075244792}
+    - targetCorrespondingSourceObject: {fileID: 3789322154145143801, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4878158168012677630}
+    - targetCorrespondingSourceObject: {fileID: 8521243958406799361, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3467286942103296841}
+    - targetCorrespondingSourceObject: {fileID: 3807363149398582128, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2348165570736998104}
+    - targetCorrespondingSourceObject: {fileID: 1714792241716270667, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9182963781404216531}
+    - targetCorrespondingSourceObject: {fileID: 4973965452874151882, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5585963814420801808}
+    - targetCorrespondingSourceObject: {fileID: 2390091569731991296, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3042001679209466665}
+    - targetCorrespondingSourceObject: {fileID: 6170170665246677058, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1201782833398941810}
+    - targetCorrespondingSourceObject: {fileID: 433255957183383553, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3579469156506838116}
+    - targetCorrespondingSourceObject: {fileID: 4381362943706597910, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6514389637156170362}
   m_SourcePrefab: {fileID: 100100000, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
 --- !u!114 &301148126424913403 stripped
 MonoBehaviour:
@@ -421,11 +821,191 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fef0190fe552f149a5f4d51e9648cb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &432823476852127410 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3807363149398582128, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3663619146692220354}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2348165570736998104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432823476852127410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &450828733448588859 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3789322154145143801, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3663619146692220354}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4878158168012677630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 450828733448588859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &1016248181758484436 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4381362943706597910, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3663619146692220354}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6514389637156170362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1016248181758484436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &1440172948532961986 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2390091569731991296, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3663619146692220354}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3042001679209466665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1440172948532961986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &2169468390321129293 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3228036627405165199, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3663619146692220354}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7451691258075244792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2169468390321129293}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &2673977375060968329 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1714792241716270667, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3663619146692220354}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &9182963781404216531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2673977375060968329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &3806933440932355523 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 433255957183383553, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3663619146692220354}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3579469156506838116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3806933440932355523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &4942208076799227331 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8521243958406799361, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3663619146692220354}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3467286942103296841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4942208076799227331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!224 &5916336071489441779 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6975168157126072881, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
   m_PrefabInstance: {fileID: 3663619146692220354}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &7455449369659608448 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6170170665246677058, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3663619146692220354}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1201782833398941810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7455449369659608448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &8633639139306643976 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4973965452874151882, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 3663619146692220354}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5585963814420801808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8633639139306643976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!1001 &5955846779941620238
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -438,6 +1018,62 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1013110544048214935, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1013110544048214935, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1080092657862576835, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1080092657862576835, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1303206142738637669, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1303206142738637669, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 3041596232317656678, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 3041596232317656678, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 3948404735552817009, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 3948404735552817009, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 4003426470632297676, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 4003426470632297676, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 4498872938874342217, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 4498872938874342217, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
     - target: {fileID: 5398141404505033875, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -450,6 +1086,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6621823574659107190, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 6621823574659107190, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
     - target: {fileID: 6975168157126072881, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -530,6 +1174,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7170524205189291360, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 7170524205189291360, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
     - target: {fileID: 7743187363744173683, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -538,16 +1190,144 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8914099421247551284, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 8914099421247551284, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3228036627405165199, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7815975338081077318}
+    - targetCorrespondingSourceObject: {fileID: 3789322154145143801, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6565135864726700906}
+    - targetCorrespondingSourceObject: {fileID: 8521243958406799361, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6697969784774807720}
+    - targetCorrespondingSourceObject: {fileID: 3807363149398582128, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1299411209100477348}
+    - targetCorrespondingSourceObject: {fileID: 1714792241716270667, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7847748743517673666}
+    - targetCorrespondingSourceObject: {fileID: 4973965452874151882, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9099072440930049826}
+    - targetCorrespondingSourceObject: {fileID: 2390091569731991296, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4144419230639801647}
+    - targetCorrespondingSourceObject: {fileID: 6170170665246677058, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5129385977229311254}
+    - targetCorrespondingSourceObject: {fileID: 433255957183383553, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 450596457164850893}
+    - targetCorrespondingSourceObject: {fileID: 4381362943706597910, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1740441788084904778}
   m_SourcePrefab: {fileID: 100100000, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+--- !u!1 &506569815562080844 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6170170665246677058, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 5955846779941620238}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5129385977229311254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 506569815562080844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &1702492800806026692 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4973965452874151882, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 5955846779941620238}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &9099072440930049826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1702492800806026692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &2659060212699556367 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8521243958406799361, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 5955846779941620238}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6697969784774807720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2659060212699556367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!224 &3633188207414120511 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6975168157126072881, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
   m_PrefabInstance: {fileID: 5955846779941620238}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &5002163700691049541 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1714792241716270667, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 5955846779941620238}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7847748743517673666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5002163700691049541}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &6099088753394958863 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 433255957183383553, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 5955846779941620238}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &450596457164850893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6099088753394958863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!114 &7232013007141669431 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3961530035864338489, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
@@ -559,6 +1339,96 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fef0190fe552f149a5f4d51e9648cb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &7363679490486424055 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3789322154145143801, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 5955846779941620238}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6565135864726700906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7363679490486424055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &7381702756081576318 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3807363149398582128, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 5955846779941620238}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1299411209100477348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7381702756081576318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &7956401992222507032 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4381362943706597910, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 5955846779941620238}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1740441788084904778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7956401992222507032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &8326069985513635086 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2390091569731991296, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 5955846779941620238}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4144419230639801647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8326069985513635086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &9109411105318131841 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3228036627405165199, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 5955846779941620238}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7815975338081077318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9109411105318131841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!1001 &6568584889543029383
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -571,6 +1441,62 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1013110544048214935, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1013110544048214935, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1080092657862576835, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1080092657862576835, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1303206142738637669, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 1303206142738637669, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 3041596232317656678, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 3041596232317656678, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 3948404735552817009, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 3948404735552817009, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 4003426470632297676, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 4003426470632297676, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 4498872938874342217, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 4498872938874342217, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
     - target: {fileID: 5398141404505033875, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -583,6 +1509,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6621823574659107190, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 6621823574659107190, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
     - target: {fileID: 6975168157126072881, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -663,6 +1597,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7170524205189291360, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 7170524205189291360, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
     - target: {fileID: 7743187363744173683, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -671,16 +1613,162 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8914099421247551284, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+    - target: {fileID: 8914099421247551284, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3228036627405165199, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9105092543689625522}
+    - targetCorrespondingSourceObject: {fileID: 3789322154145143801, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5312264780671819784}
+    - targetCorrespondingSourceObject: {fileID: 8521243958406799361, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 356793018150705775}
+    - targetCorrespondingSourceObject: {fileID: 3807363149398582128, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2280459072318431725}
+    - targetCorrespondingSourceObject: {fileID: 1714792241716270667, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4222786073909827985}
+    - targetCorrespondingSourceObject: {fileID: 4973965452874151882, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2901441321110513006}
+    - targetCorrespondingSourceObject: {fileID: 2390091569731991296, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4166068171037331031}
+    - targetCorrespondingSourceObject: {fileID: 6170170665246677058, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8297201371451759216}
+    - targetCorrespondingSourceObject: {fileID: 433255957183383553, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7524573545243411433}
+    - targetCorrespondingSourceObject: {fileID: 4381362943706597910, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2150037795974314411}
   m_SourcePrefab: {fileID: 100100000, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+--- !u!1 &1047250331695950533 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6170170665246677058, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 6568584889543029383}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8297201371451759216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1047250331695950533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &2175060629555316045 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4973965452874151882, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 6568584889543029383}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2901441321110513006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2175060629555316045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &3272365528063283846 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8521243958406799361, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 6568584889543029383}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &356793018150705775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3272365528063283846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!224 &4315727570787657910 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6975168157126072881, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
   m_PrefabInstance: {fileID: 6568584889543029383}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &5540667047302522060 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1714792241716270667, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 6568584889543029383}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4222786073909827985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5540667047302522060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &6713590343277296262 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 433255957183383553, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 6568584889543029383}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7524573545243411433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6713590343277296262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &7486661835484362897 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4381362943706597910, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 6568584889543029383}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2150037795974314411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7486661835484362897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!114 &7913497118387073726 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3961530035864338489, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
@@ -692,3 +1780,75 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fef0190fe552f149a5f4d51e9648cb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &8051922986403572094 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3789322154145143801, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 6568584889543029383}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5312264780671819784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8051922986403572094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &8069946659718910455 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3807363149398582128, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 6568584889543029383}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2280459072318431725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8069946659718910455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &8639037759234416648 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3228036627405165199, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 6568584889543029383}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &9105092543689625522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8639037759234416648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
+--- !u!1 &8791873891832300935 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2390091569731991296, guid: e47d7064ca6126e4aa0e292bb6fce829, type: 3}
+  m_PrefabInstance: {fileID: 6568584889543029383}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4166068171037331031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8791873891832300935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0

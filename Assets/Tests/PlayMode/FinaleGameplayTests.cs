@@ -35,7 +35,7 @@ namespace EternalEnigma.Tests
                 Assert.That(Time.realtimeSinceStartupAsDouble, Is.LessThan(deadline), "Finale initialization timed out.");
                 AssertCovered(common.ScreenTransition);
                 var title = common.ScreenTransition.ShutterScreen.GetComponentInChildren<TMPro.TMP_Text>(true);
-                if (harness.Game != null && harness.Game.Finale == null && title.text.Contains("Floor 1</size>"))
+                if (harness.Game != null && harness.Game.Finale == null && title.text == FinaleRuntime.LoadingTitle(1))
                 {
                     coveredPlanningFrames++;
                     if (coveredPlanningFrames == 1)
@@ -71,6 +71,41 @@ namespace EternalEnigma.Tests
                 foreach (var child in next.ExecuteImmediate(actor) ?? new()) queue.Enqueue(child);
                 next.UpdateDisplayedStats();
             }
+        }
+        [UnityTest, Timeout(900000)]
+        public IEnumerator TowerUsesTexturedCrossingsAndPortals()
+        {
+            yield return LoadFinale();
+            var game = harness.Game;
+            var root = game.DungeonGenerator.FinaleTerrainRoot;
+            var grid = game.Finale.Session.Floor.Grid;
+            Assert.That(root.GetComponent<CampaignOverworld>().BridgeCapabilityCrossings, Is.True);
+            Assert.That(root.GetComponentsInChildren<Transform>(true).Any(t => t.name == "Finale bridge"), Is.False);
+            int expected = grid.Layers[EternalEnigma.Core.World.OverworldLayers.Bridges].ToArray().Cast<bool>().Count(v => v) +
+                grid.Locks.SelectMany(l => l.Cells).Where(grid.RequiresBoat).Distinct()
+                    .Count(p => !grid.Layers[EternalEnigma.Core.World.OverworldLayers.Bridges][p.X, p.Y]);
+            Assert.That(root.GetComponentsInChildren<PaintedGroundOutput>().Sum(p => p.SurfaceCells[(int)GroundSurface.Bridge]), Is.EqualTo(expected));
+            var bridge = PaintedGroundStyle.Load().Bridge;
+            Assert.That(bridge.GetTexturePropertyNames().Any(p => bridge.GetTexture(p) != null), Is.True);
+            var portals = root.GetComponentsInChildren<FinalePortal>();
+            Assert.That(portals, Is.Not.Empty);
+            foreach (var portal in portals)
+            {
+                var renderer = portal.GetComponent<MeshRenderer>();
+                Assert.That(renderer.sharedMaterial.GetTexturePropertyNames().Any(p => renderer.sharedMaterial.GetTexture(p) != null), Is.True);
+                Assert.That(portal.GetComponent<MeshFilter>().sharedMesh, Is.SameAs(EnvironmentKit.Load().Mesh("DungeonPortal")));
+            }
+            foreach (var material in root.GetComponentsInChildren<Renderer>(true).SelectMany(r => r.sharedMaterials).Distinct())
+            {
+                Assert.That(material, Is.Not.Null);
+                Assert.That(material.shader, Is.Not.Null, material.name);
+                Assert.That(material.shader.name, Is.Not.EqualTo("Hidden/InternalErrorShader"), material.name);
+                if (material.name.StartsWith("wall", System.StringComparison.OrdinalIgnoreCase))
+                    Assert.That(material.mainTexture, Is.Not.Null, "Finale castle masonry needs a texture: " + material.name);
+            }
+            System.IO.Directory.CreateDirectory("Temp/GameplayPresentation");
+            ScreenCapture.CaptureScreenshot("Temp/GameplayPresentation/finale-play.png");
+            yield return new WaitForEndOfFrame();
         }
         Enemy Reveal(Enemy enemy)
         {

@@ -9,7 +9,8 @@ public class PlayerController : MonoBehaviour
     // === Input Timing ===
     private float holdTime = 0f;
     private float menuCooldown = 0f;
-    private float repeatTime = 0.1f;
+    internal const float WalkStepSeconds = 0.1f;
+    private bool movementHeld;
     private const float DiagonalReleaseGrace = 0.12f;
     private float lastDiagonalInputTime = float.NegativeInfinity;
 
@@ -141,17 +142,24 @@ public class PlayerController : MonoBehaviour
 
         if (PlayerInputHandler.Instance.isMoving)
         {
-            holdTime += Time.deltaTime;
+            // A fresh press takes one step immediately. Only held input repeats;
+            // elapsed time never queues steps after the direction is released.
+            holdTime = movementHeld ? holdTime + Time.deltaTime : WalkStepSeconds;
         }
         else
         {
             holdTime = 0;
+            lastDiagonalInputTime = float.NegativeInfinity;
         }
+        movementHeld = PlayerInputHandler.Instance.isMoving;
     }
 
     private void LateUpdate()
     {
         if (ControlledAlly == null) { return; }
+        // Tween completion resumes the turn after Update. Continue a held walk in
+        // that same frame, so the next tween is ready for the next rendered frame.
+        if (CanContinueHeldWalk && fastWalk?.Running != true) HandleMovementInput();
         switch (CurrentControlMode)
         {
             case PlayerControlMode.FollowAlly:
@@ -215,11 +223,11 @@ public class PlayerController : MonoBehaviour
         if (!PlayerInputHandler.Instance.holdPosition)
         {
             TargetIndicator.gameObject.SetActive(false);
-            if (!suppressMovement && move.sqrMagnitude >= .01f && holdTime > repeatTime)
+            if (!suppressMovement && move.sqrMagnitude >= .01f && holdTime >= WalkStepSeconds)
             {
                 holdTime = 0f;
                 var offset = Dungeon.GetFacingOffset(ControlledAlly.CurrentFacing);
-                if (Game.Instance.CurrentDungeon.CanWalkTo(newMapPosition, newMapPosition + offset) || Game.Instance.Encounter?.CanPush(ControlledAlly,newMapPosition+offset) == true)
+                if (Game.Instance.CurrentDungeon.CanWalkTo(newMapPosition, newMapPosition + offset, ControlledAlly.FootPrint) || Game.Instance.Encounter?.CanPush(ControlledAlly,newMapPosition+offset) == true)
                 {
                     newMapPosition += offset;
 

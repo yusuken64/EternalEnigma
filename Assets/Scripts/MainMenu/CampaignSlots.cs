@@ -59,8 +59,8 @@ public sealed class CampaignSlots : MonoBehaviour
             var titleObject = new GameObject("Campaign slots title", typeof(RectTransform), typeof(TextMeshProUGUI));
             titleObject.transform.SetParent(detail.transform.parent, false);
             Title = titleObject.GetComponent<TextMeshProUGUI>();
-            Title.font = detail.font;
         }
+        GameTypography.Apply(Title, GameTextRole.Heading);
         Title.text = creating ? "New journey - choose a slot" : "Continue a campaign";
         Title.fontSize = Title.fontSizeMax = 36;
         Title.enableAutoSizing = true;

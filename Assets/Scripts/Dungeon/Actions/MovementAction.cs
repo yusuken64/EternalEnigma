@@ -66,7 +66,7 @@ internal class MovementAction : GameAction
 
 		bool continuous = character is Ally && Game.Instance.PlayerController?.CanContinueHeldWalk == true;
 		BeginWalk(character, continuous);
-		var tween = character.transform.DOMove(worldPosition, 0.1f / character.FinalStats.ActionsPerTurnMax);
+        var tween = character.transform.DOMove(worldPosition, WalkDuration(character, continuous));
 		if (continuous) tween.SetEase(Ease.Linear);
 		yield return tween.WaitForCompletion();
 		CompleteWalk(character, continuous && Game.Instance.PlayerController?.CanContinueHeldWalk == true);
@@ -88,6 +88,11 @@ internal class MovementAction : GameAction
     {
         AddAllySight(tiles, Character, newMapPosition);
     }
+
+    // Manual walking has the same pace for every hero. Actions per turn change
+    // the turn economy, not the fraction of each input interval spent standing still.
+    internal static float WalkDuration(Character character, bool continuous) =>
+        PlayerController.WalkStepSeconds / (continuous ? 1 : Mathf.Max(1, character.FinalStats.ActionsPerTurnMax));
 
     internal override IEnumerable<Vector3Int> AnimationCells(Character actor)
     {
@@ -112,10 +117,7 @@ internal class MovementAction : GameAction
 
     internal static bool FootprintCanStep(Character character, Vector3Int from, Vector3Int to)
     {
-        var dungeon = Game.Instance.CurrentDungeon;
-        bool Free(Vector3Int center) => Character.ToBounds(character.FootPrint,center).Cells()
-            .All(cell => dungeon.IsWalkable(new Vector3Int(cell.x,cell.y,0)));
-        return dungeon.AllowsDoorwayStep(from,to) && GridMovement.CanStep(from,to,Free);
+        return Game.Instance.CurrentDungeon.CanWalkTo(from, to, character.FootPrint);
     }
 
 	internal override bool CanBeCombined(GameAction action)
@@ -642,7 +644,7 @@ internal sealed class RevealMimicAction : GameAction
     internal override bool IsValid(Character character) => character is Ally && mimic != null &&
         EnemyBehavior.IsDisguised(mimic) &&
         TileWorldDungeon.ChevDistance(character.TilemapPosition, mimic.TilemapPosition) == 1 &&
-        Game.Instance.CurrentDungeon.CanWalkTo(character.TilemapPosition, mimic.TilemapPosition) &&
+        Game.Instance.CurrentDungeon.CanReachAdjacent(character.TilemapPosition, mimic.TilemapPosition) &&
         (mimic.GetComponent<FinaleActor>() is not { Hidden: true } || character == Game.Instance.PlayerController.ControlledAlly);
 
     internal override List<GameAction> ExecuteImmediate(Character character)
@@ -698,6 +700,7 @@ public class InteractAction : GameAction
 
 public class WaitAction : GameAction
 {
+	internal bool PreserveHeldWalk;
 	public WaitAction() {}
 	internal override List<GameAction> ExecuteImmediate(Character character)
 	{
@@ -707,7 +710,9 @@ public class WaitAction : GameAction
 
 	internal override IEnumerator ExecuteRoutine(Character character, bool skipAnimation = false)
 	{
-		if (!skipAnimation) yield return null;
+		// An autonomous idle action has no animation to await. A companion's
+		// unused action must not insert a frame between the party's walking steps.
+		if (!skipAnimation && !PreserveHeldWalk && Playback?.Commanded == true) yield return null;
 	}
 
 	internal override bool IsValid(Character character)

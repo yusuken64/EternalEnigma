@@ -76,6 +76,9 @@ public class GameOverScreen : Dialog
 		{
 			_defaultButtonText ??= label.text;
 			label.text = victory ? "Save completed campaign" : campaign ? "Load last save" : "Return to town";
+            label.enableAutoSizing = true;
+            label.fontSizeMin = 18;
+            label.textWrappingMode = TextWrappingModes.NoWrap;
 		}
 
 		var nav = OkButton.navigation;

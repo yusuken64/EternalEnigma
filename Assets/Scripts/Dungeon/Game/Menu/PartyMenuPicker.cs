@@ -160,6 +160,7 @@ public sealed class PartyMenuPicker : Dialog
     public void Description(string text, bool showControlHints = true)
     {
         var label=description=Instantiate(Title,Rows);
+        GameTypography.Apply(label, GameTextRole.Interface);
         label.name="Interaction description";
         descriptionText=text;
         descriptionHints=showControlHints;

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2081140083868980206}
   - component: {fileID: 6213630339285098148}
   - component: {fileID: 4887042941789085982}
+  - component: {fileID: 5497378424541336021}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -67,8 +68,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Throw
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+  m_sharedMaterial: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -136,6 +137,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5497378424541336021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 77314867347456277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!1 &952505448578721664
 GameObject:
   m_ObjectHideFlags: 0
@@ -270,6 +284,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
+  activateOnFirstPointerPress: 0
 --- !u!1 &2970099614293727188
 GameObject:
   m_ObjectHideFlags: 0
@@ -281,6 +297,7 @@ GameObject:
   - component: {fileID: 6208968332773812823}
   - component: {fileID: 5642607457170457020}
   - component: {fileID: 2362725991877358553}
+  - component: {fileID: 762432566513268091}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -337,8 +354,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Use
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+  m_sharedMaterial: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -406,6 +423,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &762432566513268091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2970099614293727188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!1 &4354078447514816035
 GameObject:
   m_ObjectHideFlags: 0
@@ -666,6 +696,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
+  activateOnFirstPointerPress: 0
 --- !u!1 &5554731107180197628
 GameObject:
   m_ObjectHideFlags: 0
@@ -800,6 +832,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
+  activateOnFirstPointerPress: 0
 --- !u!1 &6845557194320528914
 GameObject:
   m_ObjectHideFlags: 0
@@ -811,6 +845,7 @@ GameObject:
   - component: {fileID: 8737241730765816332}
   - component: {fileID: 3654325465652739380}
   - component: {fileID: 4000251540577767178}
+  - component: {fileID: 5627871813660993527}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -867,8 +902,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Cancel
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+  m_sharedMaterial: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -936,6 +971,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5627871813660993527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6845557194320528914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!1 &7225949095640407511
 GameObject:
   m_ObjectHideFlags: 0
@@ -1070,6 +1118,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  soundRole: 0
+  activateOnFirstPointerPress: 0
 --- !u!1 &7742264742008288704
 GameObject:
   m_ObjectHideFlags: 0
@@ -1081,6 +1131,7 @@ GameObject:
   - component: {fileID: 6330841192561455202}
   - component: {fileID: 5144842730838723437}
   - component: {fileID: 1072304173818461544}
+  - component: {fileID: 5851941584897867565}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -1137,8 +1188,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Drop
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+  m_sharedMaterial: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1206,6 +1257,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5851941584897867565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7742264742008288704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!1 &7970953954652079345
 GameObject:
   m_ObjectHideFlags: 0
@@ -1397,6 +1461,7 @@ GameObject:
   - component: {fileID: 2069577867139818998}
   - component: {fileID: 4598929069590145529}
   - component: {fileID: 4373948692203384796}
+  - component: {fileID: 2115771645607285330}
   m_Layer: 5
   m_Name: Prompt
   m_TagString: Untagged
@@ -1453,8 +1518,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Prompt
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+  m_sharedMaterial: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1522,6 +1587,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2115771645607285330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8864277760309576181}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!1001 &199406287718485870
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -74,7 +74,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GraphicRaycaster
   m_IgnoreReversedGraphics: 1
   m_BlockingObjects: 0
@@ -114,7 +114,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eea58fe6fd276f140a4d2460863c6eb2, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::LevelUpChoiceDialog
   scrollView: {fileID: 0}
   Heading: {fileID: 6548267257854589644}
@@ -176,7 +176,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0}
@@ -207,6 +207,7 @@ GameObject:
   - component: {fileID: 2080353684567975293}
   - component: {fileID: 3095501126408092981}
   - component: {fileID: 6548267257854589644}
+  - component: {fileID: 5827578978876652651}
   m_Layer: 0
   m_Name: Text
   m_TagString: Untagged
@@ -251,7 +252,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -263,8 +264,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Hero
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: de5c80840b181e74fa7aa7fb6434cf03, type: 2}
+  m_sharedMaterial: {fileID: 2277866762861321579, guid: de5c80840b181e74fa7aa7fb6434cf03, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -332,6 +333,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5827578978876652651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3300018934955455359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 1
 --- !u!1 &7832312459275076805
 GameObject:
   m_ObjectHideFlags: 0
@@ -343,6 +357,7 @@ GameObject:
   - component: {fileID: 7598289090915764667}
   - component: {fileID: 6315477152132165663}
   - component: {fileID: 3655803158960266535}
+  - component: {fileID: 4915170172544241519}
   m_Layer: 0
   m_Name: Text
   m_TagString: Untagged
@@ -387,7 +402,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -399,8 +414,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Level up!
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+  m_sharedMaterial: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -468,6 +483,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4915170172544241519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7832312459275076805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!1001 &1049807455160825496
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -614,8 +642,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8795581716574187244 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8395137042286762100, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
@@ -631,7 +659,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 93946906130d5504db5180b17966c3db, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::LevelUpChoiceView
 --- !u!1001 &1538614329475227541
 PrefabInstance:
@@ -902,7 +930,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 93946906130d5504db5180b17966c3db, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::LevelUpChoiceView
 --- !u!114 &6750371272404878902 stripped
 MonoBehaviour:
@@ -913,8 +941,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5972011946302421962
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1062,7 +1090,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 93946906130d5504db5180b17966c3db, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::LevelUpChoiceView
 --- !u!114 &3278846597688707632 stripped
 MonoBehaviour:
@@ -1073,8 +1101,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &7883270725273498473 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}

@@ -72,8 +72,8 @@ public sealed class FindExitAction : GameAction, ISkillCastCondition
             return value;
         }
         return FindRoute(ally.TilemapPosition.ToGridPoint(), dungeon.Floor.Stairs,
-            p => dungeon.Floor.Neighbors(p).Where(q => Open(q) &&
-                MovementAction.FootprintCanStep(ally, p.ToCell(), q.ToCell())))
+            p => dungeon.GetValidWalkDirections(p.ToCell(), ally.FootPrint)
+                .Select(facing => (p.ToCell() + GridMovement.GetFacingOffset(facing)).ToGridPoint()).Where(Open))
             .Select(p => p.ToCell()).ToArray();
     }
 

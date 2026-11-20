@@ -146,11 +146,11 @@ public class WanderPolicy : PolicyBase
 	{
 		var offset = Dungeon.GetFacingOffset(character.CurrentFacing);
 		Vector3Int newMapPosition = character.TilemapPosition + offset;
-		var canMoveForward = game.CurrentDungeon.CanWalkTo(character.TilemapPosition, newMapPosition);
+		var canMoveForward = game.CurrentDungeon.CanWalkTo(character.TilemapPosition, newMapPosition, character.FootPrint);
 
 		if (!canMoveForward)
 		{
-			var validWalkDirections = game.CurrentDungeon.GetValidWalkDirections(character.TilemapPosition);
+			var validWalkDirections = game.CurrentDungeon.GetValidWalkDirections(character.TilemapPosition, character.FootPrint);
 
 			if (validWalkDirections.Any())
 			{

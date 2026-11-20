@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33172ca3e4a868b49950fdef0fd7cbe7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::OverworldScene
+  OverworldMusicTrack: 
   Map: {fileID: 344879134}
   PlayerPrefab: {fileID: 4083077421399000506, guid: 5495724c2afa1734eb3b4c7657a3af34, type: 3}
   ViewCamera: {fileID: 1216682244}
@@ -160,24 +161,34 @@ MonoBehaviour:
   BiomeMusic:
   - Biome: 0
     Clip: {fileID: 8300000, guid: 3d35c887b8c4d124c91afc1f749b2316, type: 3}
+    ClipTrack: 
   - Biome: 1
     Clip: {fileID: 8300000, guid: e09282939e6b3d847b669b486349e2bb, type: 3}
+    ClipTrack: 
   - Biome: 2
     Clip: {fileID: 8300000, guid: 7816fb8c9d586a046ac48aab5f883230, type: 3}
+    ClipTrack: 
   - Biome: 3
     Clip: {fileID: 8300000, guid: 9425fa341d8a9974eb302b48e3db1f02, type: 3}
+    ClipTrack: 
   - Biome: 4
     Clip: {fileID: 8300000, guid: 44161982ed3f6bb47bdd8e9b3ec166df, type: 3}
+    ClipTrack: 
   - Biome: 5
     Clip: {fileID: 8300000, guid: 9425fa341d8a9974eb302b48e3db1f02, type: 3}
+    ClipTrack: 
   - Biome: 6
     Clip: {fileID: 8300000, guid: 171c69d47c1e3ba4da9363141867484f, type: 3}
+    ClipTrack: 
   - Biome: 7
     Clip: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
+    ClipTrack: 
   TownMarker: {fileID: 8558893673760508206, guid: fbe6fe74e127ce64ebfc2b05414a27c4, type: 3}
   DungeonMarker: {fileID: 6971330757350476272, guid: 3ad375cf66e494b4699c3e3fe0bd05ae, type: 3}
   LandmarkMarker: {fileID: 427689351167209922, guid: f1e8150e498418f4bb01525081268e11, type: 3}
   GateMarker: {fileID: 7834394375621823689, guid: f39a88c645bd4ac488cc389d7151f3cd, type: 3}
+  ShowLocationMarkers: 1
+  ShowSandboxControls: 1
   CameraOffset: {x: 0, y: -14, z: -20}
 --- !u!114 &344879134
 MonoBehaviour:
@@ -194,6 +205,7 @@ MonoBehaviour:
   Template: {fileID: 11400000, guid: 592cad30711bdf547ba7b21fbcad6732, type: 2}
   CosmeticKit: {fileID: 11400000, guid: c7ece03df003cf54480a9af06e8202d6, type: 2}
   StyleProfile: {fileID: 11400000, guid: 9bbe44a035742ea4f916581e53846dba, type: 2}
+  IncludeSettlements: 1
   Seed: 42
   Width: 256
   Height: 256

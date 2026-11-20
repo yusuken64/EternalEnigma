@@ -7,12 +7,14 @@ public sealed class EnvironmentBatch
 {
     private readonly Transform parent;
     private readonly EnvironmentMeshOwner owner;
+    private readonly Action<GameObject> finishChunk;
     public EnvironmentMeshOwner Owner => owner;
     private readonly Dictionary<(int, int, Material, SilhouetteRole), List<CombineInstance>> groups = new();
     private readonly Dictionary<(Material,int),Material> variants = new();
-    public EnvironmentBatch(Transform parent)
+    public EnvironmentBatch(Transform parent, Action<GameObject> finishChunk = null)
     {
         this.parent = parent;
+        this.finishChunk = finishChunk;
         owner = parent.gameObject.AddComponent<EnvironmentMeshOwner>();
     }
     private sealed class PrefabPart
@@ -174,6 +176,8 @@ public sealed class EnvironmentBatch
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         renderer.receiveShadows = false;
         obj.AddComponent<SilhouetteParticipant>().Role = key.Item4;
+        // Presentation fixes run for both immediate and deferred terrain chunks.
+        finishChunk?.Invoke(obj);
         return mesh;
     }
 

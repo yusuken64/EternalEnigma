@@ -91,7 +91,8 @@ public sealed class StatusPresentationTests
         Assert.That(CombatVisualCatalog.Instance.ForStatus(status)?.Icon, Is.Not.Null);
     }
 
-    static IEnumerable<Type> StatusTypes => TypeCache.GetTypesDerivedFrom<StatusEffect>().Where(type => !type.IsAbstract);
+    static IEnumerable<Type> StatusTypes => TypeCache.GetTypesDerivedFrom<StatusEffect>()
+        .Where(type => !type.IsAbstract && type.Assembly == typeof(StatusEffect).Assembly);
     [TestCaseSource(nameof(StatusTypes))]
     public void EveryStatusTypeHasAnExplanationAndAnIcon(Type type)
     {

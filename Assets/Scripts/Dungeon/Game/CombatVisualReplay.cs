@@ -7,7 +7,7 @@ internal sealed class CombatVisualSequence
 {
     internal CombatEffectProfile Profile;
     internal Character Actor;
-    internal Vector3 Origin, Center;
+    internal Vector3 Origin, Center, Direction;
     internal int Radius;
     internal bool AreaPlayed, SingleFlight, FlightPlayed, ContinuousFlight, CastSoundPlayed, AreaSoundPlayed;
     internal readonly List<(Vector3 point, bool hit, Bounds? bounds, System.Action sound)> FlightImpacts = new();
@@ -80,6 +80,8 @@ internal sealed class CombatVisualReplay
         if (profile == null || Game.Instance?.CurrentDungeon == null) return;
         Sequence = new CombatVisualSequence { Profile = profile, Actor = actor,
             Origin = CombatEffectPlayer.Body(actor, actor != null && actor != resolvingActor ? actor.TilemapPosition : OriginCell), Center = CombatEffectPlayer.Body(null, center), Radius = radius };
+        Sequence.Direction = (Vector3)(center - (actor != null && actor != resolvingActor ? actor.TilemapPosition : OriginCell));
+        if (Sequence.Direction == Vector3.zero && actor != null) Sequence.Direction = Dungeon.GetFacingOffset(actor.CurrentFacing);
         Cast = true;
     }
 

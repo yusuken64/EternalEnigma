@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6936714764589543167}
   - component: {fileID: 4854952857510526578}
   - component: {fileID: 8674239324112632208}
+  - component: {fileID: 1541859832314467129}
   m_Layer: 0
   m_Name: Text
   m_TagString: Untagged
@@ -55,7 +56,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -67,8 +68,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "42\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+  m_sharedMaterial: {fileID: 3085970830955498383, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -136,6 +137,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1541859832314467129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2414836781207620395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 3
 --- !u!1 &4491484824088096603
 GameObject:
   m_ObjectHideFlags: 0
@@ -147,6 +161,7 @@ GameObject:
   - component: {fileID: 2600880412472775186}
   - component: {fileID: 1825715314098468065}
   - component: {fileID: 5791210350217539002}
+  - component: {fileID: 6622205942861465766}
   m_Layer: 0
   m_Name: Text
   m_TagString: Untagged
@@ -191,7 +206,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -203,8 +218,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "1\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+  m_sharedMaterial: {fileID: 3085970830955498383, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -272,6 +287,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &6622205942861465766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4491484824088096603}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 3
 --- !u!1 &5031187522938549192
 GameObject:
   m_ObjectHideFlags: 0
@@ -283,6 +311,7 @@ GameObject:
   - component: {fileID: 6771244642948044482}
   - component: {fileID: 1884189875316944768}
   - component: {fileID: 3703477037742420380}
+  - component: {fileID: 6127515810257976006}
   m_Layer: 0
   m_Name: Text
   m_TagString: Untagged
@@ -327,7 +356,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -339,8 +368,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Autoplay options
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+  m_sharedMaterial: {fileID: 3085970830955498383, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -408,6 +437,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &6127515810257976006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5031187522938549192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 3
 --- !u!1 &5243741181185131607
 GameObject:
   m_ObjectHideFlags: 0
@@ -419,6 +461,7 @@ GameObject:
   - component: {fileID: 8809959143118439462}
   - component: {fileID: 4607286386623051547}
   - component: {fileID: 401588499759982780}
+  - component: {fileID: 6795896115002688042}
   m_Layer: 0
   m_Name: Text
   m_TagString: Untagged
@@ -463,7 +506,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -473,10 +516,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text:
+  m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+  m_sharedMaterial: {fileID: 3085970830955498383, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -544,6 +587,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &6795896115002688042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5243741181185131607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 3
 --- !u!1 &5371251585653025801
 GameObject:
   m_ObjectHideFlags: 0
@@ -591,7 +647,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RectMask2D
   m_Padding: {x: 0, y: 0, z: 0, w: 0}
   m_Softness: {x: 0, y: 0}
@@ -606,6 +662,7 @@ GameObject:
   - component: {fileID: 8642027925340993608}
   - component: {fileID: 5048313016911079650}
   - component: {fileID: 1562668558925195971}
+  - component: {fileID: 4548236498254884734}
   m_Layer: 0
   m_Name: Text
   m_TagString: Untagged
@@ -650,7 +707,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -662,8 +719,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Run count
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+  m_sharedMaterial: {fileID: 3085970830955498383, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -731,6 +788,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4548236498254884734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5466004667849428078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 3
 --- !u!1 &5956330184600569322
 GameObject:
   m_ObjectHideFlags: 0
@@ -806,7 +876,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
@@ -829,7 +899,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GraphicRaycaster
   m_IgnoreReversedGraphics: 1
   m_BlockingObjects: 0
@@ -854,7 +924,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0.45}
@@ -884,19 +954,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c01958558880e7d46963ff4339e828cf, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::AutoplaySetup
   Seed: {fileID: 3191212286936046707}
   RunCount: {fileID: 3237179658127260470}
   Validation: {fileID: 401588499759982780}
-  SpeedLabel: {fileID: 3627471922714326160}
+  SpeedLabel: {fileID: 9072615416292780778}
   FastModeLabel: {fileID: 7227354931396334037}
   GodmodeLabel: {fileID: 8996605898591432700}
   ResourcesLabel: {fileID: 3459669765944448707}
   CoverageLabel: {fileID: 1432624246404446673}
   Launch: {fileID: 2215118326677531491}
   Back: {fileID: 5360663309920106229}
-  Speed: {fileID: 3627471922714326159}
+  Speed: {fileID: 5563998173654041975}
   FastMode: {fileID: 6094377991390150216}
   Godmode: {fileID: 268608236162948609}
   InfiniteResources: {fileID: 61953256645491038}
@@ -948,7 +1018,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RectMask2D
   m_Padding: {x: 0, y: 0, z: 0, w: 0}
   m_Softness: {x: 0, y: 0}
@@ -963,6 +1033,7 @@ GameObject:
   - component: {fileID: 5422388316661139400}
   - component: {fileID: 3707861997969526694}
   - component: {fileID: 6567848364852235617}
+  - component: {fileID: 7534295224253331261}
   m_Layer: 0
   m_Name: Text
   m_TagString: Untagged
@@ -1007,7 +1078,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1019,8 +1090,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Starting seed
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+  m_sharedMaterial: {fileID: 3085970830955498383, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1088,6 +1159,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &7534295224253331261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8616966466613027804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 3
 --- !u!1001 &893847936290982693
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1098,7 +1182,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1384995894571870720, guid: cd2a7b7b566a06d4abdc06a5398c192d, type: 3}
       propertyPath: m_Sprite
-      value:
+      value: 
       objectReference: {fileID: 21300000, guid: d92f6e1b48f3b6e459c59828f42868bd, type: 3}
     - target: {fileID: 1689069092092075705, guid: cd2a7b7b566a06d4abdc06a5398c192d, type: 3}
       propertyPath: m_Name
@@ -1210,7 +1294,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TMP_InputField
   m_Navigation:
     m_Mode: 3
@@ -1256,7 +1340,7 @@ MonoBehaviour:
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
   m_CharacterValidation: 2
-  m_RegexValue:
+  m_RegexValue: 
   m_GlobalPointSize: 14
   m_CharacterLimit: 11
   m_OnEndEdit:
@@ -1310,7 +1394,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!224 &7414823210762012033 stripped
 RectTransform:
@@ -1422,12 +1506,24 @@ PrefabInstance:
       value: 2.4639988
       objectReference: {fileID: 0}
     - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_fontSizeMax
       value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_fontSizeMin
       value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 3085970830955498383, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+    - target: {fileID: 8174646921476655672, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: Role
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8395137042286762100, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_Name
@@ -1452,8 +1548,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7227354931396334037 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
@@ -1463,7 +1559,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &3627471922714326157
 PrefabInstance:
@@ -1570,12 +1666,24 @@ PrefabInstance:
       value: 2.464001
       objectReference: {fileID: 0}
     - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_fontSizeMax
       value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_fontSizeMin
       value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 3085970830955498383, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+    - target: {fileID: 8174646921476655672, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: Role
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8395137042286762100, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_Name
@@ -1586,12 +1694,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
---- !u!224 &3627471922714326158 stripped
+--- !u!224 &995444719838313518 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
   m_PrefabInstance: {fileID: 3627471922714326157}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3627471922714326159 stripped
+--- !u!114 &5563998173654041975 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9178358729106878970, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
   m_PrefabInstance: {fileID: 3627471922714326157}
@@ -1600,9 +1708,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
---- !u!114 &3627471922714326160 stripped
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9072615416292780778 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
   m_PrefabInstance: {fileID: 3627471922714326157}
@@ -1611,7 +1719,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &3820444750436402959
 PrefabInstance:
@@ -1718,12 +1826,24 @@ PrefabInstance:
       value: 0.49599814
       objectReference: {fileID: 0}
     - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_fontSizeMax
       value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_fontSizeMin
       value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 3085970830955498383, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+    - target: {fileID: 8174646921476655672, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: Role
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8395137042286762100, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_Name
@@ -1748,8 +1868,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6655913365564975030
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1855,12 +1975,24 @@ PrefabInstance:
       value: 2.4639988
       objectReference: {fileID: 0}
     - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_fontSizeMax
       value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_fontSizeMin
       value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 3085970830955498383, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+    - target: {fileID: 8174646921476655672, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: Role
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8395137042286762100, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_Name
@@ -1880,7 +2012,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!114 &2539635824191018572 stripped
 MonoBehaviour:
@@ -1891,8 +2023,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &7194874502009941781 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
@@ -2003,12 +2135,24 @@ PrefabInstance:
       value: 0.49599814
       objectReference: {fileID: 0}
     - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_fontSizeMax
       value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_fontSizeMin
       value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 3085970830955498383, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+    - target: {fileID: 8174646921476655672, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: Role
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8395137042286762100, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_Name
@@ -2028,8 +2172,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &6798855504031388218 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
@@ -2045,7 +2189,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1384995894571870720, guid: cd2a7b7b566a06d4abdc06a5398c192d, type: 3}
       propertyPath: m_Sprite
-      value:
+      value: 
       objectReference: {fileID: 21300000, guid: d92f6e1b48f3b6e459c59828f42868bd, type: 3}
     - target: {fileID: 1689069092092075705, guid: cd2a7b7b566a06d4abdc06a5398c192d, type: 3}
       propertyPath: m_Name
@@ -2156,7 +2300,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!1 &8370283121195748018 stripped
 GameObject:
@@ -2173,7 +2317,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TMP_InputField
   m_Navigation:
     m_Mode: 3
@@ -2219,7 +2363,7 @@ MonoBehaviour:
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
   m_CharacterValidation: 2
-  m_RegexValue:
+  m_RegexValue: 
   m_GlobalPointSize: 14
   m_CharacterLimit: 11
   m_OnEndEdit:
@@ -2379,7 +2523,7 @@ PrefabInstance:
       addedObject: {fileID: 1473900906529867537}
     - targetCorrespondingSourceObject: {fileID: 7674463184335244964, guid: cd2a7b7b566a06d4abdc06a5398c192d, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3627471922714326158}
+      addedObject: {fileID: 995444719838313518}
     - targetCorrespondingSourceObject: {fileID: 7674463184335244964, guid: cd2a7b7b566a06d4abdc06a5398c192d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4854181840601147224}
@@ -2510,12 +2654,24 @@ PrefabInstance:
       value: 2.464
       objectReference: {fileID: 0}
     - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_fontSizeMax
       value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_fontSizeMin
       value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 3085970830955498383, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+    - target: {fileID: 8174646921476655672, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: Role
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8395137042286762100, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_Name
@@ -2535,8 +2691,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &4854181840601147224 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
@@ -2551,7 +2707,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &9204247724483741860
 PrefabInstance:
@@ -2658,12 +2814,24 @@ PrefabInstance:
       value: 2.464
       objectReference: {fileID: 0}
     - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_fontSizeMax
       value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_fontSizeMin
       value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 3085970830955498383, guid: d73e083daf970224a86b3655ad2bd612, type: 2}
+    - target: {fileID: 8174646921476655672, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
+      propertyPath: Role
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8395137042286762100, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_Name
@@ -2683,8 +2851,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3459669765944448707 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5746375251131506279, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
@@ -2694,7 +2862,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!224 &4628529738893885447 stripped
 RectTransform:

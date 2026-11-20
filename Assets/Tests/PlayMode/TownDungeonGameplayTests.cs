@@ -83,6 +83,31 @@ namespace EternalEnigma.Tests
             yield return Capture("gameplay-interior");
         }
 
+        [UnityTest] public IEnumerator OutdoorTreeStepUsesTheSameRouteAndExecutesThroughTheTurnManager()
+        {
+            var dungeon = harness.Game.CurrentDungeon;
+            foreach (var enemy in harness.Game.Enemies.ToArray()) Object.Destroy(enemy.gameObject);
+            harness.Game.Enemies.Clear(); yield return null;
+            var candidates = DungeonPlacement.OpenCells(dungeon, harness.Ally).SelectMany(from =>
+                new[] { new Vector3Int(1,1), new Vector3Int(-1,1), new Vector3Int(1,-1), new Vector3Int(-1,-1) }
+                    .Select(delta => (from, to: from + delta)))
+                .Where(step => dungeon.CanWalkTo(step.from,step.to) && !dungeon.CanReachAdjacent(step.from,step.to) &&
+                    DungeonPlacement.Fits(dungeon,harness.Ally,step.to) && dungeon.GetInteractable(step.to) == null).ToArray();
+            Assert.That(candidates, Is.Not.Empty, "Generated district must expose an outdoor tree corner.");
+            var step = candidates[0];
+            harness.PlaceAlly(step.from);
+            var route = new AutoplayRoute();
+            Assert.That(route.Next(step.from,step.to,Character.GetAStarGrid,
+                (a,b) => DungeonPlacement.CanStep(dungeon,harness.Ally,a,b)), Is.EqualTo(step.to));
+            var sight = dungeon.GetVisibleTiles(harness.Ally,step.from).ToHashSet();
+            yield return harness.ExecuteAction(new MovementAction(harness.Ally,step.from,step.to));
+            Assert.That(harness.Ally.TilemapPosition, Is.EqualTo(step.to));
+            Assert.That(dungeon.CanReachAdjacent(step.from,step.to), Is.False, "Combat retains strict corners after movement.");
+            Assert.That(dungeon.GetVisibleTiles(harness.Ally,step.from), Is.EquivalentTo(sight));
+            yield return harness.ExecuteAction(new MovementAction(harness.Ally,step.to,step.from));
+            Assert.That(harness.Ally.TilemapPosition, Is.EqualTo(step.from));
+        }
+
         [UnityTest] public IEnumerator GatesKeepProgressionLootBossClearanceAndReleaseOldGeometry()
         {
             Assert.That(harness.Game.CurrentDungeon.IsThroneFloor, Is.True);

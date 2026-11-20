@@ -219,7 +219,9 @@ internal class SkillAction : GameAction
 	{
 		if (releasing) CombatEffectPlayer.Get()?.ClearCasting(caster);
         if (skipAnimation || !castSucceeded) return;
-        if (charging || Visuals.Sequence == null || skill.VisualProfile.GroundCircle.Prefab == null && skill.VisualProfile.Muzzle.Prefab == null)
+        // A resolved sequence owns its particles. In particular physical skills have
+        // impact-only profiles and must not also spawn a generic activation burst.
+        if (charging || Visuals.Sequence == null)
             CombatEffectPlayer.Get()?.ShowCasting(caster, skill.VisualProfile, charging);
 	}
 

@@ -14,12 +14,14 @@ namespace JuicyChickenGames.Menu
         private readonly System.Collections.Generic.Dictionary<ScrollRect,Vector2> savedScroll = new();
         public Action CloseAction { get; internal set; }
         public DialogController Owner { get; internal set; }
+        internal RectTransform GameplayDockPanel { get; private set; }
         public void CloseDialog() => Owner?.Close(this);
         internal virtual void OnBackRequested() => CloseDialog();
         public virtual void PrepareTown(TownInteractionContext context) { }
 
         internal void UseGameplayDock(Transform panel)
         {
+            GameplayDockPanel = (RectTransform)panel;
             Fit(panel,.73f,.03f,.98f,.88f);
             foreach(var image in GetComponentsInChildren<Image>(true))
                 if(image.name=="Input shield")image.color=Color.clear;

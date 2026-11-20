@@ -23,15 +23,16 @@ public static class GridMovement
         terrain != null && Contains(terrain.GetLength(0), terrain.GetLength(1), cell) && terrain[cell.x, cell.y];
 
     public static bool CanStep(Vector3Int from, Vector3Int to, Func<Vector3Int, bool> isWalkable,
-        DiagonalMovement diagonal = DiagonalMovement.RequireOpenSides)
+        DiagonalMovement diagonal = DiagonalMovement.RequireOpenSides, Func<Vector3Int, bool> canPassBlockedSide = null)
     {
         var delta = to - from;
         if (from.z != 0 || to.z != 0 || delta == Vector3Int.zero ||
             Mathf.Abs(delta.x) > 1 || Mathf.Abs(delta.y) > 1 || !isWalkable(to)) return false;
 
+        bool OpenSide(Vector3Int cell) => isWalkable(cell) || canPassBlockedSide?.Invoke(cell) == true;
         return diagonal == DiagonalMovement.AllowCornerCutting || delta.x == 0 || delta.y == 0 ||
-            (isWalkable(from + new Vector3Int(delta.x, 0, 0)) &&
-             isWalkable(from + new Vector3Int(0, delta.y, 0)));
+            (OpenSide(from + new Vector3Int(delta.x, 0, 0)) &&
+             OpenSide(from + new Vector3Int(0, delta.y, 0)));
     }
 
     public static IEnumerable<Facing> GetValidDirections(Vector3Int from, Func<Vector3Int, bool> isWalkable,

@@ -89,6 +89,45 @@ namespace EternalEnigma.Tests
             yield return action.Visuals.Play(action, actor, true);
         }
 
+        [UnityTest] public IEnumerator ImpactOnlySkillsWaitForResolutionBeforeSpawningParticles()
+        {
+            var skill = AudioSkill(null);
+            profile.Projectile.Prefab = null; profile.Area.Prefab = null;
+            skill.VisualProfile = profile;
+            var player = CombatEffectPlayer.Get();
+            try
+            {
+                var action = new SkillAction(actor, skill, actor);
+                action.SetPlaybackContext(DungeonAnimationMode.Normal, true, actor, actor);
+                action.Visuals.Begin(actor);
+                var children = action.ExecuteImmediate(actor);
+                action.Visuals.End(action, actor, children);
+                yield return action.Visuals.Play(action, actor, false);
+                Assert.That(player.ActiveCount, Is.Zero, "A physical skill must not also emit a generic activation burst.");
+                yield return player.Deliver(action.Visuals.Sequence, actor.transform.position, true);
+                Assert.That(player.ActiveCount, Is.EqualTo(1), "Only the resolved hit produces attack particles.");
+            }
+            finally { actor.Skills.Remove(skill); Object.Destroy(skill); }
+        }
+
+        [UnityTest] public IEnumerator SlashImpactsFollowAllEightRecordedCastDirections()
+        {
+            profile.Projectile.Prefab = null; profile.Area.Prefab = null;
+            profile.Impact.AlignWithCastDirection = true;
+            profile.Impact.Rotation = new Vector3(-90, 0, 0);
+            var player = CombatEffectPlayer.Get();
+            foreach (var direction in new[] { Vector3.up, Vector3.right, Vector3.down, Vector3.left,
+                new Vector3(1,1), new Vector3(1,-1), new Vector3(-1,-1), new Vector3(-1,1) })
+            {
+                var sequence = new CombatVisualSequence { Profile = profile, Direction = direction };
+                actor.SetFacing(Facing.Down); // Playback uses the snapshot, not future actor facing.
+                yield return player.Deliver(sequence, actor.transform.position, true);
+                var effect = player.GetComponentsInChildren<ParticleSystem>().Single();
+                Assert.That(Vector3.Dot(effect.transform.forward, direction.normalized), Is.GreaterThan(.999f));
+                player.Clear(); yield return null;
+            }
+        }
+
         [UnityTest] public IEnumerator InstantSkillHasOneUniversalStartAndOneReleaseEvenWithAnimationsSkipped()
         {
             AudioFixture(out var played, out var start, out var release);

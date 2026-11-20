@@ -12,6 +12,25 @@ public sealed class DungeonPartyCard : MonoBehaviour
     [SerializeField] private TMP_Text order;
     [SerializeField] private Transform statuses;
     private string statusKey;
+    private void Awake() => ApplyStatusPresentation();
+
+    public void ApplyStatusPresentation()
+    {
+        if (StatusButtons == null) return;
+        foreach (var button in StatusButtons)
+        {
+            var image = (Image)button.targetGraphic;
+            var role = image.GetComponent<DungeonUIRole>() ?? image.gameObject.AddComponent<DungeonUIRole>();
+            // Compact icon counters need a flat square face, without the thick
+            // bevel and shadow used by the full-size command buttons.
+            role.Role = DungeonVisualRole.IconFrame;
+            role.Apply();
+            var label = button.GetComponentInChildren<TMP_Text>(true);
+            label.margin = Vector4.zero;
+            label.alignment = TextAlignmentOptions.Midline;
+            label.color = GameUITheme.LightInk;
+        }
+    }
 #if UNITY_EDITOR
     public static DungeonPartyCard AuthorLayout(CharacterStatsDisplay display, DungeonHud hud, int slot)
     {

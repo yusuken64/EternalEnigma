@@ -242,11 +242,18 @@ public sealed class OverworldLockVisual : MonoBehaviour
         batch.Finish();
     }
 
-    private static void ApplyGateMasonry(GameObject root, OverworldBiome biome)
+    internal static void ApplyGateMasonry(GameObject root, OverworldBiome biome, bool untexturedWallsOnly = false)
     {
         var masonry = EnvironmentKit.Load()?.BuildingMaterial(biome);
         if (masonry == null) return;
-        var filters = root.GetComponentsInChildren<MeshFilter>();
+        var filters = root.GetComponentsInChildren<MeshFilter>().Where(filter =>
+        {
+            if (!untexturedWallsOnly) return true;
+            var material = filter.GetComponent<MeshRenderer>()?.sharedMaterial;
+            return material != null && material.name.StartsWith("wall", System.StringComparison.OrdinalIgnoreCase) &&
+                material.HasProperty("_MainTex") && material.GetTexture("_MainTex") == null;
+        }).ToArray();
+        if (filters.Length == 0) return;
         var bounds = filters[0].sharedMesh.bounds;
         foreach (var filter in filters.Skip(1)) bounds.Encapsulate(filter.sharedMesh.bounds);
         float span = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);

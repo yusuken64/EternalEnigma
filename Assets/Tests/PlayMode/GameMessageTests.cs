@@ -66,8 +66,6 @@ namespace EternalEnigma.Tests
                     UnifiedPartyMenuTests.AssertEventFeedWidth();
                     Assert.That(text.fontSize,Is.EqualTo(33.11f).Within(.001f));
                     Assert.That(text.enableAutoSizing,Is.False);
-                    Assert.That(scroll.viewport.anchoredPosition,Is.EqualTo(new Vector2(0,26.23f)));
-                    Assert.That(scroll.viewport.sizeDelta.y,Is.EqualTo(19.8808f).Within(.001f));
                     Assert.That(text.text,Does.Not.Contain("Event 1:").And.Contain("Event 2:").And.Contain("Event 5:"));
                     Assert.That(text.textInfo.lineCount,Is.EqualTo(4));
                     Assert.That(text.isTextOverflowing,Is.False,"All four lines fit without clipping or shrinking the chosen font.");

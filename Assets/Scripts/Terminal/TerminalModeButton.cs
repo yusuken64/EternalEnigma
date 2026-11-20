@@ -46,6 +46,7 @@ public sealed class TerminalModeButton : MonoBehaviour
         component.button.targetGraphic = image;
         component.label = textObject.GetComponent<TextMeshProUGUI>();
         component.label.font = style != null ? style.captionText.font : TMP_Settings.defaultFontAsset;
+        GameTypography.Apply(component.label, GameTextRole.Utility);
         component.label.fontSize = style != null ? style.captionText.fontSize : 22;
         component.label.color = style != null ? style.captionText.color : Color.white;
         component.label.alignment = style != null ? style.captionText.alignment : TextAlignmentOptions.Center;

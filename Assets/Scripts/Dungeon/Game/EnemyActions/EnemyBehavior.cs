@@ -75,7 +75,7 @@ public sealed class EnemyBehavior : MonoBehaviour
         GameMessages.ForCharacter(enemy, $"{GameMessages.Name(enemy)} exploded!");
         return Game.Instance.AllCharacters.Where(c => c != null && c != enemy && c.Vitals.HP > 0 &&
                 TileWorldDungeon.ChevDistance(c.TilemapPosition, enemy.TilemapPosition) <= 1 &&
-                Game.Instance.CurrentDungeon.CanWalkTo(enemy.TilemapPosition, c.TilemapPosition))
+                Game.Instance.CurrentDungeon.CanReachAdjacent(enemy.TilemapPosition, c.TilemapPosition))
             .Select(c => (GameAction)new TakeDamageAction(enemy, c, ExplosionDamage) { AwardExperience = false }).ToList();
     }
 

@@ -65,8 +65,9 @@ internal class SwapAllyPositionAction : GameAction
 		MovementAction.BeginWalk(swapAlly, continuous);
 
 		Sequence moveSequence = DOTween.Sequence();
-		var first = character.transform.DOMove(worldPosition, 0.1f / character.FinalStats.ActionsPerTurnMax);
-		var second = swapAlly.transform.DOMove(worldPosition2, 0.1f / character.FinalStats.ActionsPerTurnMax);
+		float duration = MovementAction.WalkDuration(character, continuous);
+		var first = character.transform.DOMove(worldPosition, duration);
+		var second = swapAlly.transform.DOMove(worldPosition2, duration);
 		if (continuous) { first.SetEase(Ease.Linear); second.SetEase(Ease.Linear); }
 		moveSequence.Join(first);
 		moveSequence.Join(second);

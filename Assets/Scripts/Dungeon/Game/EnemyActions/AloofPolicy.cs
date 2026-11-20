@@ -7,7 +7,7 @@ public class AloofPolicy : PolicyBase
 
 	public override List<GameAction> GetActions()
 	{
-		var validWalkDirections = game.CurrentDungeon.GetValidWalkDirections(character.TilemapPosition);
+		var validWalkDirections = game.CurrentDungeon.GetValidWalkDirections(character.TilemapPosition, character.FootPrint);
 
 		if (validWalkDirections.Any())
 		{

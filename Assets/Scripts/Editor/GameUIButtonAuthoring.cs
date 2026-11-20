@@ -71,11 +71,9 @@ public static class GameUIButtonAuthoring
                 dialogTypes.Add(dialog.GetType().Name);
             foreach (var label in root.GetComponentsInChildren<TextMeshProUGUI>(true))
             {
-                // Branding and scene-loading artwork are not dialog copy.
-                if (label.name == "EternalEnigma" || label.GetComponentInParent<ScreenTransition>(true) != null) continue;
                 labels++;
                 if (label.font == null) implicitDefaults++; // TMP resolves these to its configured default at startup.
-                else if (label.font != normal)
+                else if (label.font != GameTypography.Expected(label))
                     problems.Add(path + " / " + AnimationUtility.CalculateTransformPath(label.transform, root.transform) + ": " + label.font.name);
             }
         }
@@ -184,10 +182,8 @@ public static class GameUIButtonAuthoring
             // World labels and floating combat text keep their contrast against the world.
             if (label is not TextMeshProUGUI) continue;
             label.color = GameUITheme.Ink;
-            // The game logo and loading title keep their decorative treatment.
-            // Dialogs, controls and dynamically cloned menu labels share the body font.
-            if (label.name != "EternalEnigma" && label.GetComponentInParent<ScreenTransition>(true) == null)
-                label.font = TMP_Settings.defaultFontAsset;
+            GameTypography.Apply(label, label.TryGetComponent<GameTextStyle>(out var style)
+                ? style.Role : GameTextRole.Interface);
         }
         foreach (var label in root.GetComponentsInChildren<Text>(true)) label.color = GameUITheme.Ink;
         foreach (var button in root.GetComponentsInChildren<Button>(true)) Style(button);

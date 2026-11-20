@@ -3,6 +3,7 @@ namespace JuicyChickenGames.Menu
     using UnityEngine;
     using UnityEngine.InputSystem;
 
+    [DefaultExecutionOrder(-100)] // Consumers must see this frame's press/release, including the end of a walk tween.
     public class PlayerInputHandler : SingletonMonoBehaviour<PlayerInputHandler>
     {
         public PlayerInput PlayerInput;

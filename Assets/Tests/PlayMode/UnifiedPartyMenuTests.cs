@@ -1062,7 +1062,8 @@ namespace EternalEnigma.Tests
                 if(tab==PartyMenuTab.Stats)VerifyStatsFit(menu);
                 Assert.That((button.GetComponentInChildren<TMPro.TMP_Text>().fontStyle & TMPro.FontStyles.Underline)!=0,Is.True);
                 var label=button.GetComponentInChildren<TMPro.TMP_Text>();label.ForceMeshUpdate();
-                Assert.That(label.isTextOverflowing,Is.False,"HUD tab labels must fit, including the active marker and shortcut.");
+                Assert.That(TextLayoutAudit.Capture($"Temp/HudTabAudit/{UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}-{tab}-{Screen.width}x{Screen.height}"),Is.Empty,
+                    "Rendered tab glyphs and backgrounds must fit; TMP's line-box flag also includes unused font padding.");
                 Assert.That(((Image)button.targetGraphic).sprite,Is.EqualTo(GameUITheme.Current.DungeonWoodButton),"All scenes use the same wooden tab buttons.");
                 Assert.That(((Image)button.targetGraphic).pixelsPerUnitMultiplier,Is.EqualTo(1));
                 Assert.That(button.targetGraphic.GetComponent<DungeonUIRole>().IsValid(),Is.True);
@@ -1070,8 +1071,10 @@ namespace EternalEnigma.Tests
                 Assert.That(label.color,Is.EqualTo(GameUITheme.LightInk));
                 Assert.That(button.colors.normalColor,Is.EqualTo(GameUITheme.Selected),"The current tab stays highlighted while browsing its list.");
                 var rect=(RectTransform)button.transform;
-                Assert.That(rect.anchorMax.x-rect.anchorMin.x,Is.EqualTo(.105f).Within(.0001f),"Overworld's extra tab must not shrink the shared tabs.");
-                Assert.That(rect.anchorMin.y,Is.EqualTo(.935f));Assert.That(rect.anchorMax.y,Is.EqualTo(.985f));
+                var inventoryRect=(RectTransform)launcher.ButtonFor(PartyMenuTab.Inventory).transform;
+                Assert.That(rect.rect.width,Is.EqualTo(inventoryRect.rect.width).Within(.1f),"Every header, including Capabilities, has the same usable width.");
+                Assert.That(rect.anchorMin.y,Is.EqualTo(inventoryRect.anchorMin.y));
+                Assert.That(rect.anchorMax.y,Is.EqualTo(inventoryRect.anchorMax.y));
                 yield return ClickHudTab(mouse,button);
                 Assert.That(owner.Current,Is.SameAs(menu),"Clicking the active header keeps the menu open.");
             }
@@ -1210,6 +1213,7 @@ namespace EternalEnigma.Tests
 
         internal static RectTransform AssertEventFeedWidth()
         {
+            const System.Reflection.BindingFlags flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;
             Canvas.ForceUpdateCanvases();
             var feed=Object.FindFirstObjectByType<GameMessages>();
             Assert.That(feed,Is.Not.Null);
@@ -1218,9 +1222,9 @@ namespace EternalEnigma.Tests
             Assert.That(panel.anchorMin,Is.EqualTo(new Vector2(.225f,.016f)));
             Assert.That(panel.anchorMax,Is.EqualTo(new Vector2(.775f,.20f)),"Commands and menus must not narrow the event feed.");
             var sourceScroll=panel.GetComponent<ScrollRect>();
+            Assert.That(typeof(GameMessages).GetField("scroll",flags).GetValue(feed),Is.SameAs(sourceScroll),
+                "The feed controller must reflow the visible scroll viewport.");
             Assert.That(sourceScroll.content.GetComponent<TMPro.TMP_Text>().fontSize,Is.EqualTo(33.11f).Within(.001f),"Every scene uses the saved event font size.");
-            Assert.That(sourceScroll.viewport.anchoredPosition.y,Is.EqualTo(26.23f).Within(.001f));
-            Assert.That(sourceScroll.viewport.sizeDelta.y,Is.EqualTo(19.8808f).Within(.001f));
             // Terminal mode disables this canvas; Unity keeps its old pixel geometry
             // through window resizes until the canvas is shown again.
             if(!panel.GetComponentInParent<Canvas>().isActiveAndEnabled)return panel;
@@ -1229,6 +1233,18 @@ namespace EternalEnigma.Tests
             Assert.That(bounds.xMax,Is.EqualTo(Screen.width*.775f).Within(1));
             Assert.That(bounds.yMin,Is.EqualTo(Screen.height*.016f).Within(1));
             Assert.That(bounds.yMax,Is.GreaterThanOrEqualTo(Screen.height*.20f-1),"Wide windows can add vertical room for four complete lines.");
+            var viewport=ScreenBounds(sourceScroll.viewport);
+            var history=ScreenBounds(panel.GetComponentInChildren<Button>().targetGraphic.rectTransform);
+            Assert.That(viewport.yMax,Is.LessThanOrEqualTo(history.yMin-1),"Event text must stay below the History button.");
+            var focus=MenuUIInputModule.Active?.FocusRoot;
+            var dock=focus != null ? focus.GetComponentInParent<JuicyChickenGames.Menu.Dialog>()?.GameplayDockPanel : null;
+            if(dock != null)
+            {
+                var dockBounds=ScreenBounds(dock);
+                Assert.That(history.xMax,Is.LessThanOrEqualTo(dockBounds.xMin-1),"The whole History button must remain clear of the dock.");
+                Assert.That(viewport.xMax,Is.LessThanOrEqualTo(dockBounds.xMin-1),
+                    $"Event text must wrap before the dock covers it; offset {sourceScroll.viewport.offsetMax}, inset {typeof(GameMessages).GetField("dockInset",flags).GetValue(feed)}.");
+            }
             return panel;
         }
 

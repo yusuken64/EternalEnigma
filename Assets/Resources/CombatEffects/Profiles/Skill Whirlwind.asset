@@ -16,7 +16,9 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     Offset: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0}
+    AlignWithCastDirection: 0
     FitToTarget: 0
+    ScaleWithTarget: 1
     Scale: 1
     Delay: 0
     Lifetime: 2
@@ -26,7 +28,9 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     Offset: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0}
+    AlignWithCastDirection: 0
     FitToTarget: 0
+    ScaleWithTarget: 1
     Scale: 1
     Delay: 0
     Lifetime: 2
@@ -36,7 +40,9 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     Offset: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0}
+    AlignWithCastDirection: 0
     FitToTarget: 0
+    ScaleWithTarget: 1
     Scale: 1
     Delay: 0
     Lifetime: 2
@@ -46,7 +52,9 @@ MonoBehaviour:
     Prefab: {fileID: 2110861146045004955, guid: 2bf21a2f2100c2540b2878d5121a7d21, type: 3}
     Offset: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0}
+    AlignWithCastDirection: 1
     FitToTarget: 1
+    ScaleWithTarget: 1
     Scale: 0.5
     Delay: 0
     Lifetime: 2
@@ -56,7 +64,9 @@ MonoBehaviour:
     Prefab: {fileID: 8692558854412563454, guid: 93af4cf12ca1d774c88e1ee54f0339c1, type: 3}
     Offset: {x: 0, y: 0, z: 0}
     Rotation: {x: -90, y: 0, z: 0}
+    AlignWithCastDirection: 1
     FitToTarget: 0
+    ScaleWithTarget: 1
     Scale: 0.4
     Delay: 0
     Lifetime: 2

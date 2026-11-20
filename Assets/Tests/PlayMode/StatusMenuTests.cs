@@ -131,7 +131,7 @@ namespace EternalEnigma.Tests
             Assert.That(menu.EntryButtons.Any(button => button.GetComponent<AuthoredButton>().Label.text == "Frail"), Is.False, "Statuses belong to the selected hero.");
             menu.BrowseHero(-1); yield return null;
             Assert.That(menu.Details.GetParsedText(), Does.Contain("Attack -3"), "Returning restores the same selected status.");
-            frailty.TurnsLeft = 0; menu.Refresh(); menu.SetFirstSelect(); yield return null;
+            actor.RemoveStatusEffect(frailty); menu.Refresh(); menu.SetFirstSelect(); yield return null;
             Assert.That(menu.EntryButtons.Any(button => button.GetComponent<AuthoredButton>().Label.text == "Frail"), Is.False);
         }
 
@@ -157,7 +157,9 @@ namespace EternalEnigma.Tests
 
         [UnityTest] public IEnumerator EveryStatusPopupFitsNormalAndTerminalLayouts()
         {
-            var statuses = TypeCache.GetTypesDerivedFrom<StatusEffect>().Where(type => !type.IsAbstract).OrderBy(type => type.Name).Select(Add).ToList();
+            var statuses = TypeCache.GetTypesDerivedFrom<StatusEffect>()
+                .Where(type => !type.IsAbstract && type.Assembly == typeof(StatusEffect).Assembly)
+                .OrderBy(type => type.Name).Select(Add).ToList();
             foreach (var status in statuses)
             {
                 if (status is SongStatusEffect song) { song.SongName = "Restorative Melody"; song.HealPerTurn = 8; song.Modification.Strength = 4; }
@@ -166,7 +168,8 @@ namespace EternalEnigma.Tests
                 if (status is TimedBuffStatusEffect buff) { buff.BuffName = "Protective Blessing"; buff.Modification.Defense = 6; }
             }
             var menu = MenuManager.Instance.PartyMenu; menu.Refresh(); menu.SetFirstSelect(); yield return null;
-            Assert.That(menu.EntryButtons.Count, Is.EqualTo(statuses.Count + 4));
+            var entries = (System.Collections.Generic.List<PartyMenuEntry>)typeof(PartyMenu).GetField("entries", Flags).GetValue(menu);
+            Assert.That(entries.Count(entry => entry.Status != null), Is.EqualTo(statuses.Count));
             foreach (bool terminal in new[] { false, true })
             {
                 TerminalMode.SetRequested(terminal); yield return harness.WaitUntil(() => TerminalMode.Effective == terminal, "status presentation mode");
@@ -175,7 +178,7 @@ namespace EternalEnigma.Tests
                     yield return Resolution(resolution);
                     for (int i = 0; i < statuses.Count; i++)
                     {
-                        var status = statuses[i]; var button = menu.EntryButtons[i + 4]; button.Select();
+                        var status = statuses[i]; var button = menu.EntryButtons[entries.FindIndex(entry => entry.Status == status)]; button.Select();
                         yield return new WaitForSecondsRealtime(.08f); Canvas.ForceUpdateCanvases();
                         Assert.That(button.GetComponent<AuthoredButton>().Icon.sprite, Is.Not.Null, status.GetType().Name);
                         Assert.That(menu.Details.GetParsedText(), Does.Contain(StatusPresentation.Duration(status)));
@@ -193,9 +196,10 @@ namespace EternalEnigma.Tests
         }
         static IEnumerator Capture(string name)
         {
-            Assert.That(TextLayoutAudit.Capture("Temp/StatusAudit/" + name), Is.Empty, name);
+            var issues = TextLayoutAudit.Capture("Temp/StatusAudit/" + name);
             ScreenCapture.CaptureScreenshot("Temp/StatusAudit/" + name + ".png");
             yield return new WaitForSecondsRealtime(.15f);
+            Assert.That(issues, Is.Empty, name);
         }
     }
 }

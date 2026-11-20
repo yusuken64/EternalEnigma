@@ -23,13 +23,7 @@ namespace JuicyChickenGames.Menu
                 throw new InvalidOperationException("Dialog is already owned by another controller.");
             Current?.SaveSelection();
             dialog.Owner = this;
-            // Authored dialog headings sometimes use the decorative theme font,
-            // including prompts containing body text. Keep dialog copy consistent.
-            var headingFont = GameUITheme.Current?.HeadingFont;
-            var menuFont = TMP_Settings.defaultFontAsset;
-            if (headingFont != null && menuFont != null)
-                foreach (var label in dialog.GetComponentsInChildren<TMP_Text>(true))
-                    if (label.font == headingFont) label.font = menuFont;
+            GameTypography.Apply(dialog.transform);
             dialog.gameObject.SetActive(true);
             Stack.Push(dialog);
             RefreshPresentation();

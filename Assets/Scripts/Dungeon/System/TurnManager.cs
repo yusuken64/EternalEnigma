@@ -363,7 +363,7 @@ public class TurnManager : MonoBehaviour
                 .Where(x => x.Action is MovementAction || x.Action is SwapAllyPositionAction).Select(x => x.Actor));
             foreach (var swap in simultaneousEffects.Select(x => x.Action).OfType<SwapAllyPositionAction>())
                 movers.Add(swap.SwappedAlly);
-            foreach (var waiting in simultaneousEffects.Where(x => x.Action is WaitAction && !movers.Contains(x.Actor)))
+            foreach (var waiting in simultaneousEffects.Where(x => x.Action is WaitAction { PreserveHeldWalk: false } && !movers.Contains(x.Actor)))
                 (waiting.Actor as Ally)?.HeroAnimator?.StopWalkContinuation();
 
             Game.Instance.RefreshSight();
@@ -404,7 +404,7 @@ public class TurnManager : MonoBehaviour
 
     private IEnumerator ReplayAction(ActorAction replay)
     {
-        if (replay.Action is WaitAction) (replay.Actor as Ally)?.HeroAnimator?.StopRetainedWalk();
+        if (replay.Action is WaitAction { PreserveHeldWalk: false }) (replay.Actor as Ally)?.HeroAnimator?.StopRetainedWalk();
         yield return replay.Actor.ExecuteActionRoutine(replay.Action);
         // Simulation can finish a whole round before playback begins.
         if (replay.ConsumesAllyAction && replay.Actor is Ally ally && ally != null)

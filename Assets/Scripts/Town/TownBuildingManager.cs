@@ -58,6 +58,7 @@ public class TownBuildingManager : MonoBehaviour
             {
                 float size = map.TileWorldCreator.twcAsset.cellSize;
                 var label = new GameObject("Door label " + definition.Id).AddComponent<TMPro.TextMeshPro>();
+                GameTypography.Apply(label, GameTextRole.Heading);
                 label.transform.SetParent(building.transform, false);
                 label.transform.localPosition = new Vector3(.5f, -.45f, -.6f) * size;
                 label.rectTransform.sizeDelta = new Vector2(2.4f, .45f) * size;

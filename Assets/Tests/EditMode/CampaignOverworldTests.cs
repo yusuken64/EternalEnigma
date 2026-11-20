@@ -51,6 +51,27 @@ namespace EternalEnigma.Tests.CoreIntegration
         }
 
         [Test]
+        public void FinaleCrossingsUseTheBridgeLayerWithoutChangingCampaignWater()
+        {
+            var grid = OverworldGridGenerator.Generate(CampaignGenerator.Generate(42));
+            adapter.LayerBindings.Add(new(OverworldLayers.Bridges, "Crossings"));
+            var originalBridges = grid.Layers[OverworldLayers.Bridges].ToArray();
+            var originalWater = grid.Layers[OverworldLayers.Water].ToArray();
+            adapter.BridgeCapabilityCrossings = true;
+            adapter.Apply(grid);
+            var crossings = grid.Locks.SelectMany(l => l.Cells).Where(grid.RequiresBoat).ToHashSet();
+            Assert.That(crossings, Is.Not.Empty);
+            var output = creator.GetMapOutputFromBlueprintLayer("Crossings");
+            for (int y = 0; y < grid.Height; y++) for (int x = 0; x < grid.Width; x++)
+                Assert.That(output[x, y], Is.EqualTo(originalBridges[x, y] || crossings.Contains(new GridPoint(x, y))), $"{x},{y}");
+            CollectionAssert.AreEqual(originalBridges, grid.Layers[OverworldLayers.Bridges].ToArray());
+            CollectionAssert.AreEqual(originalWater, grid.Layers[OverworldLayers.Water].ToArray());
+            adapter.BridgeCapabilityCrossings = false;
+            adapter.Apply(grid);
+            CollectionAssert.AreEqual(originalBridges, creator.GetMapOutputFromBlueprintLayer("Crossings"));
+        }
+
+        [Test]
         public void AdapterPreservesTemplateAndCreatesBothKindsOfTWCWorldMap()
         {
             var campaign = CampaignGenerator.Generate(42);

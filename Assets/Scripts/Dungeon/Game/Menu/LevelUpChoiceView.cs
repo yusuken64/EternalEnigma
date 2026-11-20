@@ -94,7 +94,7 @@ public sealed class LevelUpChoiceView : MonoBehaviour
     private TMP_Text Label(string name, Transform parent, float size, Color color)
     {
         var label = Rect(name, parent).gameObject.AddComponent<TextMeshProUGUI>();
-        label.font = title.font;
+        GameTypography.Apply(label, GameTextRole.Interface);
         label.fontSize = label.fontSizeMax = size; label.fontSizeMin = 16; label.enableAutoSizing = true;
         label.color = color; label.raycastTarget = false;
         label.alignment = TextAlignmentOptions.Midline;

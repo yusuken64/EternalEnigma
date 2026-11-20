@@ -58,6 +58,17 @@ namespace EternalEnigma.Tests
                 view.GetType().GetMethod("SetCustomResolution",Flags).Invoke(view,new object[]{resolution,"Dungeon dock "+resolution});view.Repaint();
                 yield return new WaitForSecondsRealtime(.2f);
                 yield return Capture("hud",resolution);
+                // Exercise the longest pending-round captions without spending
+                // a turn; command behavior is covered by DungeonControlTests.
+                var control = Object.FindFirstObjectByType<DungeonHud>().GetComponentsInChildren<TMPro.TMP_Text>()
+                    .Single(label => label.text.StartsWith("Full Control"));
+                string controlText = control.text;
+                foreach (var state in new[] { "On", "Off" })
+                {
+                    control.text = GameplayText.Format($"Full Control {state} next round");
+                    yield return Capture("hud-control-next-" + state.ToLowerInvariant(), resolution);
+                }
+                control.text = controlText;
                 manager.OpenPartyMenu(PartyMenuTab.Inventory);yield return null;
                 var menu=manager.PartyMenu;
                 var exit=menu.Panel.GetComponentsInChildren<DungeonDialogClose>().Single();
@@ -412,10 +423,10 @@ namespace EternalEnigma.Tests
             UnifiedPartyMenuTests.AssertEventFeedWidth();
             if(MenuManager.Instance.CurrentDialog is EventHistoryDialog history)
                 UnifiedPartyMenuTests.AssertExpandedHistoryLayout(history);
-            Assert.That(TextLayoutAudit.Capture($"Temp/DungeonDock/{name}-{size.x}x{size.y}"), Is.Empty,
-                $"Visible text must fit at {name} {size}.");
+            var issues = TextLayoutAudit.Capture($"Temp/DungeonDock/{name}-{size.x}x{size.y}");
             ScreenCapture.CaptureScreenshot($"Temp/DungeonDock/{name}-{size.x}x{size.y}.png");
             yield return new WaitForSecondsRealtime(.2f);
+            Assert.That(issues, Is.Empty, $"Visible text and buttons must fit at {name} {size}.");
         }
     }
 }

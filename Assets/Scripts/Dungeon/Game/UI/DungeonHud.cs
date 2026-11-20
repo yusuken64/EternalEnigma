@@ -29,6 +29,7 @@ public sealed class DungeonHud : MonoBehaviour
         {
             hud.game=game;
             hud.ApplyTargetPresentation();
+            hud.ApplyControlPresentation();
             hud.control.onClick.AddListener(()=>DungeonPreferences.FullControl=!DungeonPreferences.FullControl);
             ResourceHUD.Ensure(game); ScenePresentation.Ensure(game);
             HudRefresh.Request(HudChange.All);
@@ -49,6 +50,14 @@ public sealed class DungeonHud : MonoBehaviour
         target.alignment = TextAlignmentOptions.Center;
         target.textWrappingMode = TextWrappingModes.Normal;
     }
+    private void ApplyControlPresentation()
+    {
+        var rect = (RectTransform)control.transform;
+        rect.pivot = new Vector2(rect.pivot.x, 0);
+        rect.anchorMax = new Vector2(rect.anchorMax.x, rect.anchorMin.y);
+        rect.sizeDelta = new Vector2(rect.sizeDelta.x, 92);
+        rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, 0);
+    }
     #if UNITY_EDITOR
     public void AuthorLayout(Game owner)
     {
@@ -62,6 +71,7 @@ public sealed class DungeonHud : MonoBehaviour
         options.navigation = new Navigation { mode = Navigation.Mode.None };
         control = GameUISkin.Button(canvas.transform,"",new Vector2(.012f,.022f),new Vector2(.22f,.072f),()=>DungeonPreferences.FullControl=!DungeonPreferences.FullControl);
         control.navigation = new Navigation { mode = Navigation.Mode.None };
+        ApplyControlPresentation();
         target = GameUISkin.Label(canvas.transform,"",new Vector2(.29f,.79f),new Vector2(.70f,.90f),25);
         target.alignment = TextAlignmentOptions.Top;
         target.color = GameUITheme.LightInk;

@@ -26,8 +26,9 @@ public sealed class OverworldSettlementLayer : TWCBuildLayer
                 if(grid.TownFootprints.Any(t=>t.LocationId==location.Key))continue;
                 var locationRoot = new GameObject("Location " + location.Key);
                 locationRoot.transform.SetParent(root.transform, false);
-                var batch = new EnvironmentBatch(locationRoot.transform);
                 var cell=location.Value;var biome=OverworldCosmetics.Biome(grid,cell.X,cell.Y);
+                var batch = new EnvironmentBatch(locationRoot.transform,
+                    chunk => OverworldLockVisual.ApplyGateMasonry(chunk, biome, untexturedWallsOnly: true));
                 var origin=new Vector3(cell.X+.5f,cell.Y+.5f,0)*size;
                 var footprint=grid.LocationFootprints.FirstOrDefault(f=>f.LocationId==location.Key);
                 if(footprint?.EncounterKind is { } kind)

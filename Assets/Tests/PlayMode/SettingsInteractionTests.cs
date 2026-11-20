@@ -90,9 +90,14 @@ namespace EternalEnigma.Tests
             Assert.That(options.GetComponent<Canvas>().sortingOrder, Is.GreaterThan(party.GetComponent<Canvas>().sortingOrder));
             Assert.That(MenuUIInputModule.Active.Allows(options.gameObject), Is.True, "Options belongs to the party's focus scope.");
             var rect = (RectTransform)options.transform;
-            Assert.That(rect.anchorMin, Is.EqualTo(new Vector2(.87f, .935f)));
-            Assert.That(rect.anchorMax, Is.EqualTo(new Vector2(.985f, .985f)));
             Canvas.ForceUpdateCanvases();
+            var corners = new Vector3[4]; rect.GetWorldCorners(corners);
+            foreach (var corner in corners)
+            {
+                var point = RectTransformUtility.WorldToScreenPoint(null, corner);
+                Assert.That(point.x, Is.InRange(0, Screen.width), "Options must fit horizontally.");
+                Assert.That(point.y, Is.InRange(0, Screen.height), "Options must fit vertically.");
+            }
             var pointer = new PointerEventData(EventSystem.current) {
                 position = RectTransformUtility.WorldToScreenPoint(null, rect.TransformPoint(rect.rect.center))
             };

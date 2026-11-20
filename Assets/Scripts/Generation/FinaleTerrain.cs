@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Linq;
 using EternalEnigma.Core.Progression;
 using EternalEnigma.Core.World;
 using TWC;
@@ -37,6 +36,7 @@ public partial class TileWorldDungeonGenerator
         var creator = root.AddComponent<TileWorldCreator>();
         creator.worldObject = new GameObject("Terrain"); creator.worldObject.transform.SetParent(root.transform, false);
         var map = root.AddComponent<CampaignOverworld>();
+        map.BridgeCapabilityCrossings = true;
         map.StyleProfile = GameContent.Load<OverworldStyleProfile>("EnvironmentKit/OverworldStyle");
         if (map.StyleProfile == null) throw new System.InvalidOperationException("Missing overworld style profile.");
         bool built = false;
@@ -56,9 +56,6 @@ public partial class TileWorldDungeonGenerator
         CurrentFloor = plan.CreateFloor();
         GeneratedDungeon = Instantiate(TileWorldDungeonPrefab, root.transform);
         GeneratedDungeon.Setup(creator, CurrentFloor);
-        // Capability-gate water becomes a visible bridge; the original campaign grid is untouched.
-        foreach (var cell in plan.Grid.Locks.SelectMany(l => l.Cells).Where(plan.Grid.RequiresBoat).Distinct())
-            EncounterRuntime.Marker(GeneratedDungeon, "Finale bridge", cell.ToCell(), new Color(.58f, .49f, .34f), .04f);
         ScenePresentation.RegisterWorld(root.transform);
     }
 }

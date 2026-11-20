@@ -705,7 +705,9 @@ disp: {displayedVitals}");
 		AStar.Node startNode = grid[TilemapPosition.x, TilemapPosition.y];
 		AStar.Node targetNode = grid[PursuitPosition.Value.x, PursuitPosition.Value.y];
 
-		var path = AStar.FindPath(grid, startNode, targetNode);
+		var path = AStar.FindPath(grid, startNode, targetNode,
+            canStep: game.CurrentDungeon.Floor.Variant == EternalEnigma.Core.World.DungeonVariant.Town
+                ? (from, to) => game.CurrentDungeon.CanWalkTo(from, to, FootPrint) : null);
 		return path;
 	}
 

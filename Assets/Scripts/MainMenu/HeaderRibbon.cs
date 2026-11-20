@@ -51,5 +51,6 @@ public sealed class HeaderRibbon : MonoBehaviour
         float horizontal = target.rect.width * .13f;
         var margin = new Vector4(horizontal, target.rect.height * .04f, horizontal, target.rect.height * .24f);
         if (Title.margin != margin) Title.margin = margin;
+        if (Title.verticalAlignment == VerticalAlignmentOptions.Middle) Title.verticalAlignment = VerticalAlignmentOptions.Geometry;
     }
 }

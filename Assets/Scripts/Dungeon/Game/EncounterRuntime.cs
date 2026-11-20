@@ -236,7 +236,7 @@ public sealed class EncounterRuntime
             return targets.SelectMany(e=>game.CurrentDungeon.GetWalkableNeighborhoodTiles(e.TilemapPosition)
                     .Concat(e.ToBounds().Cells().SelectMany(c=>new[] {c+Vector3Int.up,c+Vector3Int.down,c+Vector3Int.left,c+Vector3Int.right})))
                 .Where(p=>game.CurrentDungeon.IsWalkable(p)&&game.CurrentDungeon.OverlapsAnyOtherCharacter(ally,Character.ToBounds(p),true)==null)
-                .Where(p=>targets.Any(e=>e.ToBounds().Cells().Any(cell=>game.CurrentDungeon.CanWalkTo(p,cell))))
+                .Where(p=>targets.Any(e=>e.ToBounds().Cells().Any(cell=>game.CurrentDungeon.CanReachAdjacent(p,cell))))
                 .OrderBy(p=>TileWorldDungeon.ChevDistance(ally.TilemapPosition,p)).ThenBy(p=>p.x).ThenBy(p=>p.y).Cast<Vector3Int?>().FirstOrDefault();
         }
         return null;

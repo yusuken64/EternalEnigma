@@ -28,14 +28,15 @@ public static class AStar
 		}
     }
 
-    // Main-thread only and non-reentrant: FindPath never calls out to user code while searching.
+    // Main-thread only and non-reentrant: step predicates must not start another search.
     static readonly List<Node> SharedOpenSet = new List<Node>(64);
     // Same order as GridMovement's Directions: DownLeft, Down, DownRight, Left, Right, UpLeft, Up, UpRight.
     static readonly int[] NeighborDx = { -1, 0, 1, -1, 1, -1, 0, 1 };
     static readonly int[] NeighborDy = { -1, -1, -1, 0, 0, 1, 1, 1 };
 
     public static List<Node> FindPath(Node[,] grid, Node startNode, Node targetNode,
-        DiagonalMovement diagonal = DiagonalMovement.RequireOpenSides)
+        DiagonalMovement diagonal = DiagonalMovement.RequireOpenSides,
+        System.Func<Vector3Int, Vector3Int, bool> canStep = null)
     {
         if (startNode == null || targetNode == null) return null;
         List<Node> openSet = SharedOpenSet;
@@ -84,9 +85,10 @@ public static class AStar
 				int dy = NeighborDy[d];
 				Node neighbor = GetWalkable(grid, width, height, currentNode.X + dx, currentNode.Y + dy);
 				if (neighbor == null) continue;
+				if (canStep != null && !canStep(new Vector3Int(currentNode.X, currentNode.Y), new Vector3Int(neighbor.X, neighbor.Y))) continue;
 				if (dx != 0 && dy != 0)
 				{
-					if (diagonal != DiagonalMovement.AllowCornerCutting &&
+					if (canStep == null && diagonal != DiagonalMovement.AllowCornerCutting &&
 						(GetWalkable(grid, width, height, currentNode.X + dx, currentNode.Y) == null ||
 						 GetWalkable(grid, width, height, currentNode.X, currentNode.Y + dy) == null))
 						continue;

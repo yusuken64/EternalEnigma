@@ -80,8 +80,10 @@ namespace EternalEnigma.Tests
             AStar.Node[,] Grid() => new[,] { { new AStar.Node(0,0,true,0), new AStar.Node(0,1,false,0) },
                 { new AStar.Node(1,0,false,0), new AStar.Node(1,1,true,0) } };
             var goal = new Vector3Int(1,1);
-            Assert.That(new AutoplayRoute().Next(Vector3Int.zero,goal,Grid,(a,b) => true),Is.Null);
-            Assert.That(new AutoplayRoute().Next(Vector3Int.zero,goal,Grid,(a,b) => true,DiagonalMovement.AllowCornerCutting),Is.EqualTo(goal));
+            bool Walkable(Vector3Int p) => p == Vector3Int.zero || p == goal;
+            Assert.That(new AutoplayRoute().Next(Vector3Int.zero,goal,Grid,(a,b) => GridMovement.CanStep(a,b,Walkable)),Is.Null);
+            Assert.That(new AutoplayRoute().Next(Vector3Int.zero,goal,Grid,
+                (a,b) => GridMovement.CanStep(a,b,Walkable,DiagonalMovement.AllowCornerCutting)),Is.EqualTo(goal));
         }
     }
 }

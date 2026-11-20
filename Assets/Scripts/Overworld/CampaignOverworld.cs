@@ -26,6 +26,8 @@ public sealed class CampaignOverworld : MonoBehaviour
     public EnvironmentKit CosmeticKit;
     public OverworldStyleProfile StyleProfile;
     public bool IncludeSettlements = true;
+    // The finale opens capability crossings without changing the campaign's immutable grid.
+    public bool BridgeCapabilityCrossings;
     public TileWorldCreatorAsset EffectiveTemplate => StyleProfile?.ResolveTemplate() ?? Template;
     public EnvironmentKit EffectiveKit => StyleProfile?.ResolveKit() ?? CosmeticKit;
     public string LastGenerationError { get; private set; }
@@ -139,6 +141,9 @@ public sealed class CampaignOverworld : MonoBehaviour
             if ((styleBinding?.Role==OverworldLayerRole.PlannedCosmetic || StyleProfile==null && layer.layerName == OverworldCosmetics.Layer) && EffectiveKit != null)
                 foreach (var prop in OverworldCosmetics.Plan(grid, EffectiveKit,generatedAsset.mapBuildLayers.OfType<OverworldCosmeticLayer>().FirstOrDefault()?.TreeModels)) mask[prop.X, prop.Y] = true;
             mask = SmartEnvironmentMasks.World(grid, StyleProfile!=null?styleBinding?.Projection:layer.layerName) ?? mask;
+            if (BridgeCapabilityCrossings && binding?.CoreLayer == OverworldLayers.Bridges)
+                foreach (var cell in grid.Locks.SelectMany(l => l.Cells).Where(grid.RequiresBoat))
+                    mask[cell.X, cell.Y] = true;
             layer.stack = new List<TileWorldCreatorAsset.BlueprintLayerData.ActionStack>
             { new("Campaign mask", new CampaignLayerAction(mask)) };
             layer.active = true;

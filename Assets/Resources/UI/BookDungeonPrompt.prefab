@@ -229,7 +229,7 @@ MonoBehaviour:
   Card: {fileID: 390353088465880674}
   Details: {fileID: 3744319527350258969}
   Requirement: {fileID: 5704405926767976528}
-  Enter: {fileID: 6234748080259736520}
+  Enter: {fileID: 172983369238443450}
   Back: {fileID: 4904561641738171350}
 --- !u!1 &910066025498474603
 GameObject:
@@ -242,6 +242,7 @@ GameObject:
   - component: {fileID: 8934193365350745700}
   - component: {fileID: 5613732223154154945}
   - component: {fileID: 5704405926767976528}
+  - component: {fileID: 2878479035652587636}
   m_Layer: 0
   m_Name: Text
   m_TagString: Untagged
@@ -298,8 +299,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: An illustrated country waits between these pages.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+  m_sharedMaterial: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -367,6 +368,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2878479035652587636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910066025498474603}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!1 &2684463963917174099
 GameObject:
   m_ObjectHideFlags: 0
@@ -379,6 +393,7 @@ GameObject:
   - component: {fileID: 8271125032535529266}
   - component: {fileID: 3807220131350117471}
   - component: {fileID: 263593861419845880}
+  - component: {fileID: 8259435379430838010}
   m_Layer: 0
   m_Name: Text
   m_TagString: Untagged
@@ -437,8 +452,8 @@ MonoBehaviour:
 
     <size=65%>A country between the pages</size>'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+  m_sharedMaterial: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -521,6 +536,19 @@ MonoBehaviour:
   m_EffectColor: {r: 0.04, g: 0.06, b: 0.08, a: 0.85}
   m_EffectDistance: {x: 1.5, y: -1.5}
   m_UseGraphicAlpha: 1
+--- !u!114 &8259435379430838010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2684463963917174099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!1 &5319934632498934897
 GameObject:
   m_ObjectHideFlags: 0
@@ -604,6 +632,7 @@ GameObject:
   - component: {fileID: 5193022256490848159}
   - component: {fileID: 9218817549960535471}
   - component: {fileID: 2326886864796228023}
+  - component: {fileID: 7733551711306758516}
   m_Layer: 0
   m_Name: Text
   m_TagString: Untagged
@@ -660,8 +689,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Enter the story
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+  m_sharedMaterial: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -729,6 +758,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &7733551711306758516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6844249097406646668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!1 &7722292280262831099
 GameObject:
   m_ObjectHideFlags: 0
@@ -815,6 +857,7 @@ GameObject:
   - component: {fileID: 3461423613452307486}
   - component: {fileID: 9019895935200126898}
   - component: {fileID: 3744319527350258969}
+  - component: {fileID: 8009128933450675933}
   m_Layer: 0
   m_Name: Text
   m_TagString: Untagged
@@ -871,8 +914,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Floors 1\u20135 \xB7 Not yet cleared"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
+  m_sharedMaterial: {fileID: -6920959106414162963, guid: c77f9e3450d20ce4c91ae3160bd06f98, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -940,6 +983,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &8009128933450675933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8186869655670400251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b53353c770157b0429657ca6ef94f02f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: EternalEnigma.Game::GameTextStyle
+  Role: 0
 --- !u!1 &9151278940455376272
 GameObject:
   m_ObjectHideFlags: 0
@@ -1127,7 +1183,7 @@ PrefabInstance:
       addedObject: {fileID: 8934193365350745700}
     - targetCorrespondingSourceObject: {fileID: 7674463184335244964, guid: cd2a7b7b566a06d4abdc06a5398c192d, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 9009059455106843713}
+      addedObject: {fileID: 4792184166182784227}
     - targetCorrespondingSourceObject: {fileID: 7674463184335244964, guid: cd2a7b7b566a06d4abdc06a5398c192d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 357840170530966159}
@@ -1518,7 +1574,7 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
---- !u!114 &6234748080259736520 stripped
+--- !u!114 &172983369238443450 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9178358729106878970, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
   m_PrefabInstance: {fileID: 9009059455106843712}
@@ -1529,7 +1585,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df1d0d9bdb94b79bb0dd87dac48d09b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &9009059455106843713 stripped
+--- !u!224 &4792184166182784227 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
   m_PrefabInstance: {fileID: 9009059455106843712}

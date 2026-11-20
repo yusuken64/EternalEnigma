@@ -359,7 +359,8 @@ public static class CombatEffectAuthoring
             }
             finally { Object.DestroyImmediate(go); }
         }
-        return new CombatEffectStage { Prefab = asset, Scale = scale, Rotation = ground ? new Vector3(-90, 0, 0) : source.Contains("52SpecialEffectPack") ? new Vector3(0, 180, 0) : Vector3.zero, Lifetime = 2 };
+        return new CombatEffectStage { Prefab = asset, Scale = scale, AlignWithCastDirection = name.Contains("Slash") || name.Contains("Cleave"),
+            Rotation = ground ? new Vector3(-90, 0, 0) : source.Contains("52SpecialEffectPack") ? new Vector3(0, 180, 0) : Vector3.zero, Lifetime = 2 };
     }
 
     static Sprite IconFor(Skill skill, string path)

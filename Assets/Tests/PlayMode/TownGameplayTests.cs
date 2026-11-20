@@ -32,6 +32,46 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator RecruitmentExcludesTheStartingHeroAndCampaignAliases()
+        {
+            yield return harness.LoadTown(new TestScenario { Gold = 10000 }.CreateSave());
+            var common = Common.Instance;
+            var configuration = World.Configuration;
+            Assert.That(World.TownAllies.Any(a => World.TownPlayer.RecruitedAllies.Any(p => TownAllyManager.SameHero(a, p))), Is.False);
+            var originalHero = common.GameSaveData.ProtagonistId;
+            var originalContext = common.CampaignContext;
+            try
+            {
+                common.CampaignContext = new EternalEnigma.Core.Progression.CampaignContext(
+                    new EternalEnigma.Core.Progression.OverworldLaunchOptions(EternalEnigma.Core.Progression.OverworldLaunchMode.Campaign, 42));
+                foreach (var hero in configuration.AllyCatalog)
+                {
+                    common.GameSaveData.ProtagonistId = hero.Id;
+                    var companions = common.CampaignContext.Campaign.Companions.Select(c => CampaignParty.Resolve(c.Id, configuration)).ToArray();
+                    Assert.That(companions.Any(a => TownAllyManager.SameHero(a, hero)), Is.False, hero.Name);
+                    Assert.That(companions.Select(a => a.Name), Is.Unique, hero.Name);
+                }
+                common.GameSaveData.ProtagonistId = originalHero;
+                var offers = World.TownAllyManager.GenerateRandomAllies(Enumerable.Range(0, 50).ToArray(),
+                    World.TownPlayer.RecruitedAllies.Select(a => a.Id));
+                try
+                {
+                    Assert.That(offers.Select(a => a.Name), Is.Unique);
+                    var reserved = common.CampaignContext.Campaign.Companions.Select(c => CampaignParty.Resolve(c.Id, configuration)).ToArray();
+                    Assert.That(offers.Any(a => reserved.Any(c => TownAllyManager.SameHero(a, c))), Is.False);
+                }
+                finally { foreach (var ally in offers) Object.Destroy(ally.gameObject); }
+                var leader = World.TownPlayer.RecruitedAllies[0];
+                var duplicate = Object.Instantiate(leader, World.transform); duplicate.Id = "duplicate-alias";
+                World.TownAllies.Add(duplicate);
+                int gold = World.TownPlayer.Gold;
+                Assert.That(World.Services.Recruit(duplicate, out _), Is.False);
+                Assert.That(World.TownPlayer.Gold, Is.EqualTo(gold));
+            }
+            finally { common.GameSaveData.ProtagonistId = originalHero; common.CampaignContext = originalContext; }
+        }
+
+        [UnityTest]
         public IEnumerator RoomAndTransactionAudioPlaysOnceOnTheCorrectChannelWithoutAnimations()
         {
             yield return harness.LoadTown(new TestScenario { Gold = 10000 }.CreateSave());

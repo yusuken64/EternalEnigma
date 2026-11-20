@@ -131,6 +131,11 @@ public class Ally : Character
 	{
 		if (PrepareManualAction()) return;
 		determinedActions = ChooseAutonomousActions();
+        // Automatically unused extra actions keep a manual walk continuous for
+        // every strategy. Explicit waits and status overrides were handled above.
+        var player = Game.Instance.PlayerController;
+        if (this == player.ControlledAlly && MovedThisTurn && player.CanContinueHeldWalk)
+            foreach (var wait in determinedActions.OfType<WaitAction>()) wait.PreserveHeldWalk = true;
 	}
 
 	// Autoplay companions use the same decisions. The turn manager still owns forced actions and casts.

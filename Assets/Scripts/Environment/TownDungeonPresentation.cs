@@ -42,7 +42,8 @@ public static class TownDungeonPresentation
         var kit = EnvironmentKit.Load();
         var biome = creator.GetComponent<TownBiomeStyle>().Current;
         TownGateVisuals.Create(kit, biome, creator.worldObject.transform, floor.Stairs,
-            creator.twcAsset.cellSize, "District exit", false, true, TownGateVisuals.DistrictRotation(floor.TownPlan, floor.Stairs, true));
+            creator.twcAsset.cellSize, "District exit", false, true, TownGateVisuals.DistrictRotation(floor.TownPlan, floor.Stairs, true),
+            TownGateVisuals.DistrictGateCell(floor.TownPlan, floor.Stairs));
         ScenePresentation.RegisterWorld(creator.worldObject.transform);
     }
 
@@ -52,6 +53,8 @@ public static class TownDungeonPresentation
         for (int y = 0; y < plan.Height; y++) for (int x = 0; x < plan.Width; x++)
         {
             if (!plan.Layers[TownLayers.Boundary][x, y]) continue;
+            if (TownGateVisuals.DistrictApproach(plan, plan.Exit, x, y) ||
+                TownGateVisuals.DistrictApproach(plan, plan.DungeonEntrance, x, y)) continue;
             var position = new Vector3(x + .5f, y + .5f, 0) * size;
             float angle = x == 0 || x == plan.Width - 1 ? 90 : 0;
             batch.Add(kit.Mesh("Wall"), kit.Material(biome), position, Vector3.one * size, angle);

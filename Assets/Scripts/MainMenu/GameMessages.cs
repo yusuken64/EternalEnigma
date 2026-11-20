@@ -28,9 +28,12 @@ public sealed class GameMessages : MonoBehaviour
     private bool historyWasOpen;
     private RectTransform feedPanel;
     private Vector2 authoredOffsetMin, authoredOffsetMax, layoutParentSize;
+    private Vector2 authoredViewportMax, authoredHistoryPosition;
+    private float dockInset;
     private float layoutFontSize;
     private float layoutWidth;
-    private bool textDirty = true, refreshingText;
+    private bool textDirty = true, refreshingText, fittingDock;
+    private readonly Vector3[] dockCorners = new Vector3[4];
     private TownMenuManager townMenus;
     public IReadOnlyList<string> TurnEvents => turnEvents;
     public static void BeginTurn()
@@ -140,8 +143,8 @@ public sealed class GameMessages : MonoBehaviour
         AuthorCompactLayout();
     }
 
-    // Defaults captured from the user's Play Mode layout. Runtime respects the
-    // serialized prefab values, so subsequent Inspector edits are not overwritten.
+    // Keep the chosen font and four-line preview in the shared compact layout.
+    // Runtime reads the serialized prefab geometry, including Inspector edits.
     public void AuthorCompactLayout()
     {
         previewLines=4;
@@ -150,9 +153,9 @@ public sealed class GameMessages : MonoBehaviour
         var label=historyButton.GetComponentInChildren<TMP_Text>(true);
         label.fontSize=26;label.enableAutoSizing=true;label.fontSizeMin=16;label.fontSizeMax=26;
         label.margin=new Vector4(0,1.789804f,0,1.78980434f);
-        JuicyChickenGames.Menu.Dialog.Fit(scroll.viewport,.035f,.03f,.965f,.70f);
-        scroll.viewport.anchoredPosition=new Vector2(0,26.23f);
-        scroll.viewport.sizeDelta=new Vector2(0,19.8808f);
+        // Reserve a separate header row so a full four-line preview cannot run
+        // underneath the History button. FitPreviewHeight supplies the text room.
+        JuicyChickenGames.Menu.Dialog.Fit(scroll.viewport,.035f,.03f,.965f,.68f);
         historyButton.transform.SetAsLastSibling();
         text.fontSize=33.11f;text.enableAutoSizing=false;text.color=GameUITheme.Ink;
         text.lineSpacing=text.paragraphSpacing=0;
@@ -170,6 +173,9 @@ public sealed class GameMessages : MonoBehaviour
         instance=this; group.alpha=0; group.blocksRaycasts=false; group.interactable=false;
         feedPanel=(RectTransform)group.transform;
         authoredOffsetMin=feedPanel.offsetMin;authoredOffsetMax=feedPanel.offsetMax;
+        authoredViewportMax=scroll.viewport.offsetMax;
+        var historyRect=(RectTransform)historyButton.transform;
+        authoredHistoryPosition=historyRect.anchoredPosition;
         text.alignment = TextAlignmentOptions.BottomLeft;
         historyButton.onClick.AddListener(ToggleHistory);
         ControlDeviceState.Changed += InvalidateText;
@@ -178,12 +184,16 @@ public sealed class GameMessages : MonoBehaviour
         townMenus = GetComponentInParent<Town>()?.GetComponentInChildren<TownMenuManager>(true);
         feedPanel.gameObject.AddComponent<HudLayoutObserver>().Changed = LayoutChanged;
         scroll.viewport.gameObject.AddComponent<HudLayoutObserver>().Changed = LayoutChanged;
+        historyButton.targetGraphic.gameObject.AddComponent<HudLayoutObserver>().Changed = LayoutChanged;
+        // Menu notifications can arrive before the resized canvas has settled.
+        Canvas.willRenderCanvases += FitDockClearance;
         SetTerminalPresentation(TerminalMode.Effective);
     }
     private void InvalidateText() { textDirty = true; HudRefresh.Request(HudChange.Events); }
     private void LayoutChanged()
     {
-        if (refreshingText || feedPanel == null || scroll == null || text == null) return;
+        if (refreshingText || fittingDock || feedPanel == null || scroll == null || text == null) return;
+        FitDockClearance();
         if (layoutParentSize != ((RectTransform)feedPanel.parent).rect.size ||
             !Mathf.Approximately(layoutWidth, scroll.viewport.rect.width) || !Mathf.Approximately(layoutFontSize, text.fontSize))
             InvalidateText();
@@ -192,11 +202,51 @@ public sealed class GameMessages : MonoBehaviour
     {
         if ((changes & HudChange.Visibility) != 0)
         {
+            FitDockClearance();
             bool historyOpen = historyDialog != null && historyDialog.Owner != null;
             if (historyWasOpen && !historyOpen) Render();
             historyWasOpen = historyOpen;
         }
         if ((changes & HudChange.Events) != 0 && textDirty && hasMessage) RefreshText();
+    }
+
+    private void FitDockClearance()
+    {
+        if (fittingDock || feedPanel == null || scroll == null || historyButton == null) return;
+        // Updating the viewport invokes layout observers synchronously. Apply
+        // both offsets together before allowing another measurement.
+        fittingDock=true;
+        try
+        {
+        var focus=MenuUIInputModule.Active?.FocusRoot;
+        var dock=focus != null ? focus.GetComponentInParent<JuicyChickenGames.Menu.Dialog>()?.GameplayDockPanel : null;
+        var historyRect=(RectTransform)historyButton.transform;
+        float inset=0;
+        if (dock != null && dock.gameObject.activeInHierarchy)
+        {
+            var corners=dockCorners;dock.GetWorldCorners(corners);
+            float left=float.PositiveInfinity;
+            foreach(var corner in corners)left=Mathf.Min(left,feedPanel.InverseTransformPoint(corner).x);
+            float textRight=feedPanel.rect.xMin+feedPanel.rect.width*scroll.viewport.anchorMax.x+authoredViewportMax.x;
+            // Authored backgrounds can extend beyond their button's hit rectangle.
+            historyButton.targetGraphic.rectTransform.GetWorldCorners(corners);
+            float buttonRight=float.NegativeInfinity;
+            foreach(var corner in corners)buttonRight=Mathf.Max(buttonRight,feedPanel.InverseTransformPoint(corner).x);
+            buttonRight+=authoredHistoryPosition.x-historyRect.anchoredPosition.x;
+            inset=Mathf.Max(0,Mathf.Max(textRight,buttonRight)-left+12);
+        }
+        var viewportMax=authoredViewportMax-Vector2.right*inset;
+        var historyPosition=authoredHistoryPosition-Vector2.right*inset;
+        if (Mathf.Approximately(inset,dockInset) && (scroll.viewport.offsetMax-viewportMax).sqrMagnitude<.01f &&
+            (historyRect.anchoredPosition-historyPosition).sqrMagnitude<.01f) return;
+        dockInset=inset;
+        // Keep the feed's authored footprint. Reflow its contents into the area
+        // still visible beside the current menu and restore them when it closes.
+        scroll.viewport.offsetMax=viewportMax;
+        historyRect.anchoredPosition=historyPosition;
+        InvalidateText();
+        }
+        finally { fittingDock=false; }
     }
     private void Render()
     {
@@ -287,6 +337,7 @@ public sealed class GameMessages : MonoBehaviour
     }
     private void OnDestroy()
     {
+        Canvas.willRenderCanvases -= FitDockClearance;
         ControlDeviceState.Changed -= InvalidateText;
         ControlBindings.Changed -= InvalidateText;
         HudRefresh.Changed -= Refresh;

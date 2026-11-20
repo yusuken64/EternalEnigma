@@ -196,8 +196,9 @@ public sealed partial class AutoplayRunner
         var targets = LootLedger.Pending.Where(p => p != null).ToArray();
         var mimicInteraction = NearbyMimicInteraction(game, ally);
         if (mimicInteraction != null) { Act(ally, mimicInteraction, "Open treasure chest disguise"); return; }
-        bool CanOccupy(Vector3Int p) => dungeon.IsWalkable(p) && dungeon.OverlapsAnyOtherCharacter(ally, Character.ToBounds(ally.FootPrint, p), true) == null;
-        bool CanStep(Vector3Int a, Vector3Int b) => dungeon.CanWalkTo(a, b) && CanOccupy(b);
+        bool Available(Vector3Int p) => dungeon.IsWalkable(p) && dungeon.OverlapsAnyOtherCharacter(ally, Character.ToBounds(p), true) == null;
+        bool CanOccupy(Vector3Int center) => Character.ToBounds(ally.FootPrint, center).Cells().All(Available);
+        bool CanStep(Vector3Int a, Vector3Int b) => dungeon.CanWalkTo(a, b, ally.FootPrint, Available);
         AStar.Node[,] Grid()
         {
             var grid = Character.GetAStarGrid();
@@ -238,7 +239,7 @@ public sealed partial class AutoplayRunner
             .OrderBy(p => (p.Position - ally.TilemapPosition).sqrMagnitude)) if (TryTarget(prop)) return;
         // Approach blocking creatures using the same A* and combat policy as campaign autoplay.
         foreach (var enemy in game.Enemies.Where(e => e != null && e.Vitals.HP > 0).OrderBy(e => (e.TilemapPosition - ally.TilemapPosition).sqrMagnitude))
-            foreach (var goal in enemy.ToBounds().Cells().SelectMany(p => Steps.Where(s => dungeon.CanWalkTo(p + s, p)).Select(s => p + s)).Where(CanOccupy).Distinct())
+            foreach (var goal in enemy.ToBounds().Cells().SelectMany(p => Steps.Where(s => dungeon.CanReachAdjacent(p + s, p)).Select(s => p + s)).Where(CanOccupy).Distinct())
             {
                 var next = approachRoute.Next(ally.TilemapPosition, goal, Grid, CanStep);
                 if (!next.HasValue) continue;

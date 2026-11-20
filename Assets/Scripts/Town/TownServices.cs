@@ -178,6 +178,11 @@ public sealed class TownServices
         if (Player.RecruitedAllies.Count >= town.Configuration.MaxPartySize) return false;
         reason = "This ally is no longer available.";
         if (!town.TownAllies.Contains(ally)) return false;
+        reason = "This hero has already joined you.";
+        var common = Common.Instance;
+        if (Player.RecruitedAllies.Any(member => TownAllyManager.SameHero(member, ally)) ||
+            (common.CampaignContext != null && common.GameSaveData.Roster.Any(member =>
+                member.AllyId == ally.Id || string.Equals(member.AllyName, ally.Name, StringComparison.OrdinalIgnoreCase)))) return false;
         reason = $"Costs {ally.RecruitCost} gold; you have {Player.Gold}.";
         if (Player.Gold < ally.RecruitCost) return false;
         var context = Common.Instance.CampaignContext;

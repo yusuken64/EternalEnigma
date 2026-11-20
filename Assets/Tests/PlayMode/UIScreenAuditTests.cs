@@ -700,7 +700,9 @@ namespace EternalEnigma.Tests
                         var face = (Image)button.targetGraphic;
                         label.ForceMeshUpdate();
                         Assert.That(face.enabled && face.rectTransform.rect.width > 80, Is.True, button.name);
-                        Assert.That(label.isTextOverflowing, Is.False, label.text);
+                        // The font's line box includes unused vertical space. CaptureSizes
+                        // checks the rendered glyphs against the text box and carved face.
+                        Assert.That(label.isTextTruncated, Is.False, label.text);
                         Assert.That(label.textInfo.lineCount, Is.EqualTo(1), label.text);
                         var box = RectTransformUtility.CalculateRelativeRectTransformBounds(face.transform, label.rectTransform);
                         var rect = face.rectTransform.rect;
@@ -750,7 +752,6 @@ namespace EternalEnigma.Tests
                 Assert.That(Screen.width, Is.EqualTo((int)resolution.x), "Capture width must match its filename.");
                 Assert.That(Screen.height, Is.EqualTo((int)resolution.y), "Capture height must match its filename.");
                 Canvas.ForceUpdateCanvases();
-                verify?.Invoke();
                 string path = $"{directory}/{screen}-{resolution.x}x{resolution.y}";
                 textIssues.AddRange(TextLayoutAudit.Capture(path).Select(issue => path + ": " + issue));
                 if (terminalAudit)
@@ -761,6 +762,7 @@ namespace EternalEnigma.Tests
                 }
                 ScreenCapture.CaptureScreenshot(path + ".png");
                 yield return new WaitForSecondsRealtime(.2f);
+                verify?.Invoke();
             }
         }
 

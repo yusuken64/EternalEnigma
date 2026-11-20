@@ -27,6 +27,7 @@ public sealed class DungeonFloatingText : MonoBehaviour
         var view=AuthoredUI.Require<CombatCalloutView>(game.transform);
         var callout=Instantiate(prominent?view.Prominent:view.Normal,view.Root);
         callout.gameObject.SetActive(true);callout.label.text=GameplayText.Format(message);callout.label.color=color;
+        GameTypography.Apply(callout.label, GameTextRole.Combat);
         callout.anchor=position;callout.canvasRect=view.Root;
         callout.LateUpdate();
     }

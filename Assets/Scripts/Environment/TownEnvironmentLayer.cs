@@ -45,6 +45,8 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
                         if(plan.Layers[TownLayers.Roads][x,y]||plan.Layers[TownLayers.Buildings][x,y]) surface=GroundSurface.Cobble;
                         if(plan.Layers.TryGetValue(TownLayers.Alleys,out var alleys)&&alleys[x,y]) surface=GroundSurface.Dirt;
                         if(plan.Layers.TryGetValue(TownLayers.MainRoads,out var main)&&main[x,y]) surface=GroundSurface.Cobble;
+                        if (district && (TownGateVisuals.DistrictApproach(plan, plan.Exit, x, y) ||
+                            TownGateVisuals.DistrictApproach(plan, plan.DungeonEntrance, x, y))) surface = GroundSurface.Cobble;
                     }
                     else if(y<0&&Mathf.Abs(x-plan.Exit.X)<=1) surface=GroundSurface.Cobble;
                     ground[x+margin,y+margin]=surface;
@@ -148,7 +150,8 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
             if(diorama!=null)DioramaTownDressing.Build(batch,plan,biome,size,diorama);
             batch.Finish();
             TownGateVisuals.Create(Kit, biome, root.transform, plan.Exit, size, district ? "District entrance" : "Town gate", false,
-                rotation: district ? TownGateVisuals.DistrictRotation(plan, plan.Exit, false) : 0);
+                rotation: district ? TownGateVisuals.DistrictRotation(plan, plan.Exit, false) : 0,
+                gateCell: district ? TownGateVisuals.DistrictGateCell(plan, plan.Exit) : null);
         }
         finally { creator.executedBuildLayersCount += 1; }
     }

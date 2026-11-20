@@ -107,6 +107,21 @@ namespace EternalEnigma.Tests
             Assert.That(harness.Ally.TilemapPosition, Is.EqualTo(origin));
         }
 
+        [UnityTest] public IEnumerator FreshCardinalPressAfterReleasingDiagonalAimMovesInTheNewDirection()
+        {
+            var origin = FreeRun(Vector3Int.right);
+            harness.PlaceAlly(origin);
+            yield return Hold(Key.LeftShift, Key.W, Key.D);
+            Assert.That(harness.Ally.CurrentFacing, Is.EqualTo(Facing.UpRight));
+            Assert.That(harness.Ally.TilemapPosition, Is.EqualTo(origin));
+            yield return Hold();
+            yield return Hold(Key.D);
+            yield return Hold();
+            yield return harness.WaitForIdle();
+            Assert.That(harness.Ally.TilemapPosition, Is.EqualTo(origin + Vector3Int.right),
+                "A new press after releasing all directions must not reuse the previous diagonal facing.");
+        }
+
         private Vector3Int FreeRun(Vector3Int step)
         {
             var dungeon = harness.Game.CurrentDungeon;

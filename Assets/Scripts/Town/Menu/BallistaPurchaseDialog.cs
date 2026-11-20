@@ -55,7 +55,7 @@ public class BallistaPurchaseDialog : Dialog
         FindFirstObjectByType<TownMenuManager>().Open(this);
         TownModalBackdrop.Ensure(this, true);
 
-        TitleText.font = TMP_Settings.defaultFontAsset;
+        GameTypography.Apply(TitleText, GameTextRole.Heading);
         TitleText.enableAutoSizing = true; TitleText.fontSizeMin = 24; TitleText.fontSizeMax = 32;
         TitleText.textWrappingMode = TextWrappingModes.Normal;
         DescriptionText.enableAutoSizing = true; DescriptionText.fontSizeMin = 22; DescriptionText.fontSizeMax = 28;

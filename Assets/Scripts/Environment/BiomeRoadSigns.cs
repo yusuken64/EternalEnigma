@@ -155,6 +155,7 @@ public static class BiomeRoadSigns
                 var rotation=Quaternion.Euler(0,0,angle)*Quaternion.Euler(55,0,0);
                 if(diorama==null)BiomeDecorationPlacement.Add(batch,root,catalog,catalog.Get(sign.Biome,BiomeDecorationKind.SignPanel),new Vector3(0,0,z),scale,rotation,false);
                 var label=new GameObject("Destination "+branch.TownId).AddComponent<TextMeshPro>();label.transform.SetParent(root,false);
+                GameTypography.Apply(label, GameTextRole.Heading);
                 label.transform.localPosition=new Vector3(0,-.08f*scale,z-.02f);label.text=context.GetTownDisplayName(branch.TownId);
                 label.fontSizeMin=.5f;label.fontSizeMax=1.6f;label.enableAutoSizing=true;label.textWrappingMode=TextWrappingModes.Normal;
                 label.overflowMode=TextOverflowModes.Overflow;label.alignment=TextAlignmentOptions.Center;label.color=new Color(1,.96f,.83f);

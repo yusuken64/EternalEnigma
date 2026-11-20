@@ -344,7 +344,11 @@ public sealed class FinalePortal : Interactable
     string label; Func<bool> activate;
     internal static void Create(TileWorldDungeon dungeon, Vector3Int cell, string text, Func<bool> action)
     {
-        var marker = EncounterRuntime.Marker(dungeon, "Warp", cell, new Color(.35f, .65f, 1f), .03f);
+        var biome = dungeon.Floor.Overworld.BiomeAt(cell.ToGridPoint()) ?? EternalEnigma.Core.World.OverworldBiome.Grassland;
+        float size = (dungeon.CellToWorld(Vector3Int.right) - dungeon.CellToWorld(Vector3Int.zero)).x;
+        var marker = EnvironmentKit.Load().Create("DungeonPortal", biome, dungeon.transform, Vector3.zero, size);
+        marker.name = "Warp";
+        marker.transform.position = dungeon.CellToWorld(cell) + new Vector3(size * .5f, size * .5f, DungeonPresentation.GroundPlaneZ);
         var portal = marker.AddComponent<FinalePortal>(); portal.Position = cell; portal.label = text; portal.activate = action; dungeon.Interactables.Add(portal);
     }
     internal override string GetInteractionText() => label;

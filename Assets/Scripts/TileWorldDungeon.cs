@@ -115,10 +115,10 @@ public class TileWorldDungeon : MonoBehaviour
 		return IsWalkable(newMapPosition);
 	}
 
-	internal List<Facing> GetValidWalkDirections(Vector3Int tilemapPosition)
+	internal List<Facing> GetValidWalkDirections(Vector3Int tilemapPosition, FootPrint footprint = FootPrint.Size1x1)
 	{
-		return GridMovement.GetValidDirections(tilemapPosition, CanWalk)
-            .Where(f => AllowsDoorwayStep(tilemapPosition, tilemapPosition + GridMovement.GetFacingOffset(f))).ToList();
+		return GridMovement.GetValidDirections(tilemapPosition, CanWalk, DiagonalMovement.AllowCornerCutting)
+            .Where(f => CanWalkTo(tilemapPosition, tilemapPosition + GridMovement.GetFacingOffset(f), footprint)).ToList();
 	}
 
     private readonly Dictionary<(Vector3Int, int), HashSet<Vector3Int>> sightCache = new();
@@ -437,10 +437,44 @@ public class TileWorldDungeon : MonoBehaviour
 		else DestroyImmediate(currentInteractable.gameObject);
 	}
 
-	internal bool CanWalkTo(Vector3Int origin, Vector3Int destination)
-	{
-		return AllowsDoorwayStep(origin, destination) && GridMovement.CanStep(origin, destination, CanWalk);
-	}
+    internal bool CanWalkTo(Vector3Int origin, Vector3Int destination) => CanWalkTo(origin, destination, FootPrint.Size1x1);
+
+    // Availability is per tile, so occupancy and exploration constraints also cover large actors.
+    internal bool CanWalkTo(Vector3Int origin, Vector3Int destination, FootPrint footprint,
+        Func<Vector3Int, bool> available = null)
+    {
+        if (!AllowsDoorwayStep(origin, destination)) return false;
+        bool Walkable(Vector3Int cell) => IsWalkable(cell) && (available == null || available(cell));
+        var delta = destination - origin;
+        foreach (var cell in Character.ToBounds(footprint, origin).allPositionsWithin)
+        {
+            if (Floor.Variant == DungeonVariant.Town && !AllowsDoorwayStep(cell, cell + delta)) return false;
+            if (!GridMovement.CanStep(cell, cell + delta, Walkable, canPassBlockedSide: IsOutdoorTreeCorner)) return false;
+        }
+        return true;
+    }
+
+    internal bool IsOutdoorTreeCorner(Vector3Int cell)
+    {
+        var floor = Floor;
+        var town = floor?.TownPlan;
+        if (floor?.Variant != DungeonVariant.Town || town == null ||
+            !GridMovement.Contains(town.Width, town.Height, cell) ||
+            cell.x == 0 || cell.y == 0 || cell.x == town.Width - 1 || cell.y == town.Height - 1) return false;
+        var point = cell.ToGridPoint();
+        bool On(string name) => town.Layers.TryGetValue(name, out var layer) && layer.At(point);
+        // Tree overlap never turns a building, interior, doorway or enclosing wall into a soft corner.
+        return On(TownLayers.Trees) && !On(TownLayers.Houses) && !On(TownLayers.ShopWalls) &&
+            !On(TownLayers.ShopFloor) && !On(TownLayers.Roofs) && !On(TownLayers.Furniture) &&
+            !On(TownLayers.Counters) && !On(TownLayers.Carpet) && !On(TownLayers.Boundary) &&
+            !town.IsDoorway(point) &&
+            !Interactables.OfType<DungeonProp>().Any(p => p.Position == cell && p.BlocksMovement) &&
+            (Game.Instance?.CurrentDungeon != this || Game.Instance.Encounter?.Blocks(cell) != true);
+    }
+
+    // Combat and adjacent interactions retain the original strict corner rule.
+    internal bool CanReachAdjacent(Vector3Int origin, Vector3Int destination) =>
+        AllowsDoorwayStep(origin, destination) && GridMovement.CanStep(origin, destination, CanWalk);
 
     internal bool AllowsDoorwayStep(Vector3Int from, Vector3Int to) =>
         Floor.Variant == DungeonVariant.Overworld ? Game.Instance.Finale.Session.CanStep(from.ToGridPoint(), to.ToGridPoint()) :

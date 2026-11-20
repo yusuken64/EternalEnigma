@@ -250,7 +250,9 @@ public sealed partial class AutoplayRunner
             .SelectMany(c => c.ToBounds().Cells()).ToHashSet();
         bool CanStep(Vector3Int a, Vector3Int b) => cautiousWalkable.Contains(b) && !cautiousHazards.Contains(b) &&
             (game.Finale?.OnOverworld != true || game.Finale.Session.CanStep(a.ToGridPoint(),b.ToGridPoint())) &&
-            dungeon.CanWalkTo(a,b) && (b.x == a.x || b.y == a.y || cautiousWalkable.Contains(new Vector3Int(a.x,b.y)) && cautiousWalkable.Contains(new Vector3Int(b.x,a.y))) &&
+            (dungeon.Floor.Variant == EternalEnigma.Core.World.DungeonVariant.Town
+                ? dungeon.CanWalkTo(a,b,ally.FootPrint,cell => cautiousWalkable.Contains(cell) && !occupied.Contains(cell))
+                : dungeon.CanWalkTo(a,b) && (b.x == a.x || b.y == a.y || cautiousWalkable.Contains(new Vector3Int(a.x,b.y)) && cautiousWalkable.Contains(new Vector3Int(b.x,a.y)))) &&
             !occupied.Contains(b);
         var steps = Steps.Select(d => from + d).Where(p => sight.Contains(p) && CanStep(from,p) && DungeonPlacement.CanStep(dungeon,ally,from,p)).ToArray();
         var safest = steps.OrderBy(p => IncomingDamage(game,ally,p,enemies)).ThenBy(p => cautiousVisits.GetValueOrDefault(p)).ThenBy(p => p.y).ThenBy(p => p.x).Select(p => (Vector3Int?)p).FirstOrDefault();

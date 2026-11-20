@@ -10,6 +10,24 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Presentation Repair Followups")]
+    public static void RunPresentationRepairFollowups() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.DungeonVisualAuditTests.HudDecorationsRespectVisibilityAndMenusKeepWorking",
+        "EternalEnigma.Tests.FinaleGameplayTests.TowerUsesTexturedCrossingsAndPortals");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Presentation Repairs")]
+    public static void RunPresentationRepairs() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CombatEffectPlaybackTests",
+        "EternalEnigma.Tests.TownGameplayTests.RecruitmentExcludesTheStartingHeroAndCampaignAliases",
+        "EternalEnigma.Tests.TownGameplayTests.CallerControlsBuildingsAndRecruitsAndShopsHaveIndependentStock",
+        "EternalEnigma.Tests.DungeonVisualAuditTests.HudDecorationsRespectVisibilityAndMenusKeepWorking",
+        "EternalEnigma.Tests.FinaleGameplayTests.TowerUsesTexturedCrossingsAndPortals");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Presentation Repair Assets")]
+    public static void RunPresentationRepairAssets() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.EditMode.GameTypographyTests", "EternalEnigma.Tests.EditMode.PresentationGeometryTests",
+        "EternalEnigma.Tests.CoreIntegration.CampaignOverworldTests.FinaleCrossingsUseTheBridgeLayerWithoutChangingCampaignWater");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Townsfolk Hints")]
     public static void RunTownsfolkHints() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.TownAmbientGameplayTests");
@@ -61,6 +79,10 @@ public static class HarnessTestRunner
     [MenuItem("Tools/Eternal Enigma/Tests/Run Fast Walk Performance")]
     public static void RunFastWalkPerformance() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.DungeonFastWalkTests.HundredStepRunBatchesTurnsAndRevealsItsPath");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Held Input Timing")]
+    public static void RunHeldInputTiming() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.DungeonFastWalkTests.AuditRealHeldInputAtThirtySixtyAndOneTwentyFrames");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon FPS Audit")]
     public static void RunDungeonFpsAudit() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.DungeonFramePerformanceTests");
@@ -162,6 +184,47 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.UIScreenAuditTests.CaptureAutoplayPanelsAcrossAspectRatios",
         "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalAutoplayPanelsAcrossAspectRatios",
         "EternalEnigma.Tests.DungeonDockTests.BrowsingActionsHistoryAndTargetingAtAllResolutions");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run UI Overflow Regressions")]
+    public static void RunUIOverflowRegressions() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.GameMessageTests",
+        "EternalEnigma.Tests.DungeonDockTests.BrowsingActionsHistoryAndTargetingAtAllResolutions",
+        "EternalEnigma.Tests.StatusMenuTests", "EternalEnigma.Tests.SettingsInteractionTests",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.FourHeroesAndLongDescriptionsFitSupportedLayouts",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentDescriptionAndProficiencyFitAboveFixedPreview",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.HistoryShortcutTogglesAcrossPresentationsAndRespectsRebinding",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownTabsNestedBackAndRecoveryPreserveCheckpoint",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentConflictsKeepCopiesAndOverworldCommitsSurviveReload",
+        "EternalEnigma.Tests.ControlDeviceStateTests",
+        "EternalEnigma.Tests.OverworldSceneTests.OverworldStartsWithoutControlHintsAndHistoryTracksDeviceChanges",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureMainMenuSlotsHeroAndSettingsAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTownServicesPartyAndOverworldAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureDungeonLevelAndResultDialogsAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalMainMenuSlotsHeroAndSettingsAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalTownServicesPartyAndOverworldAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalDungeonLevelAndResultDialogsAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureAutoplayPanelsAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalAutoplayPanelsAcrossAspectRatios");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run UI Overflow Followup")]
+    public static void RunUIOverflowFollowup() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.StatusMenuTests",
+        "EternalEnigma.Tests.GameMessageTests",
+        "EternalEnigma.Tests.DungeonDockTests.BrowsingActionsHistoryAndTargetingAtAllResolutions",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentConflictsKeepCopiesAndOverworldCommitsSurviveReload",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownTabsNestedBackAndRecoveryPreserveCheckpoint",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureAutoplayPanelsAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTownServicesPartyAndOverworldAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureTerminalTownServicesPartyAndOverworldAcrossAspectRatios",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureHeaderButtonsAcrossScenesAndInputs");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run UI Overflow Final Checks")]
+    public static void RunUIOverflowFinalChecks() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UIScreenAuditTests.CaptureHeaderButtonsAcrossScenesAndInputs",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentConflictsKeepCopiesAndOverworldCommitsSurviveReload",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownTabsNestedBackAndRecoveryPreserveCheckpoint",
+        "EternalEnigma.Tests.SettingsInteractionTests.DungeonOptionsRemainsClickableAbovePartyDockAndResumeRestoresIt",
+        "EternalEnigma.Tests.DungeonFramePerformanceTests.HudTextRefreshesOnChangesAndDoesNoIdleFormatting");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Party Portraits")]
     public static void RunPartyPortraits() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
@@ -1193,7 +1256,17 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.CoreIntegration.TownDungeonIntegrationTests",
         "EternalEnigma.Tests.CoreIntegration.TownInteriorIntegrationTests",
         "EternalEnigma.Tests.CoreIntegration.CampaignGenerationTests", "EternalEnigma.Tests.AutoplaySweepTests",
-        "GridMovementTests", "EternalEnigma.Tests.AutoplayRouteTests");
+        "GridMovementTests", "EternalEnigma.Tests.AutoplayRouteTests", "EternalEnigma.Tests.TownDungeonMovementTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Town Movement EditMode")]
+    public static void RunTownMovementEditMode() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.TownDungeonMovementTests", "GridMovementTests", "EternalEnigma.Tests.AutoplayRouteTests",
+        "EternalEnigma.Tests.CoreIntegration.FantasyTrapTests.LargeFootprintsCannotCutDiagonalWallCorners");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Town Movement PlayMode")]
+    public static void RunTownMovementPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.TownDungeonGameplayTests",
+        "EternalEnigma.Tests.AllyAiRegressionTests.ObjectiveApproachRoutesAroundClosedCornersBeforeAttacking");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Town Dungeons PlayMode")]
     public static void RunTownDungeonsPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",

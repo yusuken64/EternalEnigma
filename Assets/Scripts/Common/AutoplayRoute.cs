@@ -12,7 +12,7 @@ public sealed class AutoplayRoute
     public void Clear() { steps.Clear(); objective = previousPosition = null; }
 
     public Vector3Int? Next(Vector3Int position, Vector3Int target, Func<AStar.Node[,]> createGrid,
-        Func<Vector3Int,Vector3Int,bool> canStep, DiagonalMovement diagonal = DiagonalMovement.RequireOpenSides)
+        Func<Vector3Int,Vector3Int,bool> canStep)
     {
         bool replan = objective != target;
         if (!replan && steps.Count > 0 && position == steps.Peek()) steps.Dequeue();
@@ -25,7 +25,7 @@ public sealed class AutoplayRoute
             var grid = createGrid();
             if (!GridMovement.Contains(grid.GetLength(0),grid.GetLength(1),position) ||
                 !GridMovement.Contains(grid.GetLength(0),grid.GetLength(1),target)) return null;
-            var path = AStar.FindPath(grid,grid[position.x,position.y],grid[target.x,target.y],diagonal);
+            var path = AStar.FindPath(grid,grid[position.x,position.y],grid[target.x,target.y],canStep: canStep);
             if (path != null) foreach (var node in path) steps.Enqueue(new Vector3Int(node.X,node.Y));
         }
         previousPosition = position;

@@ -1,0 +1,353 @@
+Demo Day 71 reviewer audit — current checkout
+2026-11-20
+
+Scope
+Review source: https://itch.io/jam/agdg-demo-day-71/rate/2446295
+Checkout: C:\Users\yusuk\Documents\GitHub\EternalEnigma
+HEAD: b35bc0b738cf9fa881093c0326d992fb5edcad65, INCLUDING existing uncommitted work.
+This is a current-checkout audit, not verification of the published itch.io/WebGL build.
+No game code, assets, balance, bindings, or saves were changed for this audit.
+The earlier tree-corner implementation remains in place.
+
+Conclusion
+The claim that every reviewer issue has been addressed is too broad. Many concrete
+input and UI defects have fixes, but an inventory-picker text overflow remains,
+the bag and storage requests remain unmet, Explosion's description still omits
+its self/friendly damage, and several concerns
+about movement feel, scenery, scale, difficulty and presentation need acceptance
+testing. Existing tests also contain stale assumptions that prevent a clean run.
+
+Verdicts
+Verified addressed: current implementation plus the evidence described below.
+Partially addressed: an improvement exists but part of the complaint remains.
+Still present: the reported omission or requested feature is demonstrably unresolved.
+Intentional behavior: established behavior explains the report; this is not evidence
+that players understand or prefer it.
+Unverified: available evidence cannot responsibly establish that the complaint is fixed.
+“Verified” applies to the stated scope, never every item, seed, resolution or platform.
+
+Complaint matrix
+ID | Reviewer complaint | Verdict | Current behavior/evidence | Remaining work or limit
+01 | Cannot see/explain Frail and other debuffs | Verified addressed for Frail | HUD badges and selectable Equipment > Statuses entries show the effect, stacks and duration. A fresh 960x600 screenshot shows “Attack -3”, stacking and “Until cleansed”. Production Frailty tests pass. | The all-status layout test aborts before its sweep; repair its stale row count before claiming exhaustive coverage. [E1]
+02 | Chest/book scenery looks like collectible loot | Partially addressed | Real dungeon containers have an interaction/reward path; loose loot has placement and visibility checks. Decorations are placed on non-floor shoulders, and ordinary town decorative chests render as luggage. The opening book and key chest are now functional. | Theme decoration lists still contain Books. The original visual confusion cannot be declared eliminated from placement tests alone. [E2]
+03 | Spiders quickly overwhelm the player | Partially addressed | Floor 2 has fewer enemies/traps and reduced enemy stats, including later spawns. | The spider response still has a 50% split chance on a surviving damage response, subject to a free nearby cell; no population cap or cooldown appears in that response. Hallways constrain space but do not guarantee no splitting. Player difficulty remains unverified. [E3]
+04 | Explosion damages the caster unexpectedly; tome effect unclear | Still present (explanation); intentional damage behavior | ExplosionAction selects all characters within 10 cells on each axis, including caster and allies. Its authored damage is 20. The inventory description is still only “Causes a large explosion.” | Explain damage, area and self/friendly fire in the item description. The new description panel displays the authored copy; it does not add the missing mechanics. [E4]
+05 | Companion receives no shared EXP | Verified addressed, with visibility restriction | DeathAction awards a rounded-up equal share to standing, non-summon allies who see the victim; a qualifying living killer always counts. Eight share-arithmetic cases pass. | This is not global party XP or catch-up levelling. A distant/downed recruit may still gain nothing. Visibility eligibility was checked in source; the eight tests exercise arithmetic only. [E5]
+06 | Pillars are awkward; reduce obstacle density | Unverified | Current generators and reachability checks exist. A fresh seed-42/tier-4 Volcanic preview still contains substantial wall islands. The separate tree-corner change makes outdoor town-dungeon trees easier to pass. | The tree rule changes no pillar density or ordinary dungeon wall corners. No same-seed reconstruction of the review minimap or player acceptance of density was established. [E6]
+07 | Moving overshoots the intended tile | Verified addressed in tested release/turn paths | HeldWalkingTests and MovementRegressionTests pass in the fresh movement suite; release finishes the current square and does not continue a queued walk. | This does not guarantee identical feel at all frame rates or with physical controllers. Timing/scale concerns are separate below. [E7]
+08 | Holding a movement key should feel smoother | Partially addressed | Continuous walk animation, direction changes, release, party following and normal/fast-turn parity pass. Fresh real-input measurements were captured at target 30/60/120 fps. | Two-actions-per-turn samples still contain 43–45% stationary frames after movement starts. See the measured timing section; passing command-count assertions do not prove smooth feel. [E7]
+09 | Enemies can attack diagonally; player controls are unclear | Partially addressed | Keyboard and virtual-controller runtime tests successfully turn in place and attack an adjacent diagonal. Settings/docs explain aiming and dedicated directions. | The functionality works; first-time discoverability has not been playtested. Dedicated diagonal actions are unbound by default. [E8]
+10 | Tiles/movement scale feels too large | Partially addressed | Camera zoom is implemented and movement mechanics have regression coverage. | Zoom does not establish that physical tile/actor proportions or turn pacing feel right. No universal scale reduction was verified. [E7,E9]
+11 | Overworld is too large/empty | Unverified | Current overworld generation uses a 256x256 default with structured territories, routes, locks and locations. | It remains a large world. Added structure is not evidence that travel density or time between interesting decisions satisfies the reviewer. [E10]
+12 | Towns are too large | Partially addressed | Towns have detailed streets, furnished interiors and a versioned opening neighborhood; sizing is derived from building count and capped at 64 cells per side. | The sizing formula still budgets 250 cells per building. No comparative travel-time or player acceptance check establishes that towns are now compact enough. [E10]
+13 | Cannot save on the overworld | Verified addressed | Four fresh checks pass: slot confirmation, cancellation, failed-write/retry handling, and restore via Continue/defeat. A fresh capture shows Save game in overworld Options. | Tested with an isolated save store; published WebGL storage was not checked. [E11]
+14 | Huge rooms/full of enemies become slugfests | Partially addressed | Early-floor enemy/trap counts and enemy stats are reduced; generators have different biome layouts and populated scenery. | Starter layouts are deliberately preserved; ordinary later floors retain normal counts/stats and broad rooms can remain. Automated generation checks do not assess tactical quality or difficulty. [E3,E6]
+15 | Inventory/equipment should show full stats; Arcane Wand wording/+6 STR confusion | Verified addressed for the reported case | Selection shows a description before actions; equipment comparisons show before/after totals and changes, including changed secondary stats. Arcane Wand explicitly grants +6 Attack once and does not add six STR attribute points. Fresh edit/runtime tests and a 960x600 screenshot confirm this. | Consumable copy can still be incomplete, notably Explosion. Do not treat one corrected item as a semantic audit of every description. [E12]
+16 | Giant dark knights stand still and can be broken | Intentional behavior, with readability caveat | EarlyDungeonStatue deliberately creates a harmless Black Knight-shaped “Stone Hulk statue”; zero HP keeps it outside damage targets while it blocks movement. | It still resembles a live enemy. Mechanical indestructibility does not prove that the decorative role is obvious. [E2]
+17 | Need dedicated diagonal key bindings | Verified addressed | Four optional diagonal actions can be bound and cleared for keyboard/controller; existing two-direction combinations remain. Fresh binding/runtime tests pass. | All four start Unbound. This is configurable support, not a new default numpad layout. [E8]
+18 | Controls Previous/Next sometimes selects Audio | Verified addressed for the replacement UI | Controls now uses a continuous binding list. Keyboard/controller traversal and mouse scrolling keep focus in Controls and every row reachable; fresh tests pass. | The old paginated interaction no longer exists. A separate Options-position assertion is stale; see test failures. [E8]
+19 | Turn-in-place fails with alternate movement keys | Verified addressed in code and tested input model | Facing reads the common move vector; hold-position suppresses translation. Primary, alternate and rebound movement feed the same action. Binding tests preserve alternate keys, and runtime aiming/turn tests pass. | The runtime tests cover sampled input and dedicated/two-key directions rather than every possible custom binding conflict. [E8]
+20 | Dungeons are too zoomed-in; let player control zoom | Verified addressed in current runtime | Bounded zoom uses [ / ], mouse wheel and controller right-stick directions. Dungeon/town tests pass, including input ownership and no action cost. The isolated overworld retry also passed, as confirmed in Unity's persisted XML. | Zoom resets to the authored size on scene entry and does not persist. The initial overworld case hit an MCP WebSocket error; it is recorded separately. [E9]
+21 | Dungeon music becomes repetitive | Partially addressed | The 16 biome/environment entries reference seven distinct normal music clips. | Interior/outdoor pairs share tracks; Mountain/Tundra share a track; all entries share one boss clip. AudioManager loops the selected clip. This is variety across environments, not in-dungeon rotation; listening fatigue remains unverified. [E13]
+22 | Strange line of sight | Partially addressed | Core sight tests pass for wall occlusion, reciprocal corner blocking, symmetric edges and map bounds. | Unity still uses radius 1 in corridors (2 for 3x3 actors) versus 8 in rooms, so abrupt visibility changes remain intentional. The original screenshot lacks enough state to reproduce its exact geometry. Core tests alone do not verify visual fog/cutaway composition. [E14]
+23 | Tutorial box is too large/intrusive | Partially addressed | The home book has a contextual prompt; dungeon guidance yields to menus, settings and target details. | Dungeon objective panel still spans 40% of reference width and clamps to 66–124 px high at 960x600, without a player collapse control in this component. It is not uniformly reduced to the small home prompt. [E15]
+24 | Text not properly aligned/contained in boxes | Partially addressed | Fresh inventory/equipment/status captures fit at 960x600; equipment/layout tests cover additional sizes. | The original targeting banners pass at five sizes, but a fresh UI sweep finds actual inventory-picker help-text glyphs outside their text rectangle at 2560x1080. The all-status sweep and Options click test also stop at stale assumptions. See the failure details. [E1,E12,E16]
+25 | Bag is tiny; is there an upgrade? | Still present | Inventory.DefaultCapacity remains 10. The current HUD shows Bag 10/10 Full. No player capacity-upgrade path was found; test-lab/autoplay capacity overrides are not upgrades. | Decide whether ten slots is an accepted design constraint or implement the requested progression. [E17]
+26 | Home chest should be a stash/shared magical storage | Still present | OpeningHomeLesson dispenses the Home Key once, then reports that the chest is empty. It has no deposit/withdraw or shared-storage path. | A functional key chest does not meet the storage request. Encounter recovery stashes are different mechanics. [E17]
+27 | Need a safe fast-walk command | Verified addressed for supported dungeon modes | Ctrl / controller LB plus a fresh direction runs ordinary turns until walls, branches/room decisions, enemies, interest points, party events or required input. Fourteen dedicated fast-walk tests pass within the 33-case movement suite. | Automatic fast walk is disabled for town-dungeon variants and finale overworld; ordinary towns/overworld retain held walking. Hidden traps are not predicted, but their resolution interrupts a run. [E7]
+28 | General polish / cramped combat visibility | Unverified as a blanket claim | The checkout contains status badges, item previews, scalable menus, zoom and other tested improvements. | These resolve specific defects; overall polish, visual hierarchy and combat readability need a representative playthrough/user acceptance. [E1,E7,E9,E12,E16]
+29 | Web opening says Enter but nothing happens | Verified in current prompt implementation; published build unverified | Opening interaction prompts resolve the effective Attack/Interact binding; the default keyboard book prompt is [Space] Read, with rebound/controller variants covered by an existing runtime check. | The prompt test passed and its fresh 960x600 screenshot was inspected. No deployed WebGL build was launched or certified. [E15]
+
+Evidence index (paths relative to the checkout)
+E1  Assets/Scripts/Dungeon/Game/StatusEffects/StatusPresentation.cs
+    Assets/Scripts/Dungeon/Game/StatusEffects/FrailtyStatusEffect.cs
+    Assets/Scripts/Dungeon/Game/Menu/PartyMenuContexts.cs:118
+    Assets/Tests/EditMode/StatusPresentationTests.cs
+    Assets/Tests/PlayMode/StatusMenuTests.cs
+E2  Assets/Scripts/Environment/DungeonPresentation.cs:131, Decorate()
+    Assets/Resources/DungeonThemes/Catalog.asset
+    Assets/Scripts/Dungeon/Game/Interactables/DungeonProp.cs
+    Assets/Scripts/Environment/DungeonPropModels.cs
+    Assets/Scripts/Environment/EarlyDungeonStatue.cs
+    Assets/Scripts/Town/TownInteriorRendering.cs
+    Assets/Tests/PlayMode/BiomeSceneryTests.cs
+E3  Assets/Scripts/Dungeon/Actions/SpiderActionResponse.cs
+    Assets/Scripts/Dungeon/Game/Enemy.cs:68
+    Core/EternalEnigma.Core/EternalEnigma.Core/Generation/DungeonLayoutProfile.cs
+    Assets/Tests/PlayMode/DungeonFloorTransitionTests.cs:66
+E4  Assets/Prefabs/Dungeon/Items/Spell_Explosion.asset:16
+    Assets/Prefabs/Dungeon/Items/Spell_Explosion_ExplosionEffectDefinition.asset
+    Assets/Scripts/Dungeon/Item/ExplosionAction.cs:28
+    Assets/Scripts/Dungeon/Game/Menu/PartyMenuContexts.cs:48
+E5  Assets/Scripts/Dungeon/Game/Party/PartyRules.cs:20
+    Assets/Scripts/Dungeon/Actions/MovementAction.cs (DeathAction)
+    Assets/Tests/EditMode/PartyExperienceShareTests.cs
+E6  Core/EternalEnigma.Core/EternalEnigma.Core/Generation/DungeonLayoutProfile.cs
+    Core/EternalEnigma.Core/EternalEnigma.Core/Generation/BiomeDungeonGenerator.cs
+    Assets/Scripts/TileWorldDungeon.cs:439
+    Assets/Scripts/GridMovement.cs:25
+E7  Assets/Scripts/Dungeon/Game/Menu/PlayerController.cs
+    Assets/Scripts/Dungeon/Game/Menu/DungeonFastWalk.cs:47
+    Assets/Tests/PlayMode/DungeonFastWalkTests.cs
+    Assets/Tests/PlayMode/HeldWalkingTests.cs
+    Assets/Tests/PlayMode/MovementRegressionTests.cs
+    Temp/ReviewAudit-2026-11-20/held-input.txt and held-input.csv
+E8  Docs/DungeonControls.md
+    Assets/Scripts/Dungeon/Game/Menu/PlayerInputHandler.cs
+    Assets/Scripts/Dungeon/Game/Menu/PlayerController.cs:174
+    Assets/Tests/EditMode/ControlBindingsTests.cs
+    Assets/Tests/EditMode/InputPromptsTests.cs
+    Assets/Tests/PlayMode/ControlsRebindingTests.cs
+    Assets/Tests/PlayMode/DiagonalMovementTests.cs
+E9  Assets/Scripts/Input/CameraZoom.cs
+    Assets/Tests/PlayMode/CameraZoomTests.cs
+E10 Core/EternalEnigma.Core/EternalEnigma.Core/Generation/OverworldGridGenerator.cs:14
+    Core/EternalEnigma.Core/EternalEnigma.Core/Generation/TownPlanOptions.cs:8
+    Core/EternalEnigma.Core/EternalEnigma.Core/Generation/TownPlanGenerator.Detailed.cs
+E11 Assets/Tests/PlayMode/OverworldSaveTests.cs
+E12 Assets/Scripts/Dungeon/Game/Menu/PartyMenuContexts.cs
+    Assets/Scripts/Dungeon/Game/Menu/PartyMenu.cs:288
+    Assets/Scripts/Dungeon/Game/EquipmentStatPreview.cs
+    Assets/Tests/EditMode/EquipmentStatPreviewTests.cs
+    Assets/Tests/PlayMode/UnifiedPartyMenuTests.cs
+E13 Assets/Resources/DungeonThemes/Catalog.asset
+    Assets/Scripts/MainMenu/AudioManager.cs:123
+E14 Assets/Scripts/TileWorldDungeon.cs:126
+    Core/EternalEnigma.Core/EternalEnigma.Core.Tests/World/GridSightTests.cs
+E15 Assets/Scripts/Common/OpeningGuidance.cs:69
+    Assets/Scripts/Town/OpeningHomeLesson.cs
+    Assets/Tests/PlayMode/OpeningPreparationTests.cs
+E16 Assets/Tests/PlayMode/DungeonDockTests.cs
+    Assets/Tests/PlayMode/SettingsInteractionTests.cs:75
+E17 Assets/Scripts/Dungeon/Game/Inventory.cs:8
+    Assets/Scripts/Town/OpeningHomeLesson.cs:126
+
+Measured held walking
+Fresh samples use production input at target 30, 60 and 120 fps, for one and two
+actions per turn. These are editor measurements, not browser benchmarks.
+- One action: measured 30.6 / 60.6 / 111.3 fps; stationary 9/49, 12/97, 13/178 frames.
+- Two actions: measured 30.6 / 60.6 / 105.6 fps; stationary 22/49, 42/97, 75/169 frames.
+- First accepted command: approximately 101–134 ms; first motion: 117–165 ms.
+The “max movement gap” metric includes initial response time and is not a pure
+steady-state stutter metric. The fixture asserts more than two accepted commands;
+it does not assert a smoothness threshold. Animation continuity/release behavior
+are covered by separate tests. This supports a partial verdict for feel, not a
+newly proven overshoot defect.
+
+Validation results
+Fresh selected checks: 237 distinct executed cases, with 231 passed and 6 failed
+by latest outcome. The failures are one current text-fit issue plus five stale
+test cases. This is targeted coverage, not a full-project green test run.
+
+Deduplication: XML-backed Unity runs contain 182 distinct cases (176 pass, 6 fail).
+Add eight distinct XP-arithmetic cases reported by Unity MCP and 47 distinct Core
+tests, all passing. Three diagonal cases and one paused-settings case overlap
+between suites; the camera-overworld retry replaces its earlier infrastructure
+failure for the latest-outcome count. Raw suite invocations below retain failures
+and repeats rather than hiding them.
+
+Suite / mode                                  Passed  Failed  Evidence file
+Equipment wording / EditMode                      70       2  EquipmentWordingEditMode.xml
+Controls and prompts / EditMode                   17       0  ControlsEditMode.xml
+Party XP arithmetic / EditMode                     8       0  PartyExperienceEditMode.json
+Presentation assets / EditMode                     9       0  PresentationAssets.xml
+Status menus / PlayMode                            1       2  StatusMenu.xml
+Inventory descriptions / PlayMode                  3       0  InventoryDescriptions.xml
+Equipment description fit / PlayMode               2       0  EquipmentDescriptionFit.xml
+Controls/settings/diagonals / PlayMode             31       1  ControlsPlayMode.xml
+Fast walk/held walking/movement / PlayMode         33       0  FastWalkRegressions.xml
+Camera zoom / PlayMode                             2       1  CameraZoom.xml
+Overworld saving / PlayMode                        4       0  OverworldSaving.xml
+Camera overworld-only retry / PlayMode             1       0  CameraZoomOverworldRetry.xml
+Opening interaction prompt / PlayMode              1       0  OpeningInteractionPrompt.xml
+Dungeon UI and targeting / PlayMode                0       1  TargetPresentation.xml
+Floor-two balance / PlayMode                       3       0  FloorTwoBalance.xml
+Biome scenery / PlayMode                           3       0  BiomeScenery.xml
+Core sight/biome/town generation / .NET            47       0  Core/core-geometry.trx
+
+All evidence files above are under Temp/ReviewAudit-2026-11-20/.
+unity-suites.json retains XML suite counts/times; unity-latest-test-cases.json
+records each deduplicated XML-backed Unity case and its latest result.
+The exploratory OR-pattern test filter selected no tests and is excluded.
+Fresh Unity compilation completed without warnings. Native Core tests ran under
+Enable-CodexHeadless.ps1. No new diagnostic executables or tests were authored.
+
+Core command (from Core):
+dotnet test EternalEnigma.Core/EternalEnigma.Core.Tests/EternalEnigma.Core.Tests.csproj
+  --configuration Release --no-restore
+  --filter 'FullyQualifiedName~GridSightTests|FullyQualifiedName~BiomeDungeonTests|FullyQualifiedName~TownLayoutTests'
+  --logger 'trx;LogFileName=core-geometry.trx'
+  --results-directory '../Temp/ReviewAudit-2026-11-20/Core'
+
+Core source tests and Unity runtime tests are separate evidence. The Core test
+build was not copied into Assets. The running editor's project-path aliases were
+checked against the workspace for relevant sources and its imported Core DLL.
+
+Fresh images inspected and archived in the evidence directory's screenshots/:
+- status-960x600.png: Frail penalty, stacks, duration, HUD and menu.
+- inventory-960x600.png: selection description before actions; full ten-slot bag.
+- equipment-960x600.png: Arcane Wand +6 Attack and before/after preview.
+- overworld-save-options.png: explicit Save game action.
+- book-prompt-960x600.png: contextual [Space] Read prompt.
+- targeting-960x600.png: correctly contained original-targeting-banner replacement.
+- loose-items.png: current floor props/loot, from the passing scenery test.
+- volcanic-dungeon-seed42.png: generated tier-4 layout overview.
+- grassland-town-dungeon-seed42.png: town-dungeon tree/corner environment.
+
+The final two are editor terrain previews (seed 42, tier 4), not live player
+traversal or a reconstruction of the reviewer's seed. The repository's existing
+Capture Dungeons command generated four biome/variant previews plus detail views;
+only the two named above were visually inspected and archived here.
+The targeting test checked 960x600, 1280x720, 1920x1080, 1280x800 and 2560x1080
+before failing at the final size's separate inventory picker.
+No screenshots from older runs are presented as fresh. The editor returned to
+Common, with the scene not dirty, after tests and preview cleanup.
+
+Test failures and coverage gaps
+0. DungeonDockTests.BrowsingActionsHistoryAndTargetingAtAllResolutions finds a
+   CURRENT text-fit issue at inventory-picker 2560x1080. The instruction label
+   “Choose an item to continue. / Press Back to return or Right for details.” has
+   visible glyphs outside its 396.8x73.44 pixel text rectangle. The detector measures
+   glyph faces with a two-pixel tolerance; this is not merely TMP's overflow flag.
+   It does not report escape from the screen or the surrounding panel. Targeting
+   banners had already passed at all five sizes before the later picker check failed.
+   Evidence: Temp/ReviewAudit-2026-11-20/inventory-picker-overflow-2560x1080.json.
+   The failing-frame PNG was not written because the assertion precedes screenshot
+   capture; the fresh targeting PNG is a different, passing state.
+1. StatusPresentationTests.EveryStatusTypeHasAnExplanationAndAnIcon fails for
+   FastWalkDamageAndHealStatus and FastWalkLevelUpStatus. These are test-only
+   fixtures in DungeonFastWalkTests.cs. Unfiltered TypeCache discovery includes
+   them; production presentation returns its generic fallback. Production Frailty
+   explanation and non-expiration tests pass. Restrict discovery to production
+   statuses or explicitly exclude fixtures.
+2. StatusMenuTests.BuffsAndDebuffsUseEquipmentRowsAndSelectionPopupWithoutSpendingActions
+   reaches and captures the working Frail UI, then fails at line 135 because it
+   expects setting TurnsLeft=0 to remove Frailty. Frailty now deliberately uses
+   StatusExpiration.None. Test actual cleansing/removal rather than countdown.
+3. StatusMenuTests.EveryStatusPopupFitsNormalAndTerminalLayouts fails at line 169:
+   expected statuses+4 rows (38), actual 39. Equipment now has three slots,
+   Strategy and Equipment bonuses before statuses. The test's fixed +4 count and
+   later i+4 indexing are stale. Its exhaustive popup sweep DID NOT run.
+4. SettingsInteractionTests.DungeonOptionsRemainsClickableAbovePartyDockAndResumeRestoresIt
+   fails at line 93 expecting anchorMin.y=.935. PartyMenuLauncher.ApplyAppearance
+   deliberately sets .925. The later pointer/raycast/Resume assertions DID NOT run.
+   Use the current intended layout or behavioral containment checks, then rerun.
+5. The first direct camera suite exceeded the MCP request timeout; the resulting
+   WebSocket error was logged during its overworld test and treated as an unexpected
+   Unity test error. Dungeon and town cases passed. The isolated overworld retry passed (1/1) in persisted XML. Both direct tool calls
+   timed out waiting for responses; completed XML, not the timeout, is the test evidence.
+
+Prior evidence and tree-corner plan
+The 2026-11-13 audit/claim-verification reports were read for provenance and original
+screenshots, not treated as current test results. Their old UI/XP/zoom conclusions
+must not be copied forward as facts about this checkout.
+
+The approved tree plan is already implemented using TownLayers.Trees plus exclusions
+for buildings, interiors, furniture, doors and boundaries. Each blocked side of a
+diagonal must be an eligible outdoor tree, and destination footprints/occupancy
+remain checked. Shared movement/pathfinding uses the rule; attacks and sight keep
+strict corners. No new generic “walkable corner obstacle” layer is required for
+this tree-only scope. It does not resolve the review's general pillar-density request.
+Retained earlier results under Temp/TownMovementValidation/: 38 EditMode + 4 town
+PlayMode + 4 movement regressions + 6 Find Exit = 52 passing cases. These are earlier
+checks from the tree implementation, separately identified from this fresh audit.
+
+Suggested follow-up priority
+1. Fit the inventory-picker instruction text at 2560x1080 and rerun the UI sweep.
+2. Correct Explosion's player-facing description; this is a directly demonstrated
+   mechanics-information gap.
+3. Repair the five stale test cases above and run their previously blocked assertions.
+4. Make explicit design decisions on ten-slot inventory and shared storage. Neither
+   request is currently fulfilled by the code.
+5. Review held walking with two actions per turn, spider escalation, broad rooms,
+   pillars and travel distances in a representative playthrough.
+6. Review statue/book/loot distinction, guidance size, combat visibility and repeated
+   music with players; passing functional tests cannot certify these judgments.
+
+Original evidence inspected
+The live review comments and five original image attachments were inspected:
+- Sight: https://img.itch.zone/aW1nLzMyMDI4NjYzLmpwZw==/original/37NwkR.jpg
+- Tutorial: https://img.itch.zone/aW1nLzMyMDI4Njg5LmpwZw==/original/xC7Okh.jpg
+- Targeting text: https://img.itch.zone/aW1nLzMyMDI4NzMwLmpwZw==/original/oKVnbm.jpg
+- Pillar minimap: https://img.itch.zone/aW1nLzMyMTMwNTAyLnBuZw==/original/kmDzr8.png
+- Spiders: https://img.itch.zone/aW1nLzMyMTI5NTcwLnBuZw==/original/gsNvZ0.png
+Copies are under Temp/ReviewAudit-2026-11-20/review-*.
+The reviewers' embedded videos were not freshly watched or transcribed in this
+audit. Earlier report observations are historical context only.
+Positive comments on party autonomy/progression and the 3D style are not defects.
+
+Implementation follow-up: text containment and held movement (2026-11-20)
+The findings above describe the initial audit. The following work resolves its
+text-fit failure and stale test blockers, plus the Full Control overflow shown
+in the user's later screenshot. It does not close the separate design requests
+for inventory capacity, shared storage, dungeon density or progression balance.
+
+Why the Full Control button escaped the old audit
+The old check measured rendered glyphs against the text rectangle and enclosing
+panel bounds. A decorative sprite's rectangle includes its bevel and lower
+shadow, which are not usable caption space. The check also did not consistently
+follow Button.targetGraphic when the background was a child object rather than
+an ancestor of the label. Consequently this caption could pass geometry checks
+while hanging below the wooden face. Passing that check was insufficient visual
+evidence; the audit needed to measure the actual decorative face.
+
+Implemented corrections
+- Wooden buttons and heading ribbons fit captions inside the painted face,
+  accounting for nine-slice scaling. Full Control has enough height for normal
+  and pending "next round" captions at every tested aspect ratio.
+- The inventory picker has room for its heading and two-line footer. Status
+  badges use compact frames instead of wood bevels that consume their text area.
+- Header buttons retain their border padding and clear the resource strip.
+  Cloned toolbar buttons discard margins calculated for the source button size.
+- The event feed reserves a header row and reflows beside open menus. Its History
+  button's painted background stays clear of the dock. Closing a menu restores
+  the authored layout. An idle-performance test verifies no repeated formatting.
+- A fresh movement press takes one step promptly. Release clears repeat state,
+  including diagonal-release grace. Held walking continues across tween/turn
+  boundaries without an idle frame; extra automatic wait actions preserve the
+  walk animation. Two-action heroes retain the same manual walking cadence.
+  The earlier tree-only corner rule and strict attack/sight corners remain.
+- Stale status-discovery, permanent-Frailty removal, row-index and header-layout
+  assertions now test current behavior. The previously blocked UI interactions
+  and exhaustive status popup sweep were rerun successfully.
+
+Stronger audit coverage
+TextLayoutAudit now follows the actual button graphic, measures painted caption
+faces, checks button backgrounds against screen/mask bounds, and detects UI
+covered by an open gameplay dock. Intentional partial scrolling rows and the
+terminal world behind dialogs retain their specific exceptions. The focused
+scroll row must remain fully reachable. Failure captures are saved before layout
+assertions so a future failure includes a screenshot. Header tests separately
+reject truncated captions and measure rendered glyphs, rather than treating
+unused font line-box padding as visible overflow.
+
+Final validation
+- 34 movement tests passed. The held-input benchmark covers 30/60/120 FPS,
+  one/two actions per turn, and Follow/Hold Position: all 12 combinations had
+  zero stationary frames between steps. The first command arrived on frame 1,
+  visible motion on frame 2, and quick taps moved exactly one tile.
+- 42 distinct UI PlayMode tests passed using each case's latest completed XML
+  result. This includes Options raycast/click/Resume, party tabs and persistence,
+  normal/terminal screens, status popups, and idle HUD formatting.
+- 69 EditMode checks passed: 60 status checks and 9 font/presentation asset checks.
+- 1,229 retained layout reports have zero reported containment/font issues:
+  496 normal screens (including 24 keyboard/gamepad header captures),
+  472 terminal screens, 55 dungeon dock states, 197 status states and 9 tab states.
+  Screens span 960x600, 1280x720, 1920x1080 and 2560x1080; the dock sweep also
+  includes 1280x800. The Full Control pending states are explicitly included.
+- Fresh screenshots of Full Control, its pending caption, inventory picker,
+  History beside a menu and the final headers were visually inspected.
+- C# git diff --check passed. Validation ran in the Unity editor; no standalone
+  build or itch.io upload was performed for this follow-up.
+
+Evidence: Temp/UIAndMovementFixes-2026-11-20/
+latest-test-cases.json records all 145 distinct passing cases with source XML.
+screen-audit-summary.json records the report counts above. Intermediate failed
+runs remain archived for diagnosis and are superseded by each case's later result.
+movement-final.xml, ui-expanded-audit-first.xml, ui-followup.xml,
+ui-final-first.xml, header-final.xml, status-editmode-final.xml and
+presentation-editmode-final.xml provide the completed-run provenance.
+held-input-final.txt/csv contains the frame timing measurements. Selected PNGs
+are copied into the evidence directory; complete reports/captures remain under
+Temp/UIScreenAudit, Temp/TerminalAudit, Temp/DungeonDock, Temp/StatusAudit and
+Temp/HudTabAudit.

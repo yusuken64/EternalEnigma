@@ -14,10 +14,26 @@ public static class CampaignParty
 {
     public static TownAlly Resolve(string id, TownConfiguration configuration)
     {
-        var companion = Common.Instance.CampaignContext?.Campaign.Companions.FirstOrDefault(c => c.Id == id);
+        var common = Common.InstanceOrNull;
+        var companion = common?.CampaignContext?.Campaign.Companions.FirstOrDefault(c => c.Id == id);
         if (companion != null)
-            return configuration.CampaignCompanions.FirstOrDefault(m => m.Capability == companion.Capability)?.Prefab
-                ?? configuration.AllyCatalog[(int)companion.Capability % configuration.AllyCatalog.Count];
+        {
+            // Stable assignment across the whole campaign, excluding the selected hero.
+            // Reward IDs must not give the protagonist a second recruitable identity.
+            var used = new System.Collections.Generic.List<TownAlly> {
+                configuration.AllyCatalog.FirstOrDefault(a => a.Id == common.GameSaveData.ProtagonistId)
+            };
+            foreach (var entry in common.CampaignContext.Campaign.Companions.OrderBy(c => c.Id, StringComparer.Ordinal))
+            {
+                var preferred = configuration.CampaignCompanions.FirstOrDefault(m => m.Capability == entry.Capability)?.Prefab;
+                var candidates = new[] { preferred }.Concat(Enumerable.Range(0, configuration.AllyCatalog.Count)
+                    .Select(offset => configuration.AllyCatalog[((int)entry.Capability + offset) % configuration.AllyCatalog.Count]));
+                var selected = candidates.FirstOrDefault(a => a != null && !used.Any(old => TownAllyManager.SameHero(old, a)))
+                    ?? throw new InvalidOperationException("Not enough unique campaign companion heroes.");
+                if (entry.Id == id) return selected;
+                used.Add(selected);
+            }
+        }
         return configuration.AllyCatalog.FirstOrDefault(a => a.Id == id);
     }
     public static void Capture(Common common)
@@ -33,6 +49,11 @@ public static class CampaignParty
     public static void PrepareActive(Common common, TownConfiguration configuration)
     {
         var save = common.GameSaveData; var context = common.CampaignContext;
+        // Older saves may still name a reward after the protagonist. Keep its
+        // earned progress and equipment, but display the uniquely assigned hero.
+        var companionIds = context.Campaign.Companions.Select(c => c.Id).ToHashSet();
+        foreach (var member in save.Roster.Where(a => companionIds.Contains(a.AllyId)))
+            member.AllyName = Resolve(member.AllyId, configuration).Name;
         foreach (var id in context.Roster)
             if (!save.Roster.Any(a => a.AllyId == id))
             {

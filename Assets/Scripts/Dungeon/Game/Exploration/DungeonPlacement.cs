@@ -28,10 +28,8 @@ internal static class DungeonPlacement
 
     internal static bool CanStep(TileWorldDungeon dungeon, Character actor, Vector3Int from, Vector3Int to)
     {
-        if (!dungeon.CanWalkTo(from, to) || !Fits(dungeon, actor, to)) return false;
-        var delta = to - from;
-        return delta.x == 0 || delta.y == 0 ||
-            (Fits(dungeon, actor, from + new Vector3Int(delta.x, 0)) && Fits(dungeon, actor, from + new Vector3Int(0, delta.y)));
+        return dungeon.CanWalkTo(from, to, actor.FootPrint, cell =>
+            dungeon.OverlapsAnyOtherCharacter(actor, Character.ToBounds(cell), false) == null);
     }
 
     internal static HashSet<Vector3Int> Reachable(TileWorldDungeon dungeon, Vector3Int start)

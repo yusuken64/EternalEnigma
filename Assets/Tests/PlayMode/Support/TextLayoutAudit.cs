@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -24,31 +25,126 @@ public static class TextLayoutAudit
     {
         public int width, height;
         public LabelReport[] labels;
+        public ButtonReport[] buttons;
         public string[] issues;
+    }
+
+    [Serializable] public sealed class ButtonReport
+    {
+        public string path;
+        public float x, y, width, height;
+        public bool visible, outsideScreen;
+        public string[] clippedBy;
     }
 
     public static string[] Capture(string path)
     {
         Canvas.ForceUpdateCanvases();
+        var decorations = new Dictionary<TMP_Text, Image>();
+        foreach (var role in Object.FindObjectsByType<DungeonUIRole>(FindObjectsSortMode.None))
+            if (role.isActiveAndEnabled && role.Caption != null) decorations[role.Caption] = role.GetComponent<Image>();
+        foreach (var ribbon in Object.FindObjectsByType<HeaderRibbon>(FindObjectsSortMode.None))
+            if (ribbon.isActiveAndEnabled && ribbon.Title != null) decorations[ribbon.Title] = ribbon.GetComponent<Image>();
         var labels = Object.FindObjectsByType<TextMeshProUGUI>(FindObjectsSortMode.None)
             .Where(label => label.isActiveAndEnabled && label.color.a > .01f && !string.IsNullOrWhiteSpace(label.text) &&
                 label.canvas != null && label.canvas.rootCanvas.renderMode != RenderMode.WorldSpace &&
                 label.GetComponentsInParent<Canvas>().All(canvas => canvas.enabled) && label.canvasRenderer.GetInheritedAlpha() > .01f)
-            .Select(Measure).OrderBy(label => label.path, StringComparer.Ordinal).ToArray();
+            .Select(label => Measure(label, decorations)).OrderBy(label => label.path, StringComparer.Ordinal).ToArray();
+        var buttons = Object.FindObjectsByType<Button>(FindObjectsSortMode.None)
+            .Where(button => button.isActiveAndEnabled && button.targetGraphic is Image image &&
+                image.isActiveAndEnabled && image.color.a > .01f && image.canvas != null &&
+                image.canvas.rootCanvas.renderMode != RenderMode.WorldSpace &&
+                image.GetComponentsInParent<Canvas>().All(canvas => canvas.enabled) && image.canvasRenderer.GetInheritedAlpha() > .01f)
+            .Select(MeasureButton).OrderBy(button => button.path, StringComparer.Ordinal).ToArray();
         var issues = labels.Where(label => label.glyphsOutsideTextBox || label.glyphsOutsideScreen || label.panelsOutside.Length > 0 || label.fontMismatch)
             .Select(label => label.path + ": " +
                 (label.glyphsOutsideTextBox ? "text box; " : "") +
                 (label.glyphsOutsideScreen ? "screen; " : "") +
                 (label.fontMismatch ? $"font {label.font}, expected {label.expectedFont}; " : "") +
-                string.Join(", ", label.panelsOutside) + " | " + label.text.Substring(0, Math.Min(160, label.text.Length))).ToArray();
+                string.Join(", ", label.panelsOutside) + " | " + label.text.Substring(0, Math.Min(160, label.text.Length)))
+            .Concat(buttons.Where(button => button.visible && (button.outsideScreen || button.clippedBy.Length > 0))
+                .Select(button => button.path + ": button background; " + (button.outsideScreen ? "screen; " : "") + string.Join(", ", button.clippedBy)))
+            .ToArray();
         Directory.CreateDirectory(Path.GetDirectoryName(path));
         File.WriteAllText(path + ".json", JsonUtility.ToJson(new ScreenReport {
-            width = Screen.width, height = Screen.height, labels = labels, issues = issues
+            width = Screen.width, height = Screen.height, labels = labels, buttons = buttons, issues = issues
         }, true));
         return issues;
     }
 
-    private static LabelReport Measure(TextMeshProUGUI label)
+    private static ButtonReport MeasureButton(Button button)
+    {
+        var image = (Image)button.targetGraphic;
+        var canvas = image.canvas.rootCanvas;
+        var camera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+        var bounds = ScreenRect(image.rectTransform, ImageRect(image), camera);
+        var visible = bounds;
+        var clips = new List<string>();
+        bool selected = EventSystem.current?.currentSelectedGameObject == button.gameObject;
+        void Clip(RectTransform transform, Rect rect)
+        {
+            var mask = ScreenRect(transform, rect, camera);
+            visible = Intersect(visible, mask);
+            var scroll = transform.GetComponentInParent<ScrollRect>();
+            bool scrollRow = scroll != null && scroll.content != null && button.transform.IsChildOf(scroll.content);
+            // Partially visible rows at the scrolling edge are intentional. Their
+            // horizontal borders and the entire focused row must still be reachable.
+            bool clipped = scrollRow && !selected
+                ? bounds.xMin < mask.xMin - 2 || bounds.xMax > mask.xMax + 2
+                : !Contains(mask, bounds);
+            if (clipped) clips.Add(PathOf(transform));
+        }
+        foreach (var mask in image.GetComponentsInParent<RectMask2D>())
+            if (mask.isActiveAndEnabled) Clip(mask.rectTransform, mask.rectTransform.rect);
+        foreach (var mask in image.GetComponentsInParent<Mask>())
+            if (mask.isActiveAndEnabled && mask.graphic != null) Clip(mask.graphic.rectTransform, mask.graphic.rectTransform.rect);
+        if (CoveredByDock(image, visible, out var coveringPanel)) clips.Add("covered by " + coveringPanel);
+        return new ButtonReport {
+            path = PathOf(button.transform), x = bounds.x, y = bounds.y, width = bounds.width, height = bounds.height,
+            visible = visible.width > 0 && visible.height > 0,
+            outsideScreen = !Contains(new Rect(0, 0, Screen.width, Screen.height), visible), clippedBy = clips.ToArray()
+        };
+    }
+
+    private static Rect ImageRect(Image image)
+    {
+        var rect = image.rectTransform.rect;
+        if (!image.preserveAspect || image.type != Image.Type.Simple || image.sprite == null) return rect;
+        float aspect = image.sprite.rect.width / image.sprite.rect.height;
+        if (rect.width / rect.height > aspect)
+        {
+            float width = rect.height * aspect;
+            rect.x += (rect.width - width) * image.rectTransform.pivot.x; rect.width = width;
+        }
+        else
+        {
+            float height = rect.width / aspect;
+            rect.y += (rect.height - height) * image.rectTransform.pivot.y; rect.height = height;
+        }
+        return rect;
+    }
+
+    private static bool CoveredByDock(Graphic graphic, Rect visible, out string path)
+    {
+        path = null;
+        if (visible.width <= 0 || visible.height <= 0) return false;
+        // ASCII is the world renderer in terminal mode. Dialogs intentionally
+        // cover that world, just as they cover the 3D scene in normal mode.
+        var terminal = graphic.GetComponentInParent<TerminalScreen>();
+        if (terminal != null && terminal.ContentRect == graphic.rectTransform) return false;
+        var focus = MenuUIInputModule.Active?.FocusRoot;
+        var dialog = focus != null ? focus.GetComponentInParent<JuicyChickenGames.Menu.Dialog>() : null;
+        var dock = dialog?.GameplayDockPanel;
+        if (dock == null || !dock.gameObject.activeInHierarchy || graphic.transform.IsChildOf(dialog.transform)) return false;
+        var canvas = dock.GetComponentInParent<Canvas>();
+        if (canvas == null || !canvas.isActiveAndEnabled || graphic.canvas.sortingOrder >= canvas.sortingOrder) return false;
+        var camera = canvas.rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.rootCanvas.worldCamera;
+        if (!visible.Overlaps(ScreenRect(dock, dock.rect, camera))) return false;
+        path = PathOf(dock);
+        return true;
+    }
+
+    private static LabelReport Measure(TextMeshProUGUI label, Dictionary<TMP_Text, Image> decorations)
     {
         label.ForceMeshUpdate();
         var canvas = label.canvas.rootCanvas;
@@ -65,6 +161,13 @@ public static class TextLayoutAudit
         bool visible = glyphs.width > 0 && glyphs.height > 0;
         bool outsideBox = visible && !Contains(textRect, glyphs);
         var panels = new List<string>();
+        var button = label.GetComponentInParent<Button>();
+        var background = decorations.TryGetValue(label, out var decoration) ? decoration : button?.targetGraphic as Image;
+        if (visible && background != null &&
+            background.isActiveAndEnabled && background.color.a >= .01f &&
+            DungeonUIRole.TryCaptionRect(background, out var buttonFace) &&
+            !Contains(ScreenRect(background.rectTransform, buttonFace, camera), glyphs))
+            panels.Add("decorative caption face: " + PathOf(background.transform));
         if (visible)
             for (var parent = label.transform.parent; parent != null; parent = parent.parent)
             {
@@ -72,6 +175,7 @@ public static class TextLayoutAudit
                 if (panel != null && panel.isActiveAndEnabled && panel.color.a >= .01f && panel.canvasRenderer.GetInheritedAlpha() >= .01f)
                 {
                     var panelRect = panel.rectTransform.rect;
+                    if (DungeonUIRole.TryCaptionRect(panel, out var face)) panelRect = face;
                     if (panel.preserveAspect && panel.type == Image.Type.Simple && panel.sprite != null)
                     {
                         float aspect = panel.sprite.rect.width / panel.sprite.rect.height;
@@ -93,6 +197,7 @@ public static class TextLayoutAudit
                 // A dropdown popup has its own sorting canvas and intentionally extends beyond its owning button.
                 if (parent.TryGetComponent<Canvas>(out var sortingCanvas) && sortingCanvas.overrideSorting) break;
             }
+        if (CoveredByDock(label, glyphs, out var coveringPanel)) panels.Add("covered by " + coveringPanel);
         var dialog = label.GetComponentInParent<JuicyChickenGames.Menu.Dialog>();
         var focus = MenuUIInputModule.Active?.FocusRoot;
         var autoplay = label.GetComponentInParent<AutoplayPanel>();
@@ -104,7 +209,7 @@ public static class TextLayoutAudit
             focus == null || label.transform.IsChildOf(focus));
         var expected = TerminalMode.Effective && autoplay == null
             ? Common.InstanceOrNull?.GetComponentInChildren<TerminalScreen>(true)?.FontAsset
-            : TMP_Settings.defaultFontAsset;
+            : GameTypography.Expected(label);
         return new LabelReport {
             path = PathOf(label.transform), text = label.text, font = label.font != null ? label.font.name : "MISSING",
             menuScope = scope, expectedFont = expected != null ? expected.name : "MISSING",

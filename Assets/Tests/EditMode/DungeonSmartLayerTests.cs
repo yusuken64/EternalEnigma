@@ -156,10 +156,12 @@ namespace EternalEnigma.Tests.EditMode
                 var owner=root.GetComponentInChildren<EnvironmentMeshOwner>();
                 Assert.That(owner.Materials.All(m=>m.shader.isSupported),Is.True);
                 var texture=cutaway.FloorMask;var materials=owner.Materials.ToArray();
+                var foregroundWallMask=cutaway.ForegroundWallMask;
                 Assert.That(materials,Is.Not.Empty);Assert.That(root.GetComponentInChildren<BiomeDecorationSurfaceSet>().Faces,Is.Not.Empty);
                 AssertForegroundPixel(root,materials,texture);
                 creator.ExecuteBuildLayer(boundary.guid,true);
                 Assert.That(texture==null,Is.True);Assert.That(materials.All(m=>m==null),Is.True);
+                Assert.That(foregroundWallMask==null,Is.True,"Rebuilding releases the foreground wall field too.");
                 Assert.That(floors.map[2,1],Is.True,"Cutaway must not alter gameplay floor masks.");
                 System.Array.Clear(walls.map,0,walls.map.Length);creator.ExecuteBuildLayer(boundary.guid,true);
                 Assert.That(root.GetComponentInChildren<DungeonBoundaryCutaway>(),Is.Null,"An empty boundary has no cutaway resources.");
@@ -167,8 +169,76 @@ namespace EternalEnigma.Tests.EditMode
             finally {DungeonPresentation.ClearOutput(root);Object.DestroyImmediate(root);Object.DestroyImmediate(host);Object.DestroyImmediate(asset);}
         }
 
+        [Test]
+        public void OnlyForegroundConnectedWallsLowerWhilePillarsAndBackWallsKeepTheirHeight()
+        {
+            var host=new GameObject("Pillar cutaway test");var root=new GameObject("Pillar boundary output");
+            var creator=host.AddComponent<TileWorldCreator>();var asset=ScriptableObject.CreateInstance<TileWorldCreatorAsset>();
+            creator.worldObject=root;creator.twcAsset=asset;asset.cellSize=2;
+            var walls=new TileWorldCreatorAsset.BlueprintLayerData("Walls",true){map=new bool[7,7]};
+            var floors=new TileWorldCreatorAsset.BlueprintLayerData("Floor",true){map=new bool[7,7]};
+            walls.map[2,2]=true;walls.map[3,3]=true;walls.map[4,3]=true;
+            for(int y=0;y<7;y++)for(int x=0;x<7;x++)floors.map[x,y]=!walls.map[x,y];
+            asset.mapBlueprintLayers=new(){walls,floors};
+            var boundary=new DungeonBoundaryLayer{guid=Guid.NewGuid(),assignedGenerationLayerGuid=walls.guid,SmartPreset=Kit};
+            var floor=new DungeonThemeTileLayer{guid=Guid.NewGuid(),assignedGenerationLayerGuid=floors.guid,Role=DungeonThemeRole.Floor};
+            asset.mapBuildLayers=new(){boundary,floor};
+            GameObject pillar=null,cameraHost=null;
+            var target=RenderTexture.GetTemporary(128,128,24);var active=RenderTexture.active;
+            var image=new Texture2D(128,128,TextureFormat.RGB24,false);
+            bool asynchronous=ShaderUtil.allowAsyncCompilation;ShaderUtil.allowAsyncCompilation=false;
+            try
+            {
+                creator.ExecuteBuildLayer(boundary.guid,true);
+                var cutaway=root.GetComponentInChildren<DungeonBoundaryCutaway>();
+                var material=root.GetComponentInChildren<MeshRenderer>().sharedMaterial;
+                foreach(var renderer in root.GetComponentsInChildren<MeshRenderer>())renderer.enabled=false;
+                // Render the authored single-cell piece with the production masks and shader.
+                // The connected wall diagonally beside it contributes bilinear falloff.
+                pillar=Object.Instantiate(Kit.Tiles.singleTile);
+                pillar.transform.position=new Vector3(5,5,cutaway.GroundZ);
+                pillar.transform.localScale=new Vector3(2/Kit.AuthoredCellSize,2/Kit.AuthoredCellSize,boundary.WallHeight/Kit.AuthoredHeight);
+                foreach(var transform in pillar.GetComponentsInChildren<Transform>())transform.gameObject.layer=30;
+                foreach(var renderer in pillar.GetComponentsInChildren<MeshRenderer>())renderer.sharedMaterial=material;
+                material.SetTexture("_FloorMask",Texture2D.blackTexture); // Isolate lowering from existing foreground clipping.
+                material.SetTexture("_MainTex",Texture2D.whiteTexture);material.color=Color.white;
+                cameraHost=new GameObject("Pillar cutaway camera");var camera=cameraHost.AddComponent<Camera>();
+                camera.enabled=false;camera.orthographic=true;camera.orthographicSize=4;camera.aspect=1;
+                camera.cullingMask=1<<30;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=Color.magenta;
+                camera.targetTexture=target;
+                Color32[] Sample(float height,float focusOffset=2)
+                {
+                    material.SetFloat("_ForegroundWallHeight",height);
+                    var focus=pillar.transform.position+Vector3.up*focusOffset;
+                    camera.transform.position=focus+new Vector3(0,-12,-14);
+                    camera.transform.LookAt(focus);
+                    camera.Render();RenderTexture.active=target;
+                    image.ReadPixels(new Rect(0,0,128,128),0,0);image.Apply();return image.GetPixels32();
+                }
+                var full=Sample(boundary.WallHeight);
+                Assert.That(full.Count(p=>p.g>5 || p.b<240),Is.GreaterThan(100),"The pillar must be visible in the render.");
+                CollectionAssert.AreEqual(full,Sample(1),"An isolated pillar must retain its complete silhouette near a lowering wall.");
+                pillar.transform.position=new Vector3(7,7,cutaway.GroundZ);
+                full=Sample(boundary.WallHeight);
+                Assert.That(full.Zip(Sample(1),(a,b)=>Mathf.Abs(a.r-b.r)+Mathf.Abs(a.g-b.g)+Mathf.Abs(a.b-b.b)).Count(d=>d>20),
+                    Is.GreaterThan(100),"The connected wall below the character must lower.");
+                CollectionAssert.AreEqual(Sample(boundary.WallHeight,-2),Sample(1,-2),
+                    "The same connected wall above the character must remain full height, even with floor on both sides.");
+            }
+            finally
+            {
+                ShaderUtil.allowAsyncCompilation=asynchronous;
+                if(cameraHost!=null)cameraHost.GetComponent<Camera>().targetTexture=null;
+                RenderTexture.active=active;RenderTexture.ReleaseTemporary(target);Object.DestroyImmediate(image);
+                if(pillar!=null)Object.DestroyImmediate(pillar);if(cameraHost!=null)Object.DestroyImmediate(cameraHost);
+                DungeonPresentation.ClearOutput(root);Object.DestroyImmediate(root);Object.DestroyImmediate(host);Object.DestroyImmediate(asset);
+            }
+        }
+
         static void AssertForegroundPixel(GameObject root,Material[] walls,Texture2D floorMask)
         {
+            var heights=walls.Select(m=>m.GetFloat("_ForegroundWallHeight")).ToArray();
+            foreach(var material in walls)material.SetFloat("_ForegroundWallHeight",material.GetFloat("_CutawayHeight"));
             foreach(var t in root.GetComponentsInChildren<Transform>())t.gameObject.layer=30;
             var marker=GameObject.CreatePrimitive(PrimitiveType.Quad);marker.layer=30;
             marker.transform.position=new Vector3(5,3,-.02f);marker.transform.localScale=Vector3.one*.5f;
@@ -187,7 +257,11 @@ namespace EternalEnigma.Tests.EditMode
             }
             finally
             {
-                foreach(var material in walls)material.SetTexture("_FloorMask",floorMask);
+                for(int i=0;i<walls.Length;i++)
+                {
+                    walls[i].SetTexture("_FloorMask",floorMask);
+                    walls[i].SetFloat("_ForegroundWallHeight",heights[i]);
+                }
                 ShaderUtil.allowAsyncCompilation=asynchronous;
                 camera.targetTexture=null;RenderTexture.active=old;RenderTexture.ReleaseTemporary(target);
                 Object.DestroyImmediate(pixel);Object.DestroyImmediate(host);Object.DestroyImmediate(marker);Object.DestroyImmediate(markerMaterial);

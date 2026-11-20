@@ -7,8 +7,8 @@ public sealed class OverworldSandboxControls : MonoBehaviour
     public OverworldScene Scene;
     private void OnGUI()
     {
+        if (!Scene.IsReady || !Scene.Context.IsSandbox || !Scene.ShowSandboxControls || Scene.GetComponent<OverworldMenuManager>().Opened) return;
         GameUISkin.UseLegacySkin();
-        if (!Scene.IsReady || !Scene.Context.IsSandbox || Scene.GetComponent<OverworldMenuManager>().Opened) return;
         GameUISkin.LegacyBeginArea(new Rect(16, 455, 580, 280));
         GUILayout.Label("OVERWORLD SANDBOX ? saves disabled");
         if (GameUISkin.LegacyButton("Claim eligible location rewards")) Scene.ClaimRewards();

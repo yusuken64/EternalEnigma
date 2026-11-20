@@ -11,6 +11,8 @@ public sealed class DungeonPartyCard : MonoBehaviour
     public Button[] StatusButtons;
     [SerializeField] private TMP_Text order;
     [SerializeField] private Transform statuses;
+    [SerializeField] private RectTransform portraitRoot;
+    [SerializeField] private Image nameBacking, orderBacking;
     private string statusKey;
     private void Awake() => ApplyStatusPresentation();
 
@@ -77,39 +79,98 @@ public sealed class DungeonPartyCard : MonoBehaviour
         card.AuthorCompactLayout();
         return card;
     }
-    // Layout captured from the reviewed Avery card. Keep each slot's vertical
-    // placement and character-specific contents while sharing its presentation.
+    // Keep bindings, font sizes and semantic roles from the authored card.
     public void AuthorCompactLayout()
     {
-        var rect=(RectTransform)transform;
-        rect.anchoredPosition=new Vector2(-98.08177f,rect.anchoredPosition.y);
-        rect.sizeDelta=new Vector2(-196.1636f,rect.sizeDelta.y);
-        display.NameText.rectTransform.anchorMax=new Vector2(.965f,.95f);
-        display.NameText.rectTransform.anchoredPosition=new Vector2(0,.7000046f);
-        display.NameText.rectTransform.sizeDelta=new Vector2(0,9.0069f);
-        display.NameText.margin=new Vector4(0,11.7384291f,1.652368f,0);
-        foreach(var bar in new[]{display.HpDisplay,display.ManaDisplay,display.HungerDisplay,display.LevelDisplay})
+        var maskSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/PartyPortraitMask.png");
+        var frameSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/UI/PartyPortraitFrame.png");
+        if (maskSprite == null || frameSprite == null)
+            throw new System.InvalidOperationException("Apply Compact Party HUD to author the portrait shapes first.");
+        panel.enabled = false;
+        var oldBackground = GetComponent<Image>();
+        if (oldBackground != null) oldBackground.enabled = false;
+        foreach (var image in GetComponentsInChildren<Image>(true).Where(i => i.name == "Dungeon parchment"))
+            image.gameObject.SetActive(false);
+
+        if (portraitRoot == null)
         {
-            var barRect=(RectTransform)bar.transform;
-            barRect.anchorMax=new Vector2(.965f,barRect.anchorMax.y);
-            UnityEditor.EditorUtility.SetDirty(barRect);
-            if(UnityEditor.PrefabUtility.IsPartOfPrefabInstance(barRect))
-                UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(barRect);
+            portraitRoot = GameUISkin.Rect("Portrait control", panel.transform, Vector2.zero, Vector2.one);
+            var mask = GameUISkin.Rect("Portrait mask", portraitRoot, Vector2.zero, Vector2.one);
+            var surface = mask.gameObject.AddComponent<Image>();
+            surface.sprite = maskSprite; surface.type = Image.Type.Sliced; surface.preserveAspect = true;
+            surface.color = new Color(.08f, .14f, .14f, 1); surface.raycastTarget = false;
+            mask.gameObject.AddComponent<Mask>().showMaskGraphic = true;
+            display.PortraitImage.transform.SetParent(mask, false);
+            var frame = GameUISkin.Rect("Portrait gold frame", portraitRoot, Vector2.zero, Vector2.one).gameObject.AddComponent<Image>();
+            frame.sprite = frameSprite; frame.type = Image.Type.Sliced; frame.preserveAspect = true;
+            frame.color = new Color(.8f, .63f, .29f); frame.raycastTarget = false;
         }
-        var level=(RectTransform)display.LevelDisplay.transform;
-        level.anchoredPosition=new Vector2(0,7);
-        order.rectTransform.anchoredPosition=new Vector2(0,-2.8f);
-        order.alignment=TextAlignmentOptions.Left;
-        order.margin=new Vector4(0,0,17.6149731f,0);
-        order.enableAutoSizing=true;order.fontSizeMin=10;order.fontSizeMax=18;
-        var hpFill=display.HpDisplay.StatValueSlider.fillRect.GetComponent<Image>();
-        hpFill.type=Image.Type.Simple;
-        foreach(var component in new Component[]{rect,display.NameText,display.NameText.rectTransform,level,order.rectTransform,order,hpFill})
+        // Sorting belongs above the mask, never on the clipped image itself.
+        foreach (var component in new Component[] { display.PortraitImage.GetComponent<DungeonPortraitControl>(),
+            display.PortraitImage.GetComponent<GraphicRaycaster>(), display.PortraitImage.GetComponent<Canvas>() })
+            if (component != null) UnityEngine.Object.DestroyImmediate(component);
+        bool interactive = GetComponentInParent<DungeonHud>(true) != null;
+        if (interactive)
+        {
+            if (portraitRoot.GetComponent<Canvas>() == null) portraitRoot.gameObject.AddComponent<Canvas>();
+            if (portraitRoot.GetComponent<GraphicRaycaster>() == null) portraitRoot.gameObject.AddComponent<GraphicRaycaster>();
+            if (portraitRoot.GetComponent<DungeonPortraitControl>() == null) portraitRoot.gameObject.AddComponent<DungeonPortraitControl>();
+        }
+        else
+        {
+            // Travel portraits retain their original noninteractive presentation.
+            foreach (var component in new Component[] { portraitRoot.GetComponent<DungeonPortraitControl>(),
+                portraitRoot.GetComponent<GraphicRaycaster>(), portraitRoot.GetComponent<Canvas>() })
+                if (component != null) UnityEngine.Object.DestroyImmediate(component);
+        }
+        display.PortraitImage.preserveAspect = true; display.PortraitImage.raycastTarget = interactive;
+        display.PortraitImage.maskable = true;
+        portraitHighlight.transform.SetParent(portraitRoot, false);
+        portraitHighlight.sprite = frameSprite; portraitHighlight.overrideSprite = null;
+        portraitHighlight.type = Image.Type.Sliced; portraitHighlight.fillCenter = false;
+        portraitHighlight.pixelsPerUnitMultiplier = 1; portraitHighlight.raycastTarget = false;
+        portraitHighlight.rectTransform.anchorMin = Vector2.zero; portraitHighlight.rectTransform.anchorMax = Vector2.one;
+        portraitHighlight.rectTransform.offsetMin = new Vector2(-3, -3);
+        portraitHighlight.rectTransform.offsetMax = new Vector2(3, 3);
+
+        nameBacking = TextBacking(nameBacking, "Name backing");
+        orderBacking = TextBacking(orderBacking, "Action backing");
+        foreach (var label in new[] { display.NameText, order })
+        {
+            label.margin = Vector4.zero; label.alignment = TextAlignmentOptions.TopLeft;
+            label.textWrappingMode = TextWrappingModes.Normal; label.overflowMode = TextOverflowModes.Overflow;
+            DungeonHud.WorldLabel(label);
+            var contrast = label.GetComponent<DungeonTextStyle>();
+            if (contrast != null) contrast.OnWood = true;
+        }
+        GameTypography.Apply(transform);
+        ApplyStatusPresentation();
+        Place((RectTransform)transform, 0, 0, 280, LayoutCompact(280));
+        if (transform.parent is RectTransform column && (column.GetComponentInParent<DungeonHud>() != null ||
+            column.GetComponentInParent<TravelPartyHud>() != null))
+        {
+            // Leave the bottom controls clear, while allowing content to use
+            // the empty space below the former quarter-height card slots.
+            column.anchorMin = new Vector2(column.anchorMin.x, .14f);
+            if (column.GetComponent<CompactPartyHudLayout>() == null) column.gameObject.AddComponent<CompactPartyHudLayout>();
+            UnityEditor.EditorUtility.SetDirty(column);
+            if (UnityEditor.PrefabUtility.IsPartOfPrefabInstance(column))
+                UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(column);
+        }
+        foreach (var component in GetComponentsInChildren<Component>(true))
         {
             UnityEditor.EditorUtility.SetDirty(component);
-            if(UnityEditor.PrefabUtility.IsPartOfPrefabInstance(component))
+            if (UnityEditor.PrefabUtility.IsPartOfPrefabInstance(component))
                 UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(component);
         }
+    }
+    private Image TextBacking(Image image, string title)
+    {
+        if (image == null) image = GameUISkin.Rect(title, panel.transform, Vector2.zero, Vector2.one).gameObject.AddComponent<Image>();
+        image.transform.SetAsFirstSibling();
+        image.sprite = GameUITheme.Current.DungeonTrack; image.type = Image.Type.Sliced;
+        image.color = new Color(.23f, .28f, .24f, .94f); image.raycastTarget = false;
+        return image;
     }
     private static StatsDisplay Bar(Transform parent,float y,Color color,float height=.16f)
     {
@@ -123,6 +184,67 @@ public sealed class DungeonPartyCard : MonoBehaviour
         return data;
     }
 #endif
+    internal int LayoutKey
+    {
+        get
+        {
+            int TextKey(TMP_Text label) => System.HashCode.Combine(label.text, label.font, label.enableAutoSizing ? label.fontSizeMax : label.fontSize);
+            int key = System.HashCode.Combine(TextKey(display.NameText), TextKey(order), TextKey(display.HpDisplay.ValueText),
+                TextKey(display.ManaDisplay.ValueText), TextKey(display.HungerDisplay.ValueText), display.PortraitImage.sprite);
+            foreach (var button in StatusButtons) key = unchecked(key * 31 + (button.gameObject.activeSelf ? 1 : 0));
+            return key;
+        }
+    }
+    internal float LayoutCompact(float width)
+    {
+        if (portraitRoot == null) return ((RectTransform)transform).rect.height;
+        const float textLeft = 84;
+        float textWidth = width - textLeft - 4;
+        Place(portraitRoot, 4, 4, 72, 72);
+        var portrait = display.PortraitImage.rectTransform;
+        var sprite = display.PortraitImage.sprite;
+        float aspect = sprite != null ? sprite.rect.width / sprite.rect.height : .8f;
+        var portraitSize = aspect < 1 ? new Vector2(72, 72 / aspect) : new Vector2(72 * aspect, 72);
+        portrait.anchorMin = portrait.anchorMax = portrait.pivot = new Vector2(.5f, .5f);
+        portrait.sizeDelta = portraitSize;
+        portrait.anchoredPosition = new Vector2(0, portraitSize.y * .08f);
+
+        float top = 2;
+        float height = TextHeight(display.NameText, textWidth);
+        Place(display.NameText.rectTransform, textLeft, top, textWidth, height);
+        Place(nameBacking.rectTransform, textLeft - 3, top - 1, textWidth + 6, height + 2);
+        top += height + 3;
+        foreach (var bar in new[] { display.HpDisplay, display.ManaDisplay, display.HungerDisplay })
+        {
+            height = Mathf.Max(24, TextHeight(bar.ValueText, textWidth - 8));
+            Place((RectTransform)bar.transform, textLeft, top, textWidth, height);
+            top += height + 1;
+        }
+        Place((RectTransform)display.LevelDisplay.transform, textLeft, top + 1, textWidth, 5);
+        top += 9;
+        height = TextHeight(order, textWidth);
+        Place(order.rectTransform, textLeft, top, textWidth, height);
+        Place(orderBacking.rectTransform, textLeft - 3, top - 1, textWidth + 6, height + 2);
+        orderBacking.enabled = !string.IsNullOrEmpty(order.text);
+
+        Place((RectTransform)statuses, 2, 82, 76, 64);
+        int count = 0;
+        foreach (var button in StatusButtons)
+        {
+            if (!button.gameObject.activeSelf) continue;
+            Place((RectTransform)button.transform, count % 2 * 38, count / 2 * 32, 36, 30);
+            count++;
+        }
+        return Mathf.Max(104, top + height + 3, count > 0 ? 82 + Mathf.Ceil(count / 2f) * 32 : 0);
+    }
+    private static float TextHeight(TMP_Text label, float width) =>
+        Mathf.Ceil(label.GetPreferredValues(label.text, width, Mathf.Infinity).y) + 3;
+    private static void Place(RectTransform rect, float x, float top, float width, float height)
+    {
+        rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0, 1);
+        rect.anchoredPosition = new Vector2(x, -top);
+        rect.sizeDelta = new Vector2(width, height);
+    }
     public void Bind(CharacterStatsDisplay value) { display=value; statusKey=null; HudRefresh.PartyChanged(); }
     private void OnEnable() { HudRefresh.Changed += Refresh; HudRefresh.PartyChanged(); }
     private void OnDisable() => HudRefresh.Changed -= Refresh;

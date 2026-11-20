@@ -283,9 +283,10 @@ public static class DungeonUIAuthoring
             foreach(var display in scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<CharacterStatsDisplay>(true)))
             {
                 var portrait=display.PortraitImage;if(portrait==null)continue;portrait.raycastTarget=true;
-                if(portrait.GetComponent<Canvas>()==null)portrait.gameObject.AddComponent<Canvas>();
-                if(portrait.GetComponent<GraphicRaycaster>()==null)portrait.gameObject.AddComponent<GraphicRaycaster>();
-                if(portrait.GetComponent<DungeonPortraitControl>()==null)portrait.gameObject.AddComponent<DungeonPortraitControl>();
+                var control=portrait.GetComponentInParent<Mask>()?.transform.parent ?? portrait.transform;
+                if(control.GetComponent<Canvas>()==null)control.gameObject.AddComponent<Canvas>();
+                if(control.GetComponent<GraphicRaycaster>()==null)control.gameObject.AddComponent<GraphicRaycaster>();
+                if(control.GetComponent<DungeonPortraitControl>()==null)control.gameObject.AddComponent<DungeonPortraitControl>();
             }
             foreach(var root in scene.GetRootGameObjects())
             {

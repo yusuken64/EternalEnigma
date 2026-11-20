@@ -25,9 +25,10 @@ namespace EternalEnigma.Tests
             foreach (var name in new[] { "Enemy_Slime", "Enemy_ChestMonster" })
             {
                 var prefab = AssetDatabase.LoadAssetAtPath<Enemy>("Assets/Prefabs/Dungeon/Enemies/" + name + ".prefab");
-                var cell = dungeon.GetStartPosition();
+                var cell = DungeonPlacement.OpenCells(dungeon, prefab).First();
                 var spawn = new SpawnEnemyAction(prefab, cell, dungeon.CellToWorld(cell));
                 spawn.ExecuteImmediate(harness.Ally);
+                Assert.That(spawn.SpawnedEnemy, Is.Not.Null, "Spawn fixture must use an unoccupied cell.");
                 var routine = spawn.ExecuteRoutine(harness.Ally, true);
                 Assert.That(routine.MoveNext(), Is.False, "A no-animation spawn completes without advancing a frame.");
                 var enemy = spawn.SpawnedEnemy;
@@ -77,13 +78,14 @@ namespace EternalEnigma.Tests
         {
             var normal = new HashSet<Facing>(); var dormant = new HashSet<Facing>();
             var dungeon = harness.Game.CurrentDungeon;
-            var cell = dungeon.GetStartPosition();
             foreach (var name in new[] { "Enemy_Slime", "Enemy_EvilMage" })
             for (int i = 0; i < 24; i++)
             {
                 var prefab = AssetDatabase.LoadAssetAtPath<Enemy>("Assets/Prefabs/Dungeon/Enemies/" + name + ".prefab");
+                var cell = DungeonPlacement.OpenCells(dungeon, prefab).First();
                 var action = new SpawnEnemyAction(prefab, cell, dungeon.CellToWorld(cell));
                 action.ExecuteImmediate(harness.Ally);
+                Assert.That(action.SpawnedEnemy, Is.Not.Null, "Spawn fixture must use an unoccupied cell.");
                 var routine = action.ExecuteRoutine(harness.Ally, true); while (routine.MoveNext()) yield return routine.Current;
                 yield return null;
                 var enemy = action.SpawnedEnemy;
@@ -102,10 +104,11 @@ namespace EternalEnigma.Tests
         public IEnumerator MimicDisguiseKeepsSouthFacingAndSizeThroughSpawnScaling()
         {
             var dungeon = harness.Game.CurrentDungeon;
-            var cell = dungeon.GetStartPosition();
             var prefab = AssetDatabase.LoadAssetAtPath<Enemy>("Assets/Prefabs/Dungeon/Enemies/Enemy_ChestMonster.prefab");
+            var cell = DungeonPlacement.OpenCells(dungeon, prefab).First();
             var action = new SpawnEnemyAction(prefab, cell, dungeon.CellToWorld(cell));
             action.ExecuteImmediate(harness.Ally);
+            Assert.That(action.SpawnedEnemy, Is.Not.Null, "Spawn fixture must use an unoccupied cell.");
             yield return null; // Initialize while the spawn visual still has zero scale.
             var routine = action.ExecuteRoutine(harness.Ally, true); while (routine.MoveNext()) yield return routine.Current;
             var enemy = action.SpawnedEnemy;

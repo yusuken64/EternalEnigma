@@ -77,6 +77,8 @@ namespace EternalEnigma.Tests
             var world=Object.FindFirstObjectByType<OverworldScene>();
             yield return harness.WaitUntil(()=>world.IsReady,"portrait overworld ready");
             yield return null;
+            Assert.That(world.ShowSandboxControls,Is.False,"Sandbox diagnostics are opt-in and never cover the party HUD by default.");
+            Assert.That(world.GetComponent<OverworldSandboxControls>().enabled,Is.False);
             var hud=world.GetComponentInChildren<TravelPartyHud>(true);
             AssertCards(hud,new[]{world.Player}.Concat(world.Followers).ToArray());
             AssertSelected(hud,world.Player);
@@ -102,6 +104,8 @@ namespace EternalEnigma.Tests
             var hud=world.GetComponentInChildren<TravelPartyHud>(true);
             AssertCards(hud,new[]{world.Player}.Concat(world.Followers).ToArray());
             yield return Capture("overworld",hud);
+            Assert.That(((RectTransform)hud.PartySlots[0].transform).rect.width,Is.EqualTo(280),
+                "Ordinary four-member parties retain the compact width at ultrawide resolutions.");
         }
 
         private static void AssertCards(TravelPartyHud hud,TownAlly[] heroes)
@@ -116,6 +120,7 @@ namespace EternalEnigma.Tests
                 Assert.That(card.TownActor,Is.SameAs(heroes[i]));
                 Assert.That(card.NameText.text,Does.Contain(heroes[i].Name));
                 Assert.That(card.PortraitImage.sprite,Is.SameAs(heroes[i].Portrait));
+                Assert.That(card.PortraitImage.raycastTarget,Is.False,"Travel portraits preserve their existing noninteractive behavior.");
             }
         }
 
@@ -131,6 +136,7 @@ namespace EternalEnigma.Tests
             Assert.That(card.HpDisplay.StatValueSlider.value,Is.EqualTo((float)hp/stats.HPMax).Within(.001f));
             hero.Hp=0;yield return new WaitForSecondsRealtime(.2f);
             Assert.That(card.NameText.text,Does.Contain("Downed"));
+            Assert.That(card.NameText.text,Does.Contain("Lv "+hero.Level));
             hero.Hp=-1;hero.Mana=-1;hero.HasHunger=false;
             yield return new WaitForSecondsRealtime(.2f);
             Assert.That(card.HpDisplay.StatValueSlider.value,Is.EqualTo(1));
@@ -157,7 +163,7 @@ namespace EternalEnigma.Tests
 
         private IEnumerator Capture(string scene,TravelPartyHud hud)
         {
-            foreach(var resolution in new[]{new Vector2(960,600),new Vector2(1280,720)})
+            foreach(var resolution in CompactPartyHudTests.Resolutions)
             {
                 view.GetType().GetMethod("SetCustomResolution",Flags).Invoke(view,new object[]{resolution,"Party portraits"});view.Repaint();
                 yield return new WaitForSecondsRealtime(.2f);Canvas.ForceUpdateCanvases();
@@ -171,6 +177,20 @@ namespace EternalEnigma.Tests
                 }
                 ScreenCapture.CaptureScreenshot($"Temp/PartyPortraitLayout/{scene}-{resolution.x}x{resolution.y}.png");
                 yield return new WaitForSecondsRealtime(.2f);
+                if(hud.PartySlots[0].PortraitImage.GetComponentInParent<Mask>()!=null)
+                {
+                    for(int count=4;count>=1;count--)
+                    {
+                        for(int i=0;i<hud.PartySlots.Length;i++)hud.PartySlots[i].gameObject.SetActive(i<count);
+                        yield return null;Canvas.ForceUpdateCanvases();yield return null;
+                        Assert.That(hud.PartySlots.Count(c=>c.gameObject.activeSelf),Is.EqualTo(count));
+                        CompactPartyHudTests.AssertLayout(hud.PartySlots.Take(count));
+                        ScreenCapture.CaptureScreenshot($"Temp/PartyPortraitLayout/{scene}-{count}-{resolution.x}x{resolution.y}.png");
+                        yield return new WaitForSecondsRealtime(.1f);
+                    }
+                    foreach(var card in hud.PartySlots)card.gameObject.SetActive(true);
+                    yield return null;yield return null;
+                }
             }
         }
     }

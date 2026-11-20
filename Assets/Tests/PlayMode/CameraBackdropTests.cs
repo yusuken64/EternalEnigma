@@ -88,6 +88,9 @@ namespace EternalEnigma.Tests
             var origin = renderer.sharedMaterial.GetVector("_FogWorldOrigin");
             var size = renderer.sharedMaterial.GetVector("_FogWorldSize");
             var originalPixels = fog.VisibilityTexture.GetPixels32();
+            float height = Mathf.Abs(fog.fogOverlayQuad.transform.position.z);
+            var scenery = new Bounds(new Vector3(origin.x + size.x * .5f, origin.y + size.y * .5f, -height * .5f),
+                new Vector3(size.x, size.y, height));
             foreach (var resolution in Resolutions)
             for (int corner = 0; corner < 4; corner++)
             {
@@ -104,7 +107,9 @@ namespace EternalEnigma.Tests
                         var bounds = renderer.bounds;
                         Assert.That(point.x, Is.InRange(bounds.min.x, bounds.max.x));
                         Assert.That(point.y, Is.InRange(bounds.min.y, bounds.max.y));
-                        if (point.x >= origin.x && point.y >= origin.y && point.x <= origin.x + size.x && point.y <= origin.y + size.y) continue;
+                        // Surface-based fog follows wall/actor height. Only rays missing
+                        // the whole scenery volume are unambiguously outside the map.
+                        if (scenery.IntersectRay(camera.ViewportPointToRay(new Vector3((x + .5f) / resolution.x, (y + .5f) / resolution.y)))) continue;
                         outside++;
                         var pixel = image.GetPixel(x, y);
                         Assert.That(Mathf.Max(pixel.r, pixel.g, pixel.b), Is.LessThan(.02f),

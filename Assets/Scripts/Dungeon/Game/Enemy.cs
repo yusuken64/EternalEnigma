@@ -43,8 +43,7 @@ public class Enemy : Character
         if (GetComponent<EnemyGroundMarker>() == null) gameObject.AddComponent<EnemyGroundMarker>();
         SetFacing(VisualRandom.Pick(spawnFacings));
         gameObject.AddComponent<FogHiddenVisual>();
-		var worldPosition = Game.Instance.CurrentDungeon.CellToWorld(TilemapPosition);
-		this.transform.position = worldPosition;
+        SetPosition(TilemapPosition);
 
         GetComponent<EnemyBehavior>()?.Initialize(this);
 		CurrentEnemyState = EnemyState.Pursuit;

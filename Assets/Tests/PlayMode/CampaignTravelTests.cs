@@ -463,7 +463,15 @@ namespace EternalEnigma.Tests
             yield return SceneManager.LoadSceneAsync("Overworld"); yield return WaitWorld();
             var world = Object.FindFirstObjectByType<OverworldScene>();
             Assert.That(world.Context.IsSandbox, Is.True);
+            Assert.That(world.ShowSandboxControls, Is.False);
+            Assert.That(world.GetComponent<OverworldSandboxControls>().enabled, Is.False);
+            const string diagnostics = "Tools/Eternal Enigma/Debug/Toggle Overworld Diagnostics";
+            Assert.That(UnityEditor.EditorApplication.ExecuteMenuItem(diagnostics), Is.True);
+            Assert.That(world.ShowSandboxControls, Is.True);
             Assert.That(world.GetComponent<OverworldSandboxControls>().enabled, Is.True);
+            Assert.That(UnityEditor.EditorApplication.ExecuteMenuItem(diagnostics), Is.True);
+            Assert.That(world.ShowSandboxControls, Is.False);
+            Assert.That(world.GetComponent<OverworldSandboxControls>().enabled, Is.False);
             world.Context.Position = world.Context.Grid.Locations["story-0"];
             world.ClaimRewards(); Assert.That(world.CollectedKeys, Is.Empty);
             Assert.That(world.SimulateDungeonVictory(), Is.True);

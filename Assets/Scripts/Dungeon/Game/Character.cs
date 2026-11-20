@@ -303,8 +303,17 @@ public abstract class Character : MonoBehaviour, Actor
 	internal void SetPosition(Vector3Int newPosition)
 	{
 		TilemapPosition = newPosition;
-		var position = Game.Instance.CurrentDungeon.CellToWorld(newPosition);
-		transform.position = position;
+		var dungeon = Game.Instance.CurrentDungeon;
+		transform.position = dungeon.CellToWorld(newPosition);
+        if (VisualParent != null)
+        {
+            // Legacy prefabs were offset for 2.5-unit tiles. Derive the shared model/ring
+            // pivot from this floor, preserving authored height, scale and facing.
+            var visual = VisualParent.transform;
+            var center = dungeon.CellCenterToWorld(newPosition);
+            center.z = visual.position.z;
+            visual.position = center;
+        }
 	}
 
 	//TODO move to "GameAnimation" class

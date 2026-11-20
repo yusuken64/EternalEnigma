@@ -8,6 +8,7 @@ public class FogOverlay : MonoBehaviour
     private Minimap.MinimapTileData[,] visibilityMap;
     private float cellSize;
     private Camera viewCamera;
+    private bool ownsDepthTexture;
     private Vector2 minimumHalfSize;
 
     private void Awake() => Instance = this;
@@ -19,6 +20,13 @@ public class FogOverlay : MonoBehaviour
         if (Instance == this) Instance = null;
         if (fogTexture != null) Destroy(fogTexture);
         if (fogMaterial != null) Destroy(fogMaterial);
+        ReleaseDepthTexture();
+    }
+
+    private void ReleaseDepthTexture()
+    {
+        if (viewCamera != null && ownsDepthTexture) viewCamera.depthTextureMode &= ~DepthTextureMode.Depth;
+        ownsDepthTexture = false;
     }
 
     internal bool IsCurrentlyVisible(Vector3 worldPosition, FootPrint footprint = FootPrint.Size1x1)
@@ -55,18 +63,22 @@ public class FogOverlay : MonoBehaviour
         if (fogTexture != null) Destroy(fogTexture);
         worldSize = new Vector2(currentDungeon.dungeonWidth, currentDungeon.dungeonHeight);
 
-        // Cover tall dungeon boundaries. Compensate the added height along the view
-        // ray so the existing fog-mask projection and gameplay visibility stay fixed.
+        // Keep the overlay in front of the scenery. Its shader reconstructs the
+        // actual surface beneath each pixel, so height no longer shifts the sight mask.
         float coverHeight=Mathf.Max(3.35f,currentDungeon.PresentationWallHeight+.35f);
         float padding=coverHeight+cellSize*2;
         minimumHalfSize=worldSize*cellSize*.5f+Vector2.one*padding;
         fogOverlayQuad.transform.localScale=new Vector3(minimumHalfSize.x*2,minimumHalfSize.y*2,1);
-        viewCamera=Camera.main;
-        var direction=viewCamera!=null?viewCamera.transform.forward:new Vector3(0,12,14).normalized;
-        var shift=direction.z>.001f ? -(Vector2)direction*((coverHeight-3.35f)/direction.z) : Vector2.zero;
+        var camera = Camera.main;
+        if (viewCamera != camera) { ReleaseDepthTexture(); viewCamera = camera; }
+        if (viewCamera != null)
+        {
+            ownsDepthTexture |= (viewCamera.depthTextureMode & DepthTextureMode.Depth) == 0;
+            viewCamera.depthTextureMode |= DepthTextureMode.Depth;
+        }
         fogOverlayQuad.transform.position = new Vector3(
-            worldOrigin.x + worldSize.x * cellSize / 2+shift.x,
-            worldOrigin.y + worldSize.y * cellSize / 2+shift.y,
+            worldOrigin.x + worldSize.x * cellSize / 2,
+            worldOrigin.y + worldSize.y * cellSize / 2,
             -coverHeight
         );
 
@@ -75,7 +87,7 @@ public class FogOverlay : MonoBehaviour
 
         // Pass shader uniforms
         fogMaterial.SetVector("_FogWorldSize", new Vector4(worldSize.x * cellSize, worldSize.y * cellSize, 0, 0));
-        fogMaterial.SetVector("_FogWorldOrigin", new Vector4(worldOrigin.x+shift.x, worldOrigin.y+shift.y, 0, 0));
+        fogMaterial.SetVector("_FogWorldOrigin", new Vector4(worldOrigin.x, worldOrigin.y, 0, 0));
 
         // Create and setup texture once
         int width = currentDungeon.dungeonWidth;

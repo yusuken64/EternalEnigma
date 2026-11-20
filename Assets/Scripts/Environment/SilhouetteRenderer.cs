@@ -63,6 +63,21 @@ public sealed class SilhouetteRenderer : MonoBehaviour
             bounds.Expand(new Vector3(distance*2,distance*2,0));
             if(!GeometryUtility.TestPlanesAABB(planes,bounds))continue;
             commands.SetGlobalFloat("_SilhouetteDynamic",participant.Dynamic?1:0);
+            var sourceMaterial = participant.Source.sharedMaterial;
+            bool dungeonWall = sourceMaterial != null && sourceMaterial.HasProperty("_ForegroundWallHeight");
+            commands.SetGlobalFloat("_SilhouetteDungeonWall", dungeonWall ? 1 : 0);
+            if (dungeonWall)
+            {
+                // The depth mask must use the same wall shape as the visible/depth passes.
+                commands.SetGlobalTexture("_FloorMask", sourceMaterial.GetTexture("_FloorMask"));
+                commands.SetGlobalTexture("_ForegroundWallMask", sourceMaterial.GetTexture("_ForegroundWallMask"));
+                commands.SetGlobalVector("_FloorRect", sourceMaterial.GetVector("_FloorRect"));
+                commands.SetGlobalFloat("_GroundZ", sourceMaterial.GetFloat("_GroundZ"));
+                commands.SetGlobalFloat("_CellSize", sourceMaterial.GetFloat("_CellSize"));
+                commands.SetGlobalFloat("_CutawayHeight", sourceMaterial.GetFloat("_CutawayHeight"));
+                commands.SetGlobalFloat("_ForegroundWallHeight", sourceMaterial.GetFloat("_ForegroundWallHeight"));
+                commands.SetGlobalFloat("_WholeCell", sourceMaterial.GetFloat("_WholeCell"));
+            }
             for(int i=0;i<participant.Submeshes;i++)commands.DrawRenderer(participant.Source,material,i,0);
         }
         int samples=view.targetTexture!=null?view.targetTexture.antiAliasing:

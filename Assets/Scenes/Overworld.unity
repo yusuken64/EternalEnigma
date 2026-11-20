@@ -188,7 +188,7 @@ MonoBehaviour:
   LandmarkMarker: {fileID: 427689351167209922, guid: f1e8150e498418f4bb01525081268e11, type: 3}
   GateMarker: {fileID: 7834394375621823689, guid: f39a88c645bd4ac488cc389d7151f3cd, type: 3}
   ShowLocationMarkers: 1
-  ShowSandboxControls: 1
+  ShowSandboxControls: 0
   CameraOffset: {x: 0, y: -14, z: -20}
 --- !u!114 &344879134
 MonoBehaviour:

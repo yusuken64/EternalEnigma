@@ -25,7 +25,7 @@ public sealed class OverworldScene : MonoBehaviour
     public GameObject LandmarkMarker;
     public GameObject GateMarker;
     public bool ShowLocationMarkers = true;
-    public bool ShowSandboxControls = true;
+    public bool ShowSandboxControls;
     public Vector3 CameraOffset = new(0, -14, -20);
     private bool isReady;
     public bool IsReady { get => isReady; private set { if (isReady == value) return; isReady = value; HudRefresh.Request(HudChange.All); } }

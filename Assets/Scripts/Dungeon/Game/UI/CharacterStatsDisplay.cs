@@ -23,7 +23,7 @@ public class CharacterStatsDisplay : MonoBehaviour
         NameText.enableAutoSizing = true;
         NameText.fontSizeMin = Mathf.Min(18, maximum);
         NameText.fontSizeMax = maximum;
-        NameText.textWrappingMode = TextWrappingModes.NoWrap;
+        NameText.textWrappingMode = TextWrappingModes.Normal;
     }
 
 	internal void Setup(Character character)
@@ -67,7 +67,7 @@ public class CharacterStatsDisplay : MonoBehaviour
 		int hp=RecoveryMath.SavedVital(hero.Hp,stats.HPMax);
 		int mana=RecoveryMath.SavedVital(hero.Mana,stats.ManaMax);
 		int food=hero.HasHunger?hero.Hunger:stats.HungerMax;
-		NameText.text=GameplayText.Format(hp<=0?$"{hero.Name} (Downed)":$"{hero.Name} - Lv {hero.Level}");
+		NameText.text=GameplayText.Format($"{hero.Name} - Lv {hero.Level}"+(hp<=0?" (Downed)":""));
 		PortraitImage.sprite=hero.Portrait;PortraitImage.enabled=hero.Portrait!=null;
 		SetTravelBar(HpDisplay,"HP",hp,stats.HPMax);
 		SetTravelBar(ManaDisplay,"Mana",mana,stats.ManaMax);
@@ -85,7 +85,7 @@ public class CharacterStatsDisplay : MonoBehaviour
 	{
 		if (Character is Ally ally && baseName != null)
 		{
-			string label = ally.IsDowned ? $"{baseName} (Downed)" : $"{baseName} - Lv {ally.DisplayedVitals.Level}";
+			string label = $"{baseName} - Lv {ally.DisplayedVitals.Level}" + (ally.IsDowned ? " (Downed)" : "");
             if (NameText.text != label) NameText.text = GameplayText.Format(label);
 		}
 

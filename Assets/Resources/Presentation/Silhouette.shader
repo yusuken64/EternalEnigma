@@ -4,11 +4,12 @@ Shader "Hidden/EternalEnigma/GroundSilhouette"
     {
         CGINCLUDE
         #include "UnityCG.cginc"
+        #include "../DungeonThemes/BoundaryCutaway.cginc"
         float4x4 _SilhouetteVP;
         float3 _SilhouetteOrigin, _SilhouetteDirection;
         sampler2D _SilhouetteDepth, _SilhouetteFog, _SilhouetteMaskTexture;
         float4 _SilhouetteFogBounds, _SilhouetteColor, _SilhouetteMaskInvSize;
-        float _SilhouetteDynamic;
+        float _SilhouetteDynamic, _SilhouetteDungeonWall;
         struct MeshInput { float4 vertex:POSITION; float3 normal:NORMAL; };
         struct Pixel { float4 position:SV_POSITION; float3 world:TEXCOORD0; float3 normal:TEXCOORD1; };
         void Explored(float3 world)
@@ -23,10 +24,12 @@ Shader "Hidden/EternalEnigma/GroundSilhouette"
         Pixel Caster(MeshInput v)
         {
             Pixel o;o.world=mul(unity_ObjectToWorld,v.vertex).xyz;
+            if (_SilhouetteDungeonWall > .5) o.world = DungeonWallVertex(o.world);
             o.position=mul(_SilhouetteVP,float4(o.world,1));o.normal=0;return o;
         }
         fixed4 Depth(Pixel i):SV_Target
         {
+            if (_SilhouetteDungeonWall > .5) DungeonWallClip(i.world);
             if(_SilhouetteDynamic<.5)Explored(i.world);
             return EncodeFloatRGBA(saturate(dot(i.world-_SilhouetteOrigin,_SilhouetteDirection)/240));
         }

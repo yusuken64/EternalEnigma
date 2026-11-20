@@ -86,7 +86,7 @@ public sealed class DungeonBoundaryLayer : DungeonThemeTileLayer
             Step("placed "+batch.Owner.PropCount+" pieces, "+faces.Faces.Count+" faces");
             batch.Finish();
             Step("meshes combined");
-            if(CutawayForeground)DungeonBoundaryCutaway.Install(creator,root,batch.Owner,faces);
+            if(CutawayForeground)DungeonBoundaryCutaway.Install(creator,root,batch.Owner,faces,mask);
             Step("cutaway, "+faces.Faces.Count+" faces left");
         }
         finally { creator.executedBuildLayersCount++; }

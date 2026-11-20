@@ -10,6 +10,42 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Visibility")]
+    public static void RunDungeonVisibility() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.DungeonVisibilityTests",
+        "EternalEnigma.Tests.SilhouetteRenderingTests",
+        "EternalEnigma.Tests.CameraBackdropTests.DungeonFogCoversEveryCornerAtWideZoomWithoutChangingSight");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Visibility Assets")]
+    public static void RunDungeonVisibilityAssets() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.EditMode.DungeonSmartLayerTests.TallBoundaryCutsForegroundAndReleasesItsMaskOnIndependentRebuild",
+        "EternalEnigma.Tests.EditMode.DungeonSmartLayerTests.OnlyForegroundConnectedWallsLowerWhilePillarsAndBackWallsKeepTheirHeight",
+        "FogVisibilityTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Grid Alignment")]
+    public static void RunDungeonGridAlignment() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.DungeonGridAlignmentTests", "EternalEnigma.Tests.EnemySpawnVisualTests",
+        "MovementRegressionTests.DungeonInputStillTurnsInPlaceThenMovesThroughTurnPipeline",
+        "EternalEnigma.Tests.DungeonControlTests.NormalAllyPlaybackKeepsIndicatorsAlignedAtEverySpeed");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Grid Audit")]
+    public static void RunDungeonGridAudit() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.DungeonGridAlignmentTests.HeroAndRingsHaveEqualWallClearanceInBothCorridorDirections");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Compact Party HUD")]
+    public static void RunCompactPartyHud() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CompactPartyHudTests", "EternalEnigma.Tests.PartyPortraitTests",
+        "EternalEnigma.Tests.DungeonHudPortraitTests", "EternalEnigma.Tests.DungeonDockTests",
+        "EternalEnigma.Tests.CampaignTravelTests.SandboxClaimsCompletionAndExitNeverWriteThePlayerSave");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Compact Party Information")]
+    public static void RunCompactPartyInformation() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.CompactPartyHudTests.AllInformationSurvivesCompactRowsAtEveryPartySize");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Compact Party Assets")]
+    public static void RunCompactPartyAssets() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.EditMode.GameTypographyTests", "EternalEnigma.Tests.HeroPortraitTests");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Presentation Repair Followups")]
     public static void RunPresentationRepairFollowups() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.DungeonVisualAuditTests.HudDecorationsRespectVisibilityAndMenusKeepWorking",

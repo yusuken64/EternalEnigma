@@ -1,10 +1,34 @@
 # Game test harness
 
+**Tools > Eternal Enigma > Tests > Run Compact Party HUD** runs the shared party
+layout and existing portrait/dock fixtures. It checks full charging and ammo
+text, pending points, downed levels, status stacks/overflow/inspection, glyph
+containment, mask sorting, menu switching and targeting/modal guards. It captures
+one-to-four-card dungeon, town and overworld layouts at all five supported audit
+sizes, plus all 24 portrait crops. Results are in `Temp/CompactPartyHud`,
+`Temp/PartyPortraitLayout` and `Temp/DungeonDock`. **Run Compact Party Assets**
+runs existing typography and hero-portrait asset checks. **Run Compact Party
+Information** is the focused content/layout fixture; when run before applying
+the compact authoring, it saves a baseline for an exact after comparison.
+
 **Tools > Eternal Enigma > Tests > Run Camera Backdrops** checks dungeon fog and
 town surroundings at every map corner through 32:9 at the widest zoom. Rendered
-pixel checks reject exposed background; fog visibility and projection remain fixed.
+pixel checks reject exposed background without changing the fog's visibility data.
 Town scenery uses overworld biome models, deterministic placement and decoration
 budgets. Captures are written to `Temp/CameraBackdrops`.
+
+**Run Dungeon Visibility** checks the local foreground-wall vertex cutaway in both
+corridor directions, unchanged mesh/sight data, ground and head-height visibility,
+opaque unseen cells, wide-view fog coverage, and shadow projection regressions.
+**Run Dungeon Visibility Assets** checks foreground clipping, unchanged back-wall
+and isolated pillar silhouettes, mask cleanup and explored/live-object fog rules. Captures
+are in `Temp/DungeonVisibility`.
+Nearby walls below the character ease toward a quarter tile in height using a
+continuous lowering field. Walls above the character and isolated one-block pillars
+retain their full height. Visible rendering,
+camera depth and ground shadows share that deformation.
+Fog samples the rendered surface's world position, with a soft fade at cell
+edges; the visibility texture still comes from the existing gameplay sight rules.
 
 **Tools > Eternal Enigma > Tests > Run Camera Zoom** checks right-stick up/down,
 `]` / `[`, and mouse-wheel zoom in dungeon, town, and overworld scenes. The closest
@@ -336,6 +360,15 @@ movement/hold-position values into the existing input decision methods, checking
 turn-in-place, completed movement, and town trail recording. It does not
 simulate physical keyboard/controller bindings. Recompile scripts before running
 the harness after adding tests, and confirm the new fixtures appear in the XML.
+
+**Tools > Eternal Enigma > Tests > Run Dungeon Grid Alignment** checks model and
+ring centers against rendered walls in horizontal and vertical one-cell corridors,
+all eight facings, animated/instant movement, every enemy prefab, spawn playback,
+and a floor transition from 2-unit to 2.5-unit tiles. It also runs the existing enemy
+spawn and movement/indicator regressions. **Run Dungeon Grid Audit** runs just the
+corridor check. Measurements and perspective/top-down captures go to
+`Temp/DungeonGridAlignment`. Character roots stay at cell origins; their shared
+model/ring pivot uses the current floor's cell center, preserving model height and scale.
 
 **Run Town Movement EditMode / PlayMode** checks the town-dungeon exception for
 outdoor tree corners. Coverage includes one or two trees in every diagonal direction,

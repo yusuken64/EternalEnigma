@@ -413,7 +413,9 @@ namespace EternalEnigma.Tests
             var data=new PointerEventData(EventSystem.current){position=RectTransformUtility.WorldToScreenPoint(null,portrait.rectTransform.TransformPoint(portrait.rectTransform.rect.center)),button=PointerEventData.InputButton.Left};
             var hits=new System.Collections.Generic.List<RaycastResult>();EventSystem.current.RaycastAll(data,hits);
             Assert.That(hits.Count,Is.GreaterThan(0));
-            Assert.That(ExecuteEvents.GetEventHandler<IPointerClickHandler>(hits[0].gameObject),Is.EqualTo(portrait.gameObject),"Portrait must receive the mouse click above the dock input shield.");
+            Assert.That(hits[0].gameObject,Is.EqualTo(portrait.gameObject),"The clipped portrait receives the raycast above the dock input shield.");
+            Assert.That(ExecuteEvents.GetEventHandler<IPointerClickHandler>(hits[0].gameObject),
+                Is.EqualTo(portrait.GetComponentInParent<DungeonPortraitControl>().gameObject),"The portrait control above its mask receives the click.");
             ExecuteEvents.ExecuteHierarchy(hits[0].gameObject,data,ExecuteEvents.pointerClickHandler);
             yield return null;yield return null;
         }

@@ -514,10 +514,13 @@ public class TileWorldDungeon : MonoBehaviour
 		return currentPosition;
 	}
 
-	internal Vector3 CellToWorld(Vector3Int newMapPosition)
-	{
-		return GridMovement.CellToWorld(newMapPosition, cellSize > 0 ? cellSize : _tileWorldCreator.twcAsset.cellSize);
-	}
+    internal float CellSize => cellSize > 0 ? cellSize : _tileWorldCreator.twcAsset.cellSize;
+
+    // Movement roots use the cell origin; models and ground markers use its center.
+	internal Vector3 CellToWorld(Vector3Int newMapPosition) => GridMovement.CellToWorld(newMapPosition, CellSize);
+
+    internal Vector3 CellCenterToWorld(Vector3Int cell) =>
+        CellToWorld(cell) + new Vector3(CellSize * .5f, CellSize * .5f, 0);
 
 	internal Interactable GetInteractable(Vector3Int tilemapPosition)
 	{

@@ -16,7 +16,7 @@ internal class ThrowItemAction : GameAction
 	internal Vector3 ProjectileStart => CellCenter(Game.Instance.CurrentDungeon, sourcePosition);
 	internal Vector3 ProjectileEnd => CellCenter(Game.Instance.CurrentDungeon, rangedAttackTargetPosition);
 	internal static Vector3 CellCenter(TileWorldDungeon dungeon, Vector3Int cell) =>
-		dungeon.CellToWorld(cell) + (dungeon.CellToWorld(new Vector3Int(1, 1, 0)) - dungeon.CellToWorld(Vector3Int.zero)) * .5f;
+        dungeon.CellCenterToWorld(cell);
 
 	public ThrowItemAction()
 	{

@@ -18,7 +18,7 @@ public sealed class AutoplayWindow : EditorWindow
 
     private void OnEnable()
     {
-        options = JsonUtility.FromJson<AutoplayOptions>(EditorPrefs.GetString(SettingsKey, "{}")) ?? new AutoplayOptions();
+        options = AutoplayOptions.FromJson(EditorPrefs.GetString(SettingsKey, "{}")) ?? new AutoplayOptions();
         EditorApplication.update += Repaint;
     }
     private void OnDisable() { EditorApplication.update -= Repaint; }
@@ -130,7 +130,7 @@ public sealed class AutoplayWindow : EditorWindow
     public static void RunDebugFinaleFromFile()
     {
         var settings = AutoplayOptions.FinaleDebug();
-        JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText("Temp/FinaleDebug/options.json"), settings);
+        settings = AutoplayOptions.FromJson(System.IO.File.ReadAllText("Temp/FinaleDebug/options.json"), settings);
         if (settings.Mode != AutoplayMode.Finale) throw new System.ArgumentException("Expected direct finale options.");
         Launch(settings);
     }
@@ -143,7 +143,7 @@ public sealed class AutoplayWindow : EditorWindow
     [MenuItem("Tools/Eternal Enigma/Playthrough/Run Debug From File")]
     public static void RunDebugFromFile()
     {
-        var settings = JsonUtility.FromJson<AutoplayOptions>(System.IO.File.ReadAllText("Temp/DebugAutoplay/options.json"));
+        var settings = AutoplayOptions.FromJson(System.IO.File.ReadAllText("Temp/DebugAutoplay/options.json"));
         if (settings.Mode != AutoplayMode.Campaign || !settings.DebugPlaythrough)
             throw new System.ArgumentException("Expected debug campaign options.");
         Launch(settings);
@@ -153,7 +153,7 @@ public sealed class AutoplayWindow : EditorWindow
     [MenuItem("Tools/Eternal Enigma/Playthrough/Run Floor Loot Sweep From File")]
     public static void RunFloorLootSweepFromFile()
     {
-        var settings = JsonUtility.FromJson<AutoplayOptions>(System.IO.File.ReadAllText("Temp/FloorLootSweep/options.json"));
+        var settings = AutoplayOptions.FromJson(System.IO.File.ReadAllText("Temp/FloorLootSweep/options.json"));
         if (settings.Mode != AutoplayMode.FloorLootSweep) throw new System.ArgumentException("Expected floor sweep options.");
         Launch(settings);
     }

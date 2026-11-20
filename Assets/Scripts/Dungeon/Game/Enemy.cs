@@ -232,12 +232,14 @@ public class Enemy : Character
 	private void PlayState(string state)
 	{
 		if (GetComponent<EnemyBehavior>()?.Disguised == true) return;
-		if (state == null) return;
+		if (state == null || Animator == null || !Animator.isActiveAndEnabled) return;
 		Animator.Play(UnityEngine.Animator.StringToHash($"{Animator.GetLayerName(0)}.{state}"), 0, 0f);
 		Animator.Update(0f);
 	}
 	private string StateOrIdle(string action)
 	{
+		// Inactive visuals cannot resolve Animator states; that is not a missing clip.
+		if (Animator == null || !Animator.isActiveAndEnabled) return null;
 		var state = AnimationStates(action).FirstOrDefault();
 		if (state != null) return state;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD

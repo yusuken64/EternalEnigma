@@ -83,7 +83,13 @@ public static class DungeonPresentation
         foreach(var owner in owners){owner.Meshes.Clear();owner.Materials.Clear();owner.Textures.Clear();}
         // Hide the old output first, then free its assets at once: the next floor is usually built in
         // this same frame, and a deferred Destroy would keep both floors' geometry alive at its peak.
-        foreach(Transform child in root.transform.Cast<Transform>().ToArray()) Release(child.gameObject);
+        foreach(Transform child in root.transform.Cast<Transform>().ToArray())
+        {
+            // Destroy is deferred in Play Mode. Detach now so a same-frame rebuild
+            // cannot find old cosmetics after their materials have been released.
+            child.SetParent(null);
+            Release(child.gameObject);
+        }
         foreach(var mesh in owned) if(mesh!=null) ReleaseNow(mesh);
         // Only TWC's combined meshes are owned here; prefab meshes are shared.
         foreach(var mesh in clusters) ReleaseNow(mesh);

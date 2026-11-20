@@ -37,6 +37,32 @@ public sealed class EnemyAnimationStateTests
     }
 
     [Test]
+    public void InactiveSlimeSkipsDeathPlaybackWithoutReportingAMissingState()
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<Enemy>("Assets/Prefabs/Dungeon/Enemies/Enemy_Slime.prefab");
+        var enemy = Object.Instantiate(prefab);
+        var warnings = new System.Collections.Generic.List<string>();
+        void Capture(string message, string stack, LogType type) { if (type == LogType.Warning) warnings.Add(message); }
+        Application.logMessageReceived += Capture;
+        try
+        {
+            Assert.That(enemy.AnimationStates("Die"), Is.Not.Empty);
+            enemy.Animator.gameObject.SetActive(false);
+            enemy.PlayDeathAnimation();
+            Assert.That(warnings, Is.Empty, "Inactive playback must not report a missing animation.");
+            enemy.Animator.gameObject.SetActive(true);
+            enemy.PlayDeathAnimation();
+            Assert.That(enemy.Animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.Die"), Is.True);
+            Assert.That(warnings, Is.Empty);
+        }
+        finally
+        {
+            Application.logMessageReceived -= Capture;
+            Object.DestroyImmediate(enemy.gameObject);
+        }
+    }
+
+    [Test]
     public void ChestMonsterStaysDormantUntilPickupAttemptAndRevealsWhenMoved()
     {
         var prefab = AssetDatabase.LoadAssetAtPath<Enemy>("Assets/Prefabs/Dungeon/Enemies/Enemy_ChestMonster.prefab");

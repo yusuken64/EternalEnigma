@@ -23,7 +23,7 @@ public static class BalanceHarnessEditor
     public static void RunFromFile()
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Finish the existing session first.");
-        var options = JsonUtility.FromJson<AutoplayOptions>(File.ReadAllText("Temp/Balance/options.json"));
+        var options = AutoplayOptions.FromJson(File.ReadAllText("Temp/Balance/options.json"));
         if (options?.Balance == null || !options.Validate(out _)) throw new ArgumentException("Expected validated normal balance options.");
         SessionState.SetString(AutoplayRunner.PendingKey, JsonUtility.ToJson(options));
         EditorApplication.isPlaying = true;

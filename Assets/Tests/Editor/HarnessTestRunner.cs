@@ -1092,6 +1092,12 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.AutoplayBatchTests", "EternalEnigma.Tests.AutoplaySweepTests", "EternalEnigma.Tests.AutoplayControlPreferenceTests", "EternalEnigma.Tests.AutoplayRouteTests",
         "TrainerOfferTests", "EternalEnigma.Tests.EconomyCatalogTests");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Autoplay Triage")]
+    public static void RunAutoplayTriage() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.DungeonThemeTransitionTests.ClearedOutputCannotBeFoundByASameFrameFloorRebuild",
+        "EnemyAnimationStateTests.EnemyPrefabsResolveTheirRequiredAnimationStates",
+        "EnemyAnimationStateTests.InactiveSlimeSkipsDeathPlaybackWithoutReportingAMissingState");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Autoplay Startup")]
     public static void RunAutoplayStartup() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.AutoplayTests.DebugMenuLaunchCanResumeWhileLoading");

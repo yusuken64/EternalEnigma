@@ -17,6 +17,40 @@ namespace EternalEnigma.Tests
         [UnitySetUp] public IEnumerator Setup() {previousControl=DungeonPreferences.FullControlOverride;DungeonPreferences.FullControlOverride=false;harness=new GameTestHarness {TimeoutSeconds=100};yield return null;}
         [UnityTearDown] public IEnumerator Cleanup(){yield return harness.Cleanup();DungeonPreferences.FullControlOverride=previousControl;}
         [UnityTest]
+        public IEnumerator ClearedOutputCannotBeFoundByASameFrameFloorRebuild()
+        {
+            var root = new GameObject("Floor cleanup test");
+            var cosmetics = new GameObject("Theme cosmetics");
+            cosmetics.transform.SetParent(root.transform);
+            var owner = cosmetics.AddComponent<EnvironmentMeshOwner>();
+            var material = new Material(Shader.Find("Unlit/Color"));
+            var mesh = new Mesh();
+            owner.Materials.Add(material); owner.Meshes.Add(mesh);
+            cosmetics.AddComponent<MeshRenderer>().sharedMaterial = material;
+            cosmetics.AddComponent<MeshFilter>().sharedMesh = mesh;
+            cosmetics.AddComponent<SilhouetteParticipant>().Role = SilhouetteRole.Caster;
+            try
+            {
+                DungeonPresentation.ClearOutput(root);
+                Assert.That(root.transform.Find("Theme cosmetics"), Is.Null,
+                    "The next boundary must not find old cosmetics with already-destroyed materials.");
+                Assert.That(root.GetComponentsInChildren<EnvironmentMeshOwner>(true), Is.Empty);
+                Assert.That(material == null && mesh == null, Is.True, "Generated assets are released before rebuilding.");
+                Assert.That(cosmetics.activeSelf, Is.False, "Deferred objects stay hidden until destruction.");
+                var replacement = new GameObject("Theme cosmetics");
+                replacement.transform.SetParent(root.transform);
+                Assert.That(root.transform.Find("Theme cosmetics"), Is.EqualTo(replacement.transform));
+                yield return null;
+                Assert.That(cosmetics == null, Is.True);
+            }
+            finally
+            {
+                if (cosmetics != null) Object.DestroyImmediate(cosmetics);
+                if (root != null) Object.DestroyImmediate(root);
+            }
+        }
+
+        [UnityTest]
         public IEnumerator InteriorOutdoorTransitionsKeepSelectionFogAndSingleOutput()
         {
             yield return harness.LoadDungeon(new TestScenario {Seed=12345});

@@ -41,6 +41,21 @@ public sealed class AutoplayOptions
         Seed = 42, Speed = 32, DebugPlaythrough = true, Godmode = true, InfiniteResources = false,
         DebugCoverage = false, TimeLimitMinutes = 60, StallSeconds = 300 };
 
+    // Unity serializes a null inline class as an empty object. Treat only that
+    // empty Balance placeholder as absent; incomplete configured experiments must fail validation.
+    public static AutoplayOptions FromJson(string json, AutoplayOptions defaults = null)
+    {
+        var options = defaults ?? new AutoplayOptions();
+        JsonUtility.FromJsonOverwrite(json, options);
+        var balance = options.Balance;
+        if (balance != null && string.IsNullOrEmpty(balance.ExperimentId) && string.IsNullOrEmpty(balance.ContentId) &&
+            string.IsNullOrEmpty(balance.HeroId) && (string.IsNullOrEmpty(balance.CandidateId) || balance.CandidateId == "baseline") &&
+            (string.IsNullOrEmpty(balance.Cohort) || balance.Cohort == "training") && balance.MaxRetreats is 0 or 8 &&
+            (balance.ItemPrices == null || balance.ItemPrices.Count == 0) &&
+            (balance.AbilityMana == null || balance.AbilityMana.Count == 0)) options.Balance = null;
+        return options;
+    }
+
     public bool Validate(out string reason)
     {
         if (Balance != null && (!Balance.Validate(out reason) || Mode != AutoplayMode.Campaign ||
@@ -174,7 +189,7 @@ public sealed partial class AutoplayRunner : MonoBehaviour
         var json = UnityEditor.SessionState.GetString(PendingKey, "");
         if (string.IsNullOrEmpty(json)) return;
         UnityEditor.SessionState.EraseString(PendingKey);
-        StartBatch(JsonUtility.FromJson<AutoplayOptions>(json));
+        StartBatch(AutoplayOptions.FromJson(json));
     }
 #endif
 

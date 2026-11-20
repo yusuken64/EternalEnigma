@@ -85,8 +85,7 @@ public class CharacterStatsDisplay : MonoBehaviour
 	{
 		if (Character is Ally ally && baseName != null)
 		{
-			string label = $"{baseName} - Lv {ally.DisplayedVitals.Level}" + (ally.IsDowned ? " (Downed)" : "");
-            if (NameText.text != label) NameText.text = GameplayText.Format(label);
+			GetComponent<DungeonPartyCard>().ShowIdentity(baseName, ally.DisplayedVitals.Level, ally.IsDowned);
 		}
 
 		LevelDisplay.UpdateUI();

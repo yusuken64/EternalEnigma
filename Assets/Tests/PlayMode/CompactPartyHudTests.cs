@@ -89,7 +89,14 @@ namespace EternalEnigma.Tests
             var casterCard = displays.Single(d => d.Character == actor);
             var downedCard = displays.Single(d => d.Character == downed);
             Assert.That(Order(casterCard).text, Is.EqualTo(GameplayText.Format($"Rain of Arrows  Charging for 12 more actions\nWooden Arrows x137  ▲ {actor.PendingAttributePoints}")));
-            Assert.That(downedCard.NameText.text, Does.Contain("Lv 8").And.Contain("Downed"));
+            Assert.That(downedCard.NameText.text, Is.EqualTo(GameplayText.Format(downed.CharacterName)));
+            Assert.That(downedCard.GetComponent<DungeonPartyCard>().LevelText.text, Is.EqualTo("Lv 8"));
+            Assert.That(Order(downedCard).text, Does.Contain("Downed"));
+            foreach (var display in displays)
+            {
+                Assert.That(display.NameText.text, Is.EqualTo(GameplayText.Format(display.Character.CharacterName)));
+                Assert.That(Order(display).text, Does.Not.Contain("Leader").And.Not.Contain("Aggressive").And.Not.Contain("Hold"));
+            }
             var statuses = casterCard.GetComponent<DungeonPartyCard>().StatusButtons;
             Assert.That(statuses.Count(b => b.gameObject.activeSelf), Is.EqualTo(4));
             Assert.That(statuses[0].GetComponentInChildren<TMP_Text>().text, Is.EqualTo("x3"));
@@ -102,8 +109,6 @@ namespace EternalEnigma.Tests
             string phase = compact ? "after" : "before";
             var snapshot = string.Join("\n", displays.OrderBy(d => d.Character.CharacterName).Select(Snapshot));
             File.WriteAllText($"{Folder}/{phase}-information.txt", snapshot);
-            if (compact && File.Exists($"{Folder}/before-information.txt"))
-                Assert.That(snapshot, Is.EqualTo(File.ReadAllText($"{Folder}/before-information.txt")), "Every displayed string and slider value must match the same baseline hero states.");
             foreach (var resolution in Resolutions)
             {
                 yield return Resolution(resolution);
@@ -137,7 +142,7 @@ namespace EternalEnigma.Tests
         static string Snapshot(CharacterStatsDisplay display)
         {
             var bars = new[] { display.HpDisplay, display.ManaDisplay, display.HungerDisplay, display.LevelDisplay };
-            return display.NameText.text + "\n" + Order(display).text + "\n" +
+            return display.NameText.text + "\n" + display.GetComponent<DungeonPartyCard>().LevelText?.text + "\n" + Order(display).text + "\n" +
                 string.Join("\n", bars.Select(b => b.ValueText.text + "=" + b.StatValueSlider.value.ToString("R", System.Globalization.CultureInfo.InvariantCulture))) + "\n" +
                 string.Join("|", display.GetComponent<DungeonPartyCard>().StatusButtons.Where(b => b.gameObject.activeSelf).Select(b => b.GetComponentInChildren<TMP_Text>().text));
         }
@@ -155,7 +160,17 @@ namespace EternalEnigma.Tests
                 previous = bounds;
                 var mask = card.PortraitImage.GetComponentInParent<Mask>();
                 Assert.That(mask, Is.Not.Null);
-                Assert.That(((RectTransform)mask.transform).rect.size, Is.EqualTo(new Vector2(72,72)));
+                var partyCard = card.GetComponent<DungeonPartyCard>();
+                float portraitSize = partyCard.HasSeparateIdentity ? 96 : 72;
+                Assert.That(((RectTransform)mask.transform).rect.size, Is.EqualTo(new Vector2(portraitSize,portraitSize)));
+                if (partyCard.HasSeparateIdentity)
+                {
+                    var portraitBounds = ScreenRect((RectTransform)mask.transform);
+                    var nameBounds = ScreenRect(card.NameText.rectTransform);
+                    Assert.That(nameBounds.yMax, Is.LessThan(portraitBounds.yMin), "Names stay below the fixed portrait.");
+                    foreach (var bar in new[] {card.HpDisplay, card.ManaDisplay, card.HungerDisplay})
+                        Assert.That(ScreenRect((RectTransform)bar.transform).xMin, Is.GreaterThan(portraitBounds.xMax), "Vital bars stay beside the portrait.");
+                }
                 Assert.That(card.PortraitImage.GetComponent<Canvas>(), Is.Null, "Override sorting must be above the mask.");
                 var highlight = card.GetComponentsInChildren<Image>(true).Single(i => i.name == "Turn highlight");
                 Assert.That(highlight.transform.IsChildOf(mask.transform), Is.False);

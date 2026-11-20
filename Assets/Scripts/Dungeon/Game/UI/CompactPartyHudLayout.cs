@@ -33,7 +33,10 @@ internal sealed class CompactPartyHudLayout : MonoBehaviour
         // Long names, charging, ammunition and badges grow rows. If a full party
         // needs more than the reserved height, use more of the existing column
         // before compromising any text or font size.
-        float width = Mathf.Min(280, rect.rect.width);
+        float preferredWidth = 280;
+        foreach (var card in cards)
+            if (card.HasSeparateIdentity) { preferredWidth = 320; break; }
+        float width = Mathf.Min(preferredWidth, rect.rect.width);
         float maximumWidth = Mathf.Max(width, rect.rect.width);
         while (true)
         {

@@ -120,6 +120,8 @@ namespace EternalEnigma.Tests
                 Assert.That(card.TownActor,Is.SameAs(heroes[i]));
                 Assert.That(card.NameText.text,Does.Contain(heroes[i].Name));
                 Assert.That(card.PortraitImage.sprite,Is.SameAs(heroes[i].Portrait));
+                var travelOrder=(TMPro.TMP_Text)typeof(DungeonPartyCard).GetField("order",Flags).GetValue(card.GetComponent<DungeonPartyCard>());
+                Assert.That(travelOrder.isActiveAndEnabled,Is.True,"Travel leader/following text remains visible.");
                 Assert.That(card.PortraitImage.raycastTarget,Is.False,"Travel portraits preserve their existing noninteractive behavior.");
             }
         }

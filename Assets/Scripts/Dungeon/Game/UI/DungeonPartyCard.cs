@@ -13,6 +13,11 @@ public sealed class DungeonPartyCard : MonoBehaviour
     [SerializeField] private Transform statuses;
     [SerializeField] private RectTransform portraitRoot;
     [SerializeField] private Image nameBacking, orderBacking;
+    [SerializeField] private TMP_Text levelText;
+    [SerializeField] private Image levelBacking;
+    [SerializeField] private bool separateIdentity;
+    internal bool HasSeparateIdentity => separateIdentity && levelText != null;
+    internal TMP_Text LevelText => levelText;
     private string statusKey;
     private void Awake() => ApplyStatusPresentation();
 
@@ -135,6 +140,7 @@ public sealed class DungeonPartyCard : MonoBehaviour
 
         nameBacking = TextBacking(nameBacking, "Name backing");
         orderBacking = TextBacking(orderBacking, "Action backing");
+        display.NameText.transform.SetParent(panel.transform, false);
         foreach (var label in new[] { display.NameText, order })
         {
             label.margin = Vector4.zero; label.alignment = TextAlignmentOptions.TopLeft;
@@ -143,9 +149,43 @@ public sealed class DungeonPartyCard : MonoBehaviour
             var contrast = label.GetComponent<DungeonTextStyle>();
             if (contrast != null) contrast.OnWood = true;
         }
+        // Combat follows the portrait/name blockout; travel keeps its existing card.
+        separateIdentity = GetComponentInParent<TravelPartyHud>(true) == null;
+        if (separateIdentity)
+        {
+            display.NameText.name = "Character name";
+            display.NameText.alignment = TextAlignmentOptions.Midline;
+            display.NameText.enableAutoSizing = true;
+            display.NameText.fontSizeMin = 18; display.NameText.fontSizeMax = 26;
+            order.name = "Combat details";
+            foreach (var bar in new[] { display.HpDisplay, display.ManaDisplay, display.HungerDisplay })
+            {
+                bar.ValueText.textWrappingMode = TextWrappingModes.NoWrap;
+                bar.ValueText.enableAutoSizing = true;
+                bar.ValueText.fontSizeMin = 18; bar.ValueText.fontSizeMax = 22;
+            }
+            if (levelText == null)
+            {
+                levelBacking = TextBacking(levelBacking, "Level badge");
+                levelText = GameUISkin.Label(levelBacking.transform, "Lv 1", Vector2.zero, Vector2.one, 18);
+                levelText.name = "Character level";
+                DungeonHud.WorldLabel(levelText);
+                levelText.gameObject.AddComponent<DungeonTextStyle>().OnWood = true;
+            }
+            levelText.margin = Vector4.zero;
+            levelText.alignment = TextAlignmentOptions.Midline;
+            levelText.textWrappingMode = TextWrappingModes.NoWrap;
+            levelText.enableAutoSizing = true; levelText.fontSizeMin = 14; levelText.fontSizeMax = 18;
+            levelBacking.transform.SetParent(portraitRoot, false);
+            levelBacking.transform.SetAsLastSibling();
+            nameBacking.transform.SetAsLastSibling();
+            display.NameText.transform.SetAsLastSibling();
+        }
+        if (levelBacking != null) levelBacking.gameObject.SetActive(separateIdentity);
         GameTypography.Apply(transform);
         ApplyStatusPresentation();
-        Place((RectTransform)transform, 0, 0, 280, LayoutCompact(280));
+        float cardWidth = HasSeparateIdentity ? 320 : 280;
+        Place((RectTransform)transform, 0, 0, cardWidth, LayoutCompact(cardWidth));
         if (transform.parent is RectTransform column && (column.GetComponentInParent<DungeonHud>() != null ||
             column.GetComponentInParent<TravelPartyHud>() != null))
         {
@@ -191,6 +231,7 @@ public sealed class DungeonPartyCard : MonoBehaviour
             int TextKey(TMP_Text label) => System.HashCode.Combine(label.text, label.font, label.enableAutoSizing ? label.fontSizeMax : label.fontSize);
             int key = System.HashCode.Combine(TextKey(display.NameText), TextKey(order), TextKey(display.HpDisplay.ValueText),
                 TextKey(display.ManaDisplay.ValueText), TextKey(display.HungerDisplay.ValueText), display.PortraitImage.sprite);
+            if (levelText != null) key = System.HashCode.Combine(key, TextKey(levelText));
             foreach (var button in StatusButtons) key = unchecked(key * 31 + (button.gameObject.activeSelf ? 1 : 0));
             return key;
         }
@@ -198,6 +239,7 @@ public sealed class DungeonPartyCard : MonoBehaviour
     internal float LayoutCompact(float width)
     {
         if (portraitRoot == null) return ((RectTransform)transform).rect.height;
+        if (HasSeparateIdentity) return LayoutCombat(width);
         const float textLeft = 84;
         float textWidth = width - textLeft - 4;
         Place(portraitRoot, 4, 4, 72, 72);
@@ -237,6 +279,64 @@ public sealed class DungeonPartyCard : MonoBehaviour
         }
         return Mathf.Max(104, top + height + 3, count > 0 ? 82 + Mathf.Ceil(count / 2f) * 32 : 0);
     }
+    private float LayoutCombat(float width)
+    {
+        // A fixed reference-pixel portrait never grows with names, bars or party size.
+        const float portraitSize = 96, identityWidth = 108, textLeft = 116;
+        float textWidth = width - textLeft - 4;
+        Place(portraitRoot, 6, 4, portraitSize, portraitSize);
+        var portrait = display.PortraitImage.rectTransform;
+        var sprite = display.PortraitImage.sprite;
+        float aspect = sprite != null ? sprite.rect.width / sprite.rect.height : .8f;
+        portrait.anchorMin = portrait.anchorMax = portrait.pivot = new Vector2(.5f, .5f);
+        portrait.sizeDelta = aspect < 1 ? new Vector2(portraitSize, portraitSize / aspect) : new Vector2(portraitSize * aspect, portraitSize);
+        portrait.anchoredPosition = new Vector2(0, portrait.sizeDelta.y * .08f);
+
+        float nameHeight = TextHeight(display.NameText, identityWidth - 8);
+        Place(nameBacking.rectTransform, 0, 104, identityWidth, nameHeight + 4);
+        Place(display.NameText.rectTransform, 4, 106, identityWidth - 8, nameHeight);
+        Place(levelBacking.rectTransform, 46, 74, 54, 26);
+        Place(levelText.rectTransform, 2, 0, 50, 26);
+
+        float top = 2;
+        foreach (var bar in new[] { display.HpDisplay, display.ManaDisplay, display.HungerDisplay })
+        {
+            float height = Mathf.Max(30, TextHeight(bar.ValueText, textWidth * .92f));
+            Place((RectTransform)bar.transform, textLeft, top, textWidth, height);
+            top += height + 1;
+        }
+        Place((RectTransform)display.LevelDisplay.transform, textLeft, top + 1, textWidth, 5);
+        top += 12;
+
+        // Status icons occupy their own row, clear of both the name and the bars.
+        Place((RectTransform)statuses, textLeft, top, textWidth, 30);
+        int count = 0;
+        foreach (var button in StatusButtons)
+        {
+            if (!button.gameObject.activeSelf) continue;
+            Place((RectTransform)button.transform, count * 38, 0, 36, 30);
+            count++;
+        }
+        if (count > 0) top += 34;
+        bool hasDetails = !string.IsNullOrEmpty(order.text);
+        order.gameObject.SetActive(hasDetails);
+        orderBacking.gameObject.SetActive(hasDetails);
+        orderBacking.enabled = hasDetails;
+        if (hasDetails)
+        {
+            float height = TextHeight(order, textWidth - 4);
+            Place(order.rectTransform, textLeft + 2, top + 2, textWidth - 4, height);
+            Place(orderBacking.rectTransform, textLeft, top, textWidth, height + 4);
+            top += height + 4;
+        }
+        return Mathf.Max(108 + nameHeight, top) + 4;
+    }
+    internal void ShowIdentity(string characterName, int level, bool downed)
+    {
+        display.NameText.text = GameplayText.Format(HasSeparateIdentity ? characterName :
+            $"{characterName} - Lv {level}" + (downed ? " (Downed)" : ""));
+        if (levelText != null) levelText.text = GameplayText.Format($"Lv {level}");
+    }
     private static float TextHeight(TMP_Text label, float width) =>
         Mathf.Ceil(label.GetPreferredValues(label.text, width, Mathf.Infinity).y) + 3;
     private static void Place(RectTransform rect, float x, float top, float width, float height)
@@ -250,6 +350,9 @@ public sealed class DungeonPartyCard : MonoBehaviour
     private void OnDisable() => HudRefresh.Changed -= Refresh;
     internal void ShowTravelState(TownAlly hero,bool leader,bool selected)
     {
+        // Shared prefab details start hidden for combat, but travel keeps its leader/following label.
+        order.gameObject.SetActive(true);
+        orderBacking.gameObject.SetActive(true);
         portraitHighlight.enabled=selected;
         portraitHighlight.color=new Color(1,.84f,.3f,1);
         order.text=GameplayText.Format((leader?"Leader":"Following")+
@@ -268,10 +371,9 @@ public sealed class DungeonPartyCard : MonoBehaviour
         if (display == null || display.Character is not Ally ally || Game.Instance == null) return;
         portraitHighlight.enabled = ally.IsTurnHighlighted;
         portraitHighlight.color = ally.TurnHighlightColor;
-        order.text = GameplayText.Format(ally == Game.Instance.PlayerController.PartyLeader ? "Leader" :
-            ally.AllyStrategy.ToString().Replace("Aggresive","Aggressive").Replace("HoldPosition","Hold"));
-        if (ally.PendingCast != null) order.text = GameplayText.Format(ally.PendingCast.Name + (ally.PendingCast.Remaining == 0 ? " ready" : $"  Charging for {ally.PendingCast.Remaining} more actions"));
-        if (ArrowSupply.HasBow(ally)) order.text += GameplayText.Format($"\n{ally.Equipment.EquippedShield?.DisplayName ?? "Arrows"} x{ArrowSupply.Count(ally)}");
+        order.text = ally.IsDowned ? "Downed" : "";
+        if (ally.PendingCast != null) AppendDetail(ally.PendingCast.Name + (ally.PendingCast.Remaining == 0 ? " ready" : $"  Charging for {ally.PendingCast.Remaining} more actions"));
+        if (ArrowSupply.HasBow(ally)) AppendDetail($"{ally.Equipment.EquippedShield?.DisplayName ?? "Arrows"} x{ArrowSupply.Count(ally)}");
         if (ally.PendingAttributePoints > 0) order.text += GameplayText.Format($"  ▲ {ally.PendingAttributePoints}");
         order.enableAutoSizing = true; order.fontSizeMin = 10; order.fontSizeMax = 18;
         string key=DungeonHud.StatusSummary(ally);
@@ -308,5 +410,9 @@ public sealed class DungeonPartyCard : MonoBehaviour
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(()=>DungeonHud.Ensure(Game.Instance).Inspect(ally.CharacterName+"\n"+DungeonHud.StatusSummary(ally)));
         }
+    }
+    private void AppendDetail(string text)
+    {
+        order.text += (string.IsNullOrEmpty(order.text) ? "" : "\n") + GameplayText.Format(text);
     }
 }

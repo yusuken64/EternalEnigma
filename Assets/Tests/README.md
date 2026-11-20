@@ -2,14 +2,15 @@
 
 **Tools > Eternal Enigma > Tests > Run Compact Party HUD** runs the shared party
 layout and existing portrait/dock fixtures. It checks full charging and ammo
-text, pending points, downed levels, status stacks/overflow/inspection, glyph
+text, pending points, separate combat names/levels, hidden combat orders, downed
+state, fixed portrait dimensions, status stacks/overflow/inspection, glyph
 containment, mask sorting, menu switching and targeting/modal guards. It captures
 one-to-four-card dungeon, town and overworld layouts at all five supported audit
 sizes, plus all 24 portrait crops. Results are in `Temp/CompactPartyHud`,
 `Temp/PartyPortraitLayout` and `Temp/DungeonDock`. **Run Compact Party Assets**
 runs existing typography and hero-portrait asset checks. **Run Compact Party
-Information** is the focused content/layout fixture; when run before applying
-the compact authoring, it saves a baseline for an exact after comparison.
+Information** is the focused content/layout fixture and saves the displayed
+information alongside the resolution captures.
 
 **Tools > Eternal Enigma > Tests > Run Camera Backdrops** checks dungeon fog and
 town surroundings at every map corner through 32:9 at the widest zoom. Rendered

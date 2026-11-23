@@ -13,6 +13,7 @@ public sealed class DioramaItemCatalog : ScriptableObject
         public Color Tint=Color.white;
     }
     [Serializable] public sealed class Prop {public string Id;public GameObject Prefab;}
+    public DroppedItem[] Categories = Array.Empty<DroppedItem>();
     public Entry[] Items=Array.Empty<Entry>();
     public Prop[] Props=Array.Empty<Prop>();
     public static DioramaItemCatalog Load()=>GameContent.Load<DioramaItemCatalog>("EnvironmentKit/DioramaItems");

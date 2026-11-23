@@ -10,6 +10,11 @@ public sealed class TownNpc : MonoBehaviour
     {
         TurnToward(Visual, player - Cell);
         Visual.GetComponentInChildren<Animator>()?.SetTrigger("Greeting");
+        if (Definition.Id == "Cat" && GetComponentInParent<Town>()?.Guide is { } guide)
+        {
+            guide.TalkToMochi(this);
+            return;
+        }
         if (Definition.DialogueTopics?.Length > 0)
         {
             TownMenu.ShowConversation(Definition);

@@ -97,6 +97,12 @@ public class TownPlayer : MonoBehaviour
 		{
 			return;
 		}
+		if (!_menuBusy && PlayerInputHandler.Instance?.optionsPressed == true)
+		{
+			StopHeldWalk();
+			Common.Instance.GlobalSettings.ShowDialog();
+			return;
+		}
 		if (!_busy && !_menuBusy)
 		{
 			DeterminePlayerAction();
@@ -117,53 +123,10 @@ public class TownPlayer : MonoBehaviour
 		if (inputHandler == null || _busy)
 			return;
 
-		var moveInput = inputHandler.moveInput;
-
-		Facing? newFacing = null;
-
-        bool moving = moveInput.magnitude > 0.1f;
-        if (moving)
+		var offset = GridMovement.InputDirection(inputHandler.moveInput);
+		if (offset != Vector3Int.zero)
 		{
-			// Normalize to handle diagonal directions nicely
-			var normInput = moveInput.normalized;
-
-			// Determine primary direction by thresholds for diagonals
-			if (normInput.y > 0.5f)
-			{
-				if (normInput.x < -0.5f)
-					newFacing = Facing.UpLeft;
-				else if (normInput.x > 0.5f)
-					newFacing = Facing.UpRight;
-				else
-					newFacing = Facing.Up;
-			}
-			else if (normInput.y < -0.5f)
-			{
-				if (normInput.x < -0.5f)
-					newFacing = Facing.DownLeft;
-				else if (normInput.x > 0.5f)
-					newFacing = Facing.DownRight;
-				else
-					newFacing = Facing.Down;
-			}
-			else
-			{
-				// Y near zero, horizontal only
-				if (normInput.x < 0)
-					newFacing = Facing.Left;
-				else
-					newFacing = Facing.Right;
-			}
-		}
-
-		if (newFacing.HasValue)
-		{
-			ControllingTownAlly.SetFacing(newFacing.Value);
-		}
-
-		if (moving)
-		{
-			var offset = Dungeon.GetFacingOffset(ControllingTownAlly.CurrentFacing);
+			ControllingTownAlly.SetFacing(Character.GetFacing(offset));
 			var originalPosition = ControllingTownAlly.TilemapPosition;
 			var newMapPosition = ControllingTownAlly.TilemapPosition + offset;
 
@@ -198,36 +161,27 @@ public class TownPlayer : MonoBehaviour
 		if (inputHandler.attackPressed)
 		{
 			//determine ally at attackposition;
-			var offset = Dungeon.GetFacingOffset(ControllingTownAlly.CurrentFacing);
+			var facingOffset = Dungeon.GetFacingOffset(ControllingTownAlly.CurrentFacing);
 			var originalPosition = ControllingTownAlly.TilemapPosition;
-			var targetMapPosition = originalPosition + offset;
+			var targetMapPosition = originalPosition + facingOffset;
 
-            var npc = FindFirstObjectByType<Town>().Townsfolk.FirstOrDefault(n=>n.Cell==targetMapPosition);
-            if (FindFirstObjectByType<Town>().HomeLesson?.TryInteract(targetMapPosition) == true) return;
-            if (FindFirstObjectByType<Town>().DungeonBook?.TryInteract(targetMapPosition) == true) return;
+            var town = FindFirstObjectByType<Town>();
+            var npc = town.Townsfolk.FirstOrDefault(n => n.Cell == targetMapPosition);
+            if (town.HomeLesson?.TryInteract(targetMapPosition) == true) return;
+            if (town.DungeonBook?.TryInteract(targetMapPosition) == true) return;
             if(npc!=null){npc.Greet(originalPosition);return;}
             var bed = FindObjectsByType<HomeBed>(FindObjectsSortMode.None).FirstOrDefault(b => b.Tile == targetMapPosition);
             if (bed != null) { bed.Interact(); return; }
-			var waitingAlly = FindFirstObjectByType<Town>().TownAllies.FirstOrDefault(x => x.TilemapPosition == targetMapPosition);
+			var waitingAlly = town.TownAllies.FirstOrDefault(x => x.TilemapPosition == targetMapPosition);
 			var targetingAlly = waitingAlly ?? RecruitedAllies.FirstOrDefault(x => x.TilemapPosition == targetMapPosition);
 			if (targetingAlly != null)
 			{
-				_menuBusy = true;
-				var townMenu = FindFirstObjectByType<TownMenu>();
-				townMenu.AllyRecruitDialog.Show(targetingAlly, waitingAlly != null ? AllyRecruitDialogMode.Recruit : AllyRecruitDialogMode.Talk);
-				townMenu.AllyRecruitDialog.CloseAction = () =>
-				{
-					//Do nothing
-					StartCoroutine(Wait(() =>
-					{
-						_menuBusy = false;
-					}));
-				};
-				townMenuManager.Open(townMenu.AllyRecruitDialog);
+                if (town.Guide?.TalkToGateSpeaker(targetingAlly) != true)
+                    OpenAllyDialog(targetingAlly, waitingAlly != null ? AllyRecruitDialogMode.Recruit : AllyRecruitDialogMode.Talk);
 			}
 			else
 			{
-				var vendor = FindFirstObjectByType<Town>().ShopVendors.FirstOrDefault(x => x.TilemapPosition == targetMapPosition);
+				var vendor = town.ShopVendors.FirstOrDefault(x => x.TilemapPosition == targetMapPosition);
 				if (vendor != null)
 				{
 					_menuBusy = true;
@@ -240,14 +194,17 @@ public class TownPlayer : MonoBehaviour
 			}
 		}
 
-		if (inputHandler.optionsPressed)
-		{
-			if (townMenuManager.DialogStack.Count == 0)
-			{
-				Common.Instance.GlobalSettings.ShowDialog();
-			}
-		}
+
 	}
+
+    internal void OpenAllyDialog(TownAlly ally, AllyRecruitDialogMode mode)
+    {
+        _menuBusy = true;
+        var dialog = FindFirstObjectByType<TownMenu>().AllyRecruitDialog;
+        dialog.Show(ally, mode);
+        dialog.CloseAction = () => StartCoroutine(Wait(() => _menuBusy = false));
+        townMenuManager.Open(dialog);
+    }
 
 	private IEnumerator Wait(Action action)
 	{
@@ -311,6 +268,8 @@ public class TownPlayer : MonoBehaviour
 		var town = FindFirstObjectByType<Town>();
 		if (Common.Instance.CampaignContext != null && ControllingTownAlly.TilemapPosition == town.Plan.Exit.ToCell())
         { StopHeldWalk(); Common.Instance.Travel.ExitTown(town); _busy = false; yield break; }
+        if (townAction is TownMovement && town.Guide?.IntroduceGateSpeaker() == true)
+        { StopHeldWalk(); _busy = false; yield break; }
 		var overlappingBuilding = town.TownBuildings.FirstOrDefault(x =>
 			x.InteractionPosition == this.ControllingTownAlly.TilemapPosition && !x.HasInterior);
 		if (overlappingBuilding != null)

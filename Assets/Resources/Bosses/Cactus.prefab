@@ -28,6 +28,14 @@ PrefabInstance:
       propertyPath: StartingStats.EXPOnKill
       value: 15
       objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: ffefe95634574304382199026e55bd1e, type: 3}
+      propertyPath: DiagonalFootprintOffset.x
+      value: 0.0019439692
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: ffefe95634574304382199026e55bd1e, type: 3}
+      propertyPath: DiagonalFootprintOffset.y
+      value: -0.062986806
+      objectReference: {fileID: 0}
     - target: {fileID: 5543747752720980080, guid: ffefe95634574304382199026e55bd1e, type: 3}
       propertyPath: m_Name
       value: Cactus
@@ -43,6 +51,14 @@ PrefabInstance:
     - target: {fileID: 5590973851788533376, guid: ffefe95634574304382199026e55bd1e, type: 3}
       propertyPath: m_LocalScale.z
       value: 4.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5884038861790183271, guid: ffefe95634574304382199026e55bd1e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.0028484662
+      objectReference: {fileID: 0}
+    - target: {fileID: 5884038861790183271, guid: ffefe95634574304382199026e55bd1e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.003082461
       objectReference: {fileID: 0}
     - target: {fileID: 8639548010823113620, guid: ffefe95634574304382199026e55bd1e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -113,3 +129,5 @@ MonoBehaviour:
   WarningTurns: 1
   CooldownTurns: 3
   EffectTurns: 2
+  SplashRadiusOverride: 0
+  RecoveryTurns: 0

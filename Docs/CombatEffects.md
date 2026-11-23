@@ -13,7 +13,7 @@ Open **Tools → Eternal Enigma → Combat Effects → Assignments And Preview**
 2. **Projectile** flies to the recorded recipient or missile endpoint.
 3. **Impact** plays for successful results; **Area** plays once for an area activation.
 
-Stages are optional. Each has an independent prefab, offset, rotation, scale, delay, and lifetime. Cast and impact holds, projectile speed, and minimum/maximum flight times live on the profile. Ground effects use the dungeon's XY ground plane. Projectile rotations correct the source prefab's forward axis after aiming it at the target.
+Stages are optional. Each has an independent prefab, offset, rotation, scale, delay, and lifetime. Cast and impact holds, projectile speed, and minimum/maximum flight times live on the profile. Body impacts and muzzle flashes face the gameplay camera. Directional slashes rotate in that view to match the cast. Ground effects use the dungeon's XY ground plane. Projectile rotations correct the source prefab's forward axis after aiming it at the target.
 
 Profiles also own a `CastSound` fallback for enemy and item actions. Skill casts retain their skill-specific sound and do not play this fallback twice. Death explosions play their cue without making a dead character perform a cast animation. Mimic reveals use one shared shadow effect for ordinary chests and finale town/dungeon disguises. See the [enemy coverage audit](EnemyBehaviors.md#ability-feedback-coverage-2026-10-11).
 

@@ -32,6 +32,22 @@ PrefabInstance:
       propertyPath: StartingStats.EXPOnKill
       value: 125
       objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 169da8e2f30bfcb49aeecc174775c898, type: 3}
+      propertyPath: DiagonalFootprintOffset.x
+      value: -0.0018209883
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 169da8e2f30bfcb49aeecc174775c898, type: 3}
+      propertyPath: DiagonalFootprintOffset.y
+      value: -0.6843584
+      objectReference: {fileID: 0}
+    - target: {fileID: 4261317079374780868, guid: 169da8e2f30bfcb49aeecc174775c898, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.00000010596382
+      objectReference: {fileID: 0}
+    - target: {fileID: 4261317079374780868, guid: 169da8e2f30bfcb49aeecc174775c898, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.73593706
+      objectReference: {fileID: 0}
     - target: {fileID: 5543747752720980080, guid: 169da8e2f30bfcb49aeecc174775c898, type: 3}
       propertyPath: m_Name
       value: Stingray
@@ -117,3 +133,5 @@ MonoBehaviour:
   WarningTurns: 1
   CooldownTurns: 3
   EffectTurns: 2
+  SplashRadiusOverride: 0
+  RecoveryTurns: 0

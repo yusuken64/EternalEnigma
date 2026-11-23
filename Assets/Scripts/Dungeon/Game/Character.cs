@@ -336,7 +336,7 @@ public abstract class Character : MonoBehaviour, Actor
 		PlayIdleAnimation();
 	}
 
-	internal void SetFacing(Facing facing)
+	internal virtual void SetFacing(Facing facing)
 	{
 		if (CurrentFacing != facing) HudRefresh.Request(HudChange.Dungeon);
 		CurrentFacing = facing;

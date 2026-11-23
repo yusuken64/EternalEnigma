@@ -53,6 +53,7 @@ namespace EternalEnigma.Tests
                 Assert.That(world.AttemptGate(session, new KeyLockAction("missing-key")), Is.EqualTo(LockOutcome.NoEffect));
                 Assert.That(heard.Any(e => e.cue == SoundCue.GateUnlock), Is.False);
                 Assert.That(world.AttemptGate(session, new KeyLockAction(route.KeyId)), Is.EqualTo(LockOutcome.Opened));
+                Assert.That(world.Message, Does.Contain(route.KeyLabel).And.Contain("activate the waystone"));
                 Assert.That(heard.Count(e => e.cue == SoundCue.GateUnlock), Is.EqualTo(1));
                 Assert.That(heard.Single(e => e.cue == SoundCue.GateUnlock).group, Is.SameAs(audio.EffectAudioMixerGroup));
                 Assert.That(world.AttemptGate(session, new KeyLockAction(route.KeyId)), Is.EqualTo(LockOutcome.NoEffect));
@@ -223,6 +224,9 @@ namespace EternalEnigma.Tests
             yield return null;
             Assert.That(context.Resolved.Contains(route.Id), Is.True);
             Assert.That(menu.Opened, Is.False);
+            Assert.That(world.Message, Does.Contain(name).And.Contain(LockSkinCatalog.Skins.Single(s => s.Id == route.SkinId).Resolution));
+            ScreenCapture.CaptureScreenshot("Temp/CampaignKeys/named-gate-opened.png");
+            yield return new WaitForEndOfFrame();
         }
 
         [UnityTest] public IEnumerator RoadSignOpensTownAndLandmarkDirectionsWithoutChangingProgression()
@@ -230,25 +234,60 @@ namespace EternalEnigma.Tests
             var context = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, 42));
             Common.Instance.CampaignContext = context;
             var sign = BiomeRoadSigns.Plan(context.Grid).First(s => s.Priority == 0);
-            context.Position = new GridPoint(sign.Verge.x, sign.Verge.y);
+            context.Position = new GridPoint(sign.Road.x, sign.Road.y);
             var position = context.Position; int collected = context.Keys.Count, completed = context.Completed.Count;
             yield return SceneManager.LoadSceneAsync("Overworld", LoadSceneMode.Additive);
             scene = SceneManager.GetSceneByName("Overworld");
             var world = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<OverworldScene>()).Single();
             yield return harness.WaitUntil(() => world.IsReady, "road sign world");
             Assert.That(world.NearbySign(), Is.Not.Null);
+            var verge = world.CellCenterToWorld(new GridPoint(sign.Verge.x, sign.Verge.y));
+            var board = Object.FindObjectsByType<EnvironmentMeshOwner>(FindObjectsSortMode.None)
+                .Single(owner => owner.name == BiomeRoadSigns.ObjectName && Vector3.Distance(owner.transform.position, verge) < .01f);
+            Assert.That(board.GetComponentsInChildren<TMPro.TMP_Text>(true), Is.Empty);
+            Assert.That(board.GetComponentsInChildren<TextMesh>(true), Is.Empty);
+            var boards = board.GetComponentsInChildren<MeshRenderer>();
+            Assert.That(boards, Is.Not.Empty);
+            Assert.That(boards.All(r => r.enabled && r.gameObject.activeInHierarchy), Is.True);
+            var bounds = boards[0].bounds;
+            foreach (var renderer in boards.Skip(1)) bounds.Encapsulate(renderer.bounds);
+            Assert.That(bounds.size.x / world.CellSize, Is.InRange(.25f, 1f));
+            var viewport = world.ViewCamera.WorldToViewportPoint(bounds.center);
+            Assert.That(viewport.z, Is.Positive);
+            Assert.That(viewport.x, Is.InRange(.05f, .95f));
+            Assert.That(viewport.y, Is.InRange(.05f, .95f));
+            Assert.That(world.GetComponent<OverworldMenuManager>().Opened, Is.False);
+            var pickups = world.GetComponent<OverworldPickups>();
+            foreach (Transform marker in pickups.transform.Cast<Transform>().Where(t => t.TryGetComponent<DroppedItem>(out _)))
+            {
+                var renders = marker.GetComponentsInChildren<MeshRenderer>();
+                Assert.That(renders.SelectMany(r => r.sharedMaterials).All(m => m != null && m.mainTexture != null), Is.True, marker.name);
+            }
+            Directory.CreateDirectory("Temp/WorldSigns");
+            yield return harness.WaitUntil(() => !Common.Instance.ScreenTransition.BlocksInput, "overworld signs visible");
+            yield return null;
+            ScreenCapture.CaptureScreenshot("Temp/WorldSigns/road.png");
+            yield return new WaitForSecondsRealtime(.2f);
             world.ClaimRewards(); yield return null;
             var menu = world.GetComponent<OverworldMenuManager>();
             var dialog = Object.FindFirstObjectByType<MessageDialog>();
             Assert.That(menu.Opened, Is.True); Assert.That(dialog, Is.Not.Null);
             Assert.That(dialog.PromptText.text, Does.StartWith("Road sign"));
-            Assert.That(dialog.PromptText.text, Does.Contain("road steps"));
+            Assert.That(dialog.PromptText.text, Does.Not.Contain("steps"));
             Assert.That(context.Campaign.Locations.Where(l => l.Kind == LocationKind.Town).Any(l => dialog.PromptText.text.Contains(context.GetTownDisplayName(l.Id))), Is.True);
-            Assert.That(dialog.PromptText.text.Split('\n').Count(s => s.Contains("road steps")), Is.GreaterThan(2), "Landmarks appear alongside at most two towns.");
+            Assert.That(dialog.PromptText.text.Split('\n').Count(s => s.Contains(" — ")), Is.GreaterThan(2), "Landmarks appear alongside at most two towns.");
             Directory.CreateDirectory("Temp/TodoVerification"); ScreenCapture.CaptureScreenshot("Temp/TodoVerification/road-sign.png");
             yield return new WaitForEndOfFrame();
             Assert.That(context.Position, Is.EqualTo(position)); Assert.That(context.Keys.Count, Is.EqualTo(collected));
             Assert.That(context.Completed.Count, Is.EqualTo(completed)); dialog.CloseDialog();
+            yield return null;
+            yield return null;
+            pad = InputSystem.AddDevice<Gamepad>();
+            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.Start));
+            yield return null;
+            yield return null;
+            Assert.That(Common.Instance.GlobalSettings.IsOpen, Is.True, "Start opens Settings directly from the overworld.");
+            InputSystem.QueueStateEvent(pad, new GamepadState());
         }
 
         [UnityTest]

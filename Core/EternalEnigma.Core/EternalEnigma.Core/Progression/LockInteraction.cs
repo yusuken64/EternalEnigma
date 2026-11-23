@@ -22,6 +22,7 @@ public sealed class LockSolutionEvaluator
     private readonly CampaignRoute route;
     private readonly CapabilitySet[] progress;
     private bool complete;
+    public CapabilitySet CompletedSolution { get; private set; }
     public LockSolutionEvaluator(CampaignRoute route)
     { this.route = route; progress = new CapabilitySet[route.Requirement.Alternatives.Count]; }
 
@@ -42,7 +43,11 @@ public sealed class LockSolutionEvaluator
             if (!solution.Contains(use.Capability) || progress[i].Contains(use.Capability)) continue;
             progress[i] = progress[i].Union(CapabilitySet.Of(use.Capability));
             changed = true;
-            complete |= progress[i].ContainsAll(solution);
+            if (progress[i].ContainsAll(solution) && (!complete || solution.Count < CompletedSolution.Count))
+            {
+                CompletedSolution = solution;
+                complete = true;
+            }
         }
         return complete ? LockOutcome.Opened : changed ? LockOutcome.Progress : LockOutcome.NoEffect;
     }
@@ -57,9 +62,11 @@ public sealed class LockInteractionSession : IDisposable
     private readonly Func<bool> commit;
     private bool submitting;
     public bool Closed { get; private set; }
+    public CampaignRoute Route { get; }
+    public CapabilitySet CompletedSolution => evaluator.CompletedSolution;
     public LockInteractionSession(CampaignRoute route, Func<bool> valid,
         Func<LockAction, bool> available, Func<bool> commit)
-    { evaluator = new(route); this.valid = valid; this.available = available; this.commit = commit; }
+    { Route = route; evaluator = new(route); this.valid = valid; this.available = available; this.commit = commit; }
 
     public LockOutcome Attempt(LockAction action)
     {

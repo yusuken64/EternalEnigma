@@ -71,9 +71,9 @@ Rebuilding releases owned meshes, effects and ambient actors.
 Seven `TownNpcDefinition` assets preserve identity, portrait, greeting and prefab. The cat
 and shepherd dog use deterministic, reachable public anchors; service characters use the
 existing `ShopVendor` contract (bear innkeeper, sheep baker, bunny consumables, guinea pig
-trainer and hooded equipment merchant). Greetings turn toward the player and open the
-existing message dialog. `Town.IsOccupied` is shared by player and party movement. Ambient
-NPCs have no combat components, equipment, recruitment or persistent state.
+trainer and hooded equipment merchant). Mochi the Traveler and Rowan the Shepherd turn
+toward the player and use the same question menu. Closing an answer returns to the selected
+question. `Town.IsOccupied` is shared by player and party movement.
 
 Each normal furnished town selects blue, red and yellow spherical birds. Two prefer
 supported sign perches on the exterior enclosure; one uses an interior shelf/cupboard.
@@ -95,6 +95,12 @@ captures, four interior types, vendor behavior, greetings, movement and revisit 
   passive and unaffordable offers. After learning, the full trainer catalog returns.
   Bread is no longer placed in the starting bag. The free offer is consumed once, survives
   saving, and does not return on shop restock. The bed can save unfinished errands and quit.
+- On the walk from home to the bakery, an optional prompt introduces Mochi. Ask for the
+  next destination, preparation advice, or a recruit by primary or secondary class. Mochi
+  names an available local hero and their fee first, then checks towns the player has visited.
+- After the first town dungeon, a companion explains the east road as the party approaches
+  the gate. For a solo hero, one of the town?s existing recruits waits beside the gate.
+  The player can ask for directions, hire them at their usual price, or leave alone.
 - Purchases, training, donations, recruitment, dismissal and equipment changes update captured
   live state. Explicit home/inn save actions write the checkpoint; `SaveSystem.Capture` itself
   does not write storage.

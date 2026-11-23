@@ -8,9 +8,9 @@ public class PlayerController : MonoBehaviour
 {
     // === Input Timing ===
     private float holdTime = 0f;
-    private float menuCooldown = 0f;
     internal const float WalkStepSeconds = 0.1f;
     private bool movementHeld;
+    private float menuCooldown = .2f;
     private const float DiagonalReleaseGrace = 0.12f;
     private float lastDiagonalInputTime = float.NegativeInfinity;
 
@@ -58,7 +58,9 @@ public class PlayerController : MonoBehaviour
         {
             ally.SetToPlayer();
             CameraController.SetFollowTarget(ally.CirlcleRenderer.transform);
-            holdTime = 0; menuCooldown = 0; releaseInput = true;
+            holdTime = 0;
+            if (changedAlly && Game.Instance?.TurnManager?.AwaitingCommand == true) menuCooldown = 0;
+            releaseInput = true;
         }
         TargetIndicator.gameObject.SetActive(false);
         CurrentControlMode = PlayerControlMode.FollowAlly;
@@ -102,6 +104,12 @@ public class PlayerController : MonoBehaviour
         CheckAttributePrompts();
         if (ShouldBlockInput()) return;
 
+        if (movementInput?.optionsPressed == true && MenuManager.Instance?.Opened != true)
+        {
+            StopHeldWalk();
+            Common.Instance.GlobalSettings.ShowDialog();
+            return;
+        }
         if (releaseInput)
         {
             var input = PlayerInputHandler.Instance;
@@ -139,7 +147,6 @@ public class PlayerController : MonoBehaviour
     private void UpdateTimers()
     {
         menuCooldown += Time.deltaTime;
-
         if (PlayerInputHandler.Instance.isMoving)
         {
             // A fresh press takes one step immediately. Only held input repeats;
@@ -170,7 +177,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMovementInput()
     {
-        if (ControlledAlly.IsWaitingForPlayerInput && menuCooldown > 0.2f)
+        if (ControlledAlly.IsWaitingForPlayerInput && menuCooldown >= .2f)
         {
             DeterminePlayerAction();
         }
@@ -185,45 +192,22 @@ public class PlayerController : MonoBehaviour
         if (PlayerInputHandler.Instance.waitPressed) { StopHeldWalk(); ControlledAlly.SetAction(new WaitAction()); return; }
         Vector2 move = PlayerInputHandler.Instance.moveInput;
 
-        if (move.sqrMagnitude >= 0.01f)
+        var step = GridMovement.InputDirection(move);
+        if (step != Vector3Int.zero)
         {
-            // Normalize the input so diagonal directions are consistent
-            move.Normalize();
-
-            Facing? desired = null;
-            if (move.x < -0.5f && move.y > 0.5f)
-                desired = Facing.UpLeft;
-            else if (move.x > 0.5f && move.y > 0.5f)
-                desired = Facing.UpRight;
-            else if (move.x < -0.5f && move.y < -0.5f)
-                desired = Facing.DownLeft;
-            else if (move.x > 0.5f && move.y < -0.5f)
-                desired = Facing.DownRight;
-            else if (move.y > 0.5f)
-                desired = Facing.Up;
-            else if (move.x < -0.5f)
-                desired = Facing.Left;
-            else if (move.y < -0.5f)
-                desired = Facing.Down;
-            else if (move.x > 0.5f)
-                desired = Facing.Right;
-
-            if (desired.HasValue)
-            {
-                bool diagonalDesired = IsDiagonal(desired.Value);
-                // Keys are rarely released on the same frame; keep the diagonal briefly so
-                // letting go of one key doesn't snap the facing to a cardinal direction.
-                bool releasingDiagonal = !diagonalDesired && IsDiagonal(ControlledAlly.CurrentFacing) &&
-                    Time.unscaledTime - lastDiagonalInputTime < DiagonalReleaseGrace;
-                if (diagonalDesired) lastDiagonalInputTime = Time.unscaledTime;
-                if (!releasingDiagonal) ControlledAlly.SetFacing(desired.Value);
-            }
+            var facing = Character.GetFacing(step);
+            bool aiming = PlayerInputHandler.Instance.holdPosition;
+            bool diagonal = IsDiagonal(facing);
+            // Forgive staggered key releases while aiming. Walking always uses the new direction.
+            if (!aiming || diagonal || Time.unscaledTime - lastDiagonalInputTime >= DiagonalReleaseGrace)
+                ControlledAlly.SetFacing(facing);
+            if (diagonal && aiming) lastDiagonalInputTime = Time.unscaledTime;
         }
 
         if (!PlayerInputHandler.Instance.holdPosition)
         {
             TargetIndicator.gameObject.SetActive(false);
-            if (!suppressMovement && move.sqrMagnitude >= .01f && holdTime >= WalkStepSeconds)
+            if (!suppressMovement && step != Vector3Int.zero && holdTime >= WalkStepSeconds)
             {
                 holdTime = 0f;
                 var offset = Dungeon.GetFacingOffset(ControlledAlly.CurrentFacing);
@@ -330,11 +314,6 @@ public class PlayerController : MonoBehaviour
             TakeControlNextAlly();
         }
 
-        if (PlayerInputHandler.Instance.optionsPressed)
-        {
-            StopHeldWalk();
-            Common.Instance.GlobalSettings.ShowDialog();
-        }
     }
 
     public List<GameAction> MoveSideEffects(Character character)

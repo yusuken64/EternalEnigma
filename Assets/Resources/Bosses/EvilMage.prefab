@@ -32,6 +32,14 @@ PrefabInstance:
       propertyPath: StartingStats.EXPOnKill
       value: 60
       objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 75476149ecd979f4a95a90e493d41136, type: 3}
+      propertyPath: DiagonalFootprintOffset.x
+      value: -0.11209157
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 75476149ecd979f4a95a90e493d41136, type: 3}
+      propertyPath: DiagonalFootprintOffset.y
+      value: -0.117168054
+      objectReference: {fileID: 0}
     - target: {fileID: 5543747752720980080, guid: 75476149ecd979f4a95a90e493d41136, type: 3}
       propertyPath: m_Name
       value: EvilMage
@@ -47,6 +55,14 @@ PrefabInstance:
     - target: {fileID: 5590973851788533376, guid: 75476149ecd979f4a95a90e493d41136, type: 3}
       propertyPath: m_LocalScale.z
       value: 4.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5907456232330067932, guid: 75476149ecd979f4a95a90e493d41136, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.005989047
+      objectReference: {fileID: 0}
+    - target: {fileID: 5907456232330067932, guid: 75476149ecd979f4a95a90e493d41136, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.38547644
       objectReference: {fileID: 0}
     - target: {fileID: 6390101934427800450, guid: 75476149ecd979f4a95a90e493d41136, type: 3}
       propertyPath: WaitUntilAttacked
@@ -121,3 +137,5 @@ MonoBehaviour:
   WarningTurns: 1
   CooldownTurns: 3
   EffectTurns: 2
+  SplashRadiusOverride: 0
+  RecoveryTurns: 0

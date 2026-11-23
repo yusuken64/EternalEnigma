@@ -119,8 +119,7 @@ public static class CampaignGuidance
             {
                 var companion = context.Campaign.Companions.FirstOrDefault(c => c.Capability == capability && context.Roster.Contains(c.Id));
                 if (companion != null)
-                    return "Add " + (companionName?.Invoke(companion.Id) ?? companion.Id) + " to your party here in town to use " +
-                        CampaignRewardNames.Name(context, capability) + ".";
+                    return (companionName?.Invoke(companion.Id) ?? companion.Id) + " knows " + CampaignRewardNames.Name(context, capability) + ".";
 
                 foreach (var source in context.Campaign.Sources.Where(s => s.Capability == capability && !context.Claimed.Contains(s.Id))
                     .OrderByDescending(s => s.Prerequisites.IsSatisfiedBy(held))
@@ -137,8 +136,10 @@ public static class CampaignGuidance
                     var location = context.Campaign.Locations.Single(l => l.Id == source.LocationId);
                     if (location.IsDungeon && !context.Completed.Contains(location.Id))
                         return ClearLocationHint(context, townId, location.Id, companionName,
-                            source.CompanionId == null ? " to obtain " + reward : " to recruit " + name, visiting);
-                    return (source.CompanionId == null ? "Collect " : "Recruit ") + name + " at " + HintLocation(context, townId, source.LocationId) + ".";
+                            source.CompanionId == null ? " to obtain " + reward : "", visiting);
+                    string place = HintLocation(context, townId, source.LocationId);
+                    return source.CompanionId == null ? "Collect " + reward + " at " + place + "." :
+                        "You'll find " + name + ", who knows " + reward + ", at " + place + ".";
                 }
             }
             finally { visiting.Remove(capability); }

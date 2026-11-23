@@ -1,3 +1,5 @@
+using EternalEnigma.Core.World;
+
 namespace EternalEnigma.Core.Generation;
 
 public sealed class BossProfile
@@ -34,6 +36,14 @@ public static class BossCatalog
         new BossProfile("Cyclops",3,"Marked boulder throw"), new BossProfile("Beholder",4,"Confusion gaze"),
         new BossProfile("Flying Demon",4,"Swooping fire bombardment"), new BossProfile("Lizard Warrior",4,"Sequenced three-strike combo"),
         new BossProfile("Demon King",4,"Delayed eruptions on marked tiles"), new BossProfile("Dragon",4,"Fire breath cone") });
+    internal static GridPoint LandingCell(IEnumerable<GridPoint> reachable, GridPoint start, GridPoint preferred, Func<GridPoint, bool> clear)
+    {
+        int Distance(GridPoint a, GridPoint b) => Math.Max(Math.Abs(a.X - b.X), Math.Abs(a.Y - b.Y));
+        return reachable.Where(p => Distance(p, start) >= 4 &&
+                new GridRect(p.X - 1, p.Y - 1, 3, 3).Cells().All(clear))
+            .OrderBy(p => Distance(p, preferred)).ThenBy(p => p.Y).ThenBy(p => p.X).First();
+    }
+
     public static BossProfile Select(int seed, int tier)
     {
         var eligible = All.Where(p => p.MinimumTier <= tier && p.MinimumTier >= Math.Max(0, tier - 1)).ToArray();

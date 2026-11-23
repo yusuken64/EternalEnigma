@@ -7,7 +7,7 @@ public sealed class CombatEffectStage
     public GameObject Prefab;
     public Vector3 Offset;
     public Vector3 Rotation;
-    [Tooltip("Rotate in the dungeon plane to follow the recorded cast direction (authored forward is +Y).")]
+    [Tooltip("Rotate along the cast direction in the impact or ground plane (authored forward is +Y).")]
     public bool AlignWithCastDirection;
     [Tooltip("Place impacts in front of the target's model and enlarge them for bigger targets.")]
     public bool FitToTarget;

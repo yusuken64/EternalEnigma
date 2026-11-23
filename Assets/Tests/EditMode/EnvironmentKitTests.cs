@@ -85,7 +85,11 @@ namespace EternalEnigma.Tests.CoreIntegration
             var plan = OverworldCosmetics.Plan(grid, kit);
             CollectionAssert.AreEqual(plan, OverworldCosmetics.Plan(grid, kit));
             Assert.That(Random.state, Is.EqualTo(state));
-            Assert.That(plan.Count, Is.GreaterThan(0));
+            var roadside = plan.Where(p => new[] { (2, 0), (-2, 0), (0, 2), (0, -2) }
+                .Any(d => OverworldCosmetics.InLayer(grid, EternalEnigma.Core.World.OverworldLayers.Roads, p.X + d.Item1, p.Y + d.Item2))).ToArray();
+            Assert.That(roadside.Length, Is.GreaterThan(20), "Paths should pass patches of visible scenery.");
+            Assert.That(roadside.GroupBy(p => (p.X / 32, p.Y / 32)).Count(), Is.GreaterThan(2));
+            Assert.That(grid.Pickups.All(item => !plan.Any(p => p.X == item.Position.X && p.Y == item.Position.Y)), Is.True);
             var protect = OverworldCosmetics.Protected(grid);
             Assert.That(plan.All(p => !protect[p.X, p.Y]), Is.True);
             Assert.That(plan.Sum(p => kit.Triangles(p.Model)), Is.LessThanOrEqualTo(OverworldCosmetics.TriangleBudget));

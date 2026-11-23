@@ -41,8 +41,9 @@ public static class DioramaItemAuthoring
             entries.Add(new DioramaItemCatalog.Entry{Name=item.ItemName,Source=source,Prefab=prefab.GetComponent<DroppedItem>(),Tint=tint});
         }
         string[] fallback={"bow","waffle","gold coin bag2","key","potion_red","ring","shield","skull","book2","@OHS03_Sword","treasure chest"};
-        foreach(var value in Enum.GetValues(typeof(DroppedItemVisual)).Cast<DroppedItemVisual>())
-            Make(fallback[(int)value],Color.white,value.ToString(),value,"Assets/Prefabs/Dungeon/DroppedItems/"+value+".prefab");
+        catalog.Categories = Enum.GetValues(typeof(DroppedItemVisual)).Cast<DroppedItemVisual>()
+            .Select(value => Make(fallback[(int)value], Color.white, value.ToString(), value,
+                "Assets/Prefabs/Dungeon/DroppedItems/" + value + ".prefab").GetComponent<DroppedItem>()).ToArray();
         catalog.Items=entries.ToArray();
         catalog.Props=new[]{"bag","key","skull","treasure chest","exclamation mark","question mark","cake","waffle","egg","potion_red","potion_blue","jar","hen","duck","butterfly","bee","ladybug","trophy"}
             .Select(id=>new DioramaItemCatalog.Prop {Id=id,Prefab=Make(id,Color.white,"Prop_"+Safe(id),null,Folder+"/Prop_"+Safe(id)+".prefab")}).ToArray();

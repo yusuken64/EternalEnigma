@@ -15,7 +15,8 @@ internal sealed class DungeonFastWalk
     private Ally leader;
     private TileWorldDungeon dungeon;
     private Vector3Int direction, previousInput, consumedInput;
-    private bool consumed;
+    private bool consumed, pendingLaunch;
+    private Vector3Int lastStepFrom;
     private readonly HashSet<Vector3Int> visited = new();
     private readonly HashSet<Vector3Int> sight = new();
     private readonly Dictionary<Ally, Vector3Int> followers = new();
@@ -34,18 +35,10 @@ internal sealed class DungeonFastWalk
 
     internal DungeonFastWalk(PlayerController player) { this.player = player; }
 
-    internal static Vector3Int InputDirection(Vector2 input)
-    {
-        if (input.sqrMagnitude <= .1f) return Vector3Int.zero;
-        input.Normalize();
-        return new Vector3Int(Mathf.Abs(input.x) > .5f ? System.Math.Sign(input.x) : 0,
-            Mathf.Abs(input.y) > .5f ? System.Math.Sign(input.y) : 0, 0);
-    }
-
     // The modifier may stay held between runs. Only a fresh direction launches another run.
     internal bool ReadInput(Vector2 move, bool fast, bool canLaunch)
     {
-        var next = InputDirection(move);
+        var next = GridMovement.InputDirection(move);
         bool fresh = next != Vector3Int.zero && next != previousInput;
         previousInput = next;
         if (next != consumedInput) consumed = false;
@@ -53,10 +46,12 @@ internal sealed class DungeonFastWalk
         bool available = Game.Instance != null && Game.Instance.IsReady && Game.Instance.CurrentDungeon != null &&
             Game.Instance.Finale?.OnOverworld != true &&
             Game.Instance.CurrentDungeon.Floor.Variant != EternalEnigma.Core.World.DungeonVariant.Town;
-        if (fast && available && fresh && canLaunch)
+        if (!fast || !available || !canLaunch || next == Vector3Int.zero) pendingLaunch = false;
+        else if (fresh) pendingLaunch = true;
+        if (pendingLaunch && Launch(next))
         {
             consumed = true; consumedInput = next;
-            Launch(next);
+            pendingLaunch = false;
         }
         return Running || consumed || fast && available && next != Vector3Int.zero;
     }
@@ -150,6 +145,7 @@ internal sealed class DungeonFastWalk
         followers.Clear();
         foreach (var member in game.Allies.Where(a => a != null && a != leader && !a.IsSummon && a.AllyStrategy != AllyStrategy.HoldPosition))
             followers[member] = member.TilemapPosition;
+        lastStepFrom = from;
         leader.SetFacing(Character.GetFacing(direction));
         if (!game.TurnManager.SubmitCommand(leader, action)) { RequestStop(FastWalkStop.NoProgress); return; }
         Steps++;
@@ -203,19 +199,25 @@ internal sealed class DungeonFastWalk
                 TileWorldDungeon.ChevDistance(cell, item.Position) > 1) continue;
             return FastWalkStop.PointOfInterest;
         }
-        // Only local, currently perceived terrain informs the next decision.
         var to = cell + direction;
-        if (!sight.Contains(to) || !MovementAction.FootprintCanStep(leader, cell, to)) return FastWalkStop.CornerOrWall;
-        if (!launching)
+        if (!launching && dungeon.IsHallway(cell))
         {
-            if (dungeon.IsHallway(cell) != dungeon.IsHallway(cell - direction) ||
-                dungeon.IsHallway(cell) != dungeon.IsHallway(to)) return FastWalkStop.RoomBoundary;
-            if (dungeon.IsHallway(cell))
+            // A one-cell bend has one way forward. A junction needs a new command.
+            Vector3Int continuation = default;
+            int exits = 0;
+            foreach (var next in GridMovement.GetNeighbors(cell, p => sight.Contains(p) && dungeon.IsFloorCell(p)))
             {
-                int exits = GridMovement.GetNeighbors(cell, p => sight.Contains(p) && dungeon.IsFloorCell(p)).Count();
-                if (exits > 2) return FastWalkStop.Branch;
+                if (next == lastStepFrom) continue;
+                if (++exits > 1) return FastWalkStop.Branch;
+                continuation = next;
             }
+            if (exits == 0 || visited.Contains(continuation)) return FastWalkStop.CornerOrWall;
+            if (!dungeon.IsHallway(continuation)) return FastWalkStop.RoomBoundary;
+            to = continuation;
+            direction = to - cell;
         }
+        if (!sight.Contains(to) || !MovementAction.FootprintCanStep(leader, cell, to))
+            return FastWalkStop.CornerOrWall;
         return FastWalkStop.None;
     }
 

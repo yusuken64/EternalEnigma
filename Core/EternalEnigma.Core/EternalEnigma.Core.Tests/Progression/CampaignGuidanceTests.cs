@@ -95,7 +95,7 @@ public sealed class CampaignGuidanceTests
             new Requirement(CapabilitySet.Of(companions[0].Capability, companions[1].Capability), CapabilitySet.Of(companions[2].Capability)), LockForm.Obstacle);
         c.Roster.Add(companions[2].Id);
         var hint = CampaignGuidance.DescribeLock(c, "town-0", route, _ => "Casey");
-        Assert.Equal("Add Casey to your party here in town to use " + CampaignRewardNames.Name(c, companions[2].Capability) + ".", hint);
+        Assert.Equal("Casey knows " + CampaignRewardNames.Name(c, companions[2].Capability) + ".", hint);
         c.Active.Add(companions[2].Id);
         hint = CampaignGuidance.DescribeLock(c, "town-0", route, _ => "Casey");
         Assert.StartsWith("Use " + CampaignRewardNames.Name(c, companions[2].Capability) + " at the gate", hint);
@@ -104,7 +104,7 @@ public sealed class CampaignGuidanceTests
     }
 
     [Fact]
-    public void PairedRequirementGivesOnlyTheRemainingRecruitmentStep()
+    public void PairedRequirementNamesTheMissingAbilityAndItsLocation()
     {
         var c = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));
         var companions = c.Campaign.Companions.GroupBy(a => a.Capability).Select(g => g.First()).Take(2).ToArray();
@@ -114,7 +114,8 @@ public sealed class CampaignGuidanceTests
         c.Active.Add(companions[0].Id);
         var source = c.Campaign.Sources.First(s => s.CompanionId == companions[1].Id);
         var hint = CampaignGuidance.DescribeLock(c, "town-0", route, _ => "Riley");
-        Assert.StartsWith("Recruit Riley at ", hint);
+        Assert.Contains("You'll find Riley, who knows ", hint);
+        Assert.DoesNotContain("recruit", hint, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(CampaignGuidance.LocationName(c, source.LocationId), hint);
         Assert.Contains("from here", hint);
         Assert.DoesNotContain(CampaignRewardNames.Name(c, companions[0].Capability), hint);
@@ -161,7 +162,8 @@ public sealed class CampaignGuidanceTests
         var c = new CampaignContext(new(OverworldLaunchMode.Campaign, 42));
         var route = c.Campaign.Routes.First(r => r.CompletionLocationId != null);
         var hint = CampaignGuidance.DescribeLock(c, "town-3", route, _ => "Rowan");
-        Assert.StartsWith("Recruit Rowan at ", hint);
+        Assert.Contains("You'll find Rowan, who knows ", hint);
+        Assert.DoesNotContain("recruit", hint, StringComparison.OrdinalIgnoreCase);
         var companion = c.Campaign.Companions.Single(a => a.Capability == Capability.Icewalk);
         c.Roster.Add(companion.Id);
         c.Active.Add(companion.Id);

@@ -32,6 +32,14 @@ PrefabInstance:
       propertyPath: StartingStats.EXPOnKill
       value: 35
       objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 3be6ea59b933f6247917b1fc37b0925f, type: 3}
+      propertyPath: DiagonalFootprintOffset.x
+      value: 0.000000039736435
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 3be6ea59b933f6247917b1fc37b0925f, type: 3}
+      propertyPath: DiagonalFootprintOffset.y
+      value: 0.17190836
+      objectReference: {fileID: 0}
     - target: {fileID: 5543747752720980080, guid: 3be6ea59b933f6247917b1fc37b0925f, type: 3}
       propertyPath: m_Name
       value: Spider
@@ -47,6 +55,14 @@ PrefabInstance:
     - target: {fileID: 5590973851788533376, guid: 3be6ea59b933f6247917b1fc37b0925f, type: 3}
       propertyPath: m_LocalScale.z
       value: 4.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5844649949283847923, guid: 3be6ea59b933f6247917b1fc37b0925f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.00000010596382
+      objectReference: {fileID: 0}
+    - target: {fileID: 5844649949283847923, guid: 3be6ea59b933f6247917b1fc37b0925f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.00021560979
       objectReference: {fileID: 0}
     - target: {fileID: 8639548010823113620, guid: 3be6ea59b933f6247917b1fc37b0925f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -117,3 +133,5 @@ MonoBehaviour:
   WarningTurns: 1
   CooldownTurns: 3
   EffectTurns: 2
+  SplashRadiusOverride: 0
+  RecoveryTurns: 0

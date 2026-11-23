@@ -24,6 +24,9 @@ namespace JuicyChickenGames.Menu
         public bool optionsPressed { get; private set; }
 
         private InputAction moveAction;
+        private Vector2 pressedMove;
+        private int movePressFrame = -1;
+        private bool moveEngaged;
         private InputAction moveUpLeftAction, moveUpRightAction, moveDownLeftAction, moveDownRightAction;
         private InputAction lookAction;
         private InputAction attackAction;
@@ -91,16 +94,39 @@ namespace JuicyChickenGames.Menu
         {
             bool upLeft = moveUpLeftAction.IsPressed(), upRight = moveUpRightAction.IsPressed();
             bool downLeft = moveDownLeftAction.IsPressed(), downRight = moveDownRightAction.IsPressed();
-            if (!upLeft && !upRight && !downLeft && !downRight) return moveAction.ReadValue<Vector2>();
+            if (!upLeft && !upRight && !downLeft && !downRight)
+            {
+                var value = moveAction.ReadValue<Vector2>();
+                return movePressFrame == Time.frameCount && value.sqrMagnitude <= .1f ? pressedMove : value;
+            }
 
             // Dedicated directions take priority while held; opposite components cancel.
             return new Vector2((upRight ? 1 : 0) + (downRight ? 1 : 0) - (upLeft ? 1 : 0) - (downLeft ? 1 : 0),
                 (upLeft ? 1 : 0) + (upRight ? 1 : 0) - (downLeft ? 1 : 0) - (downRight ? 1 : 0)).normalized;
         }
 
+        private void CaptureMove(InputAction.CallbackContext context)
+        {
+            var value = context.ReadValue<Vector2>();
+            bool engaged = value.sqrMagnitude > .1f;
+            if (engaged && !moveEngaged) { pressedMove = value; movePressFrame = Time.frameCount; }
+            moveEngaged = engaged;
+        }
+
         void OnEnable()
         {
             if (moveAction == null) Initialize();
+            moveAction.performed += CaptureMove;
+            moveAction.canceled += CaptureMove;
+        }
+
+        void OnDisable()
+        {
+            if (moveAction == null) return;
+            moveAction.performed -= CaptureMove;
+            moveAction.canceled -= CaptureMove;
+            moveEngaged = false;
+            movePressFrame = -1;
         }
     }
 }

@@ -23,7 +23,7 @@ public static class BiomeDecorationPreview
                     var entry=catalog.Get(biome,(BiomeDecorationKind)k);
                     var obj=(GameObject)PrefabUtility.InstantiatePrefab(entry.Prefab);obj.transform.SetParent(root.transform,false);obj.transform.localPosition=new Vector3(2+k*2.5f,y,0);obj.transform.localScale=Vector3.one*1.8f;
                     if(k==4)for(int panel=0;panel<3;panel++) {
-                        var arrow=(GameObject)PrefabUtility.InstantiatePrefab(catalog.Get(biome,BiomeDecorationKind.SignPanel).Prefab);arrow.transform.SetParent(obj.transform,false);arrow.transform.localPosition=new Vector3(0,-.03f,-1.05f+panel*.23f);
+                        var board=(GameObject)PrefabUtility.InstantiatePrefab(catalog.Get(biome,BiomeDecorationKind.SignPanel).Prefab);board.transform.SetParent(obj.transform,false);board.transform.localPosition=new Vector3(0,-.03f,-1.05f+panel*.23f);
                     }
                 }
             }

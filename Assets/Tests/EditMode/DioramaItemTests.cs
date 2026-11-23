@@ -43,6 +43,40 @@ namespace EternalEnigma.Tests.EditMode
                 finally {Object.DestroyImmediate(instance);}
             }
         }
+        [Test] public void PickupCategoriesPropsAndItemIconsHaveTextures()
+        {
+            var catalog = DioramaItemCatalog.Load();
+            var dungeon = AssetDatabase.LoadAssetAtPath<TileWorldDungeon>("Assets/Prefabs/Dungeon/TileWorldDungeon.prefab");
+            Assert.That(catalog.Categories, Is.EquivalentTo(dungeon.DroppedItemPrefabs));
+            foreach (var item in catalog.Items)
+            {
+                Assert.That(item.Icon, Is.Not.Null, item.Name);
+                Assert.That(item.Icon.texture, Is.Not.Null, item.Name);
+            }
+            var props = catalog.Props.Select(p => p.Prefab).Concat(catalog.Categories.Select(p => p.gameObject))
+                .Append(dungeon.GoldPrefab.gameObject).Append(dungeon.SmallKeyPrefab);
+            foreach (var prop in props)
+            {
+                var renderers = prop.GetComponentsInChildren<MeshRenderer>(true);
+                Assert.That(renderers, Is.Not.Empty, prop.name);
+                foreach (var material in renderers.SelectMany(r => r.sharedMaterials))
+                {
+                    Assert.That(material, Is.Not.Null, prop.name);
+                    Assert.That(material.shader.isSupported, Is.True, prop.name);
+                    Assert.That(material.mainTexture, Is.Not.Null, prop.name);
+                }
+            }
+        }
+
+        [TestCase("king"), TestCase("knightBlue"), TestCase("knightRed")]
+        public void CastleCharacterMeshesBindTheirCostumeAndFaceTextures(string name)
+        {
+            string path = "Assets/Art/KennyNL/Castle Kit/Models/" + name + ".fbx";
+            var model = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            var materials = model.GetComponentsInChildren<MeshRenderer>(true).SelectMany(r => r.sharedMaterials).Distinct();
+            Assert.That(materials.Select(m => m.mainTexture?.name), Is.EquivalentTo(new[] { name, "astronaut" }), path);
+        }
+
         [Test] public void ShopItemsHaveDistinctModelAndTintCombinations()
         {
             var catalog=DioramaItemCatalog.Load();
@@ -61,6 +95,7 @@ namespace EternalEnigma.Tests.EditMode
             {
                 item.DroppedItemVisual=DroppedItemVisual.Bread;
                 Assert.That(item.ResolveDroppedPrefab(new[]{fallback}),Is.SameAs(fallback));
+                Assert.That(item.ResolveDroppedPrefab(), Is.SameAs(fallback));
                 Assert.That(item.ResolveIcon(profile),Is.SameAs(profile.ItemIcons[(int)DroppedItemVisual.Bread]));
                 item.DroppedItemPrefab=fallback;item.Icon=profile.BagIcon;
                 Assert.That(item.ResolveDroppedPrefab(Array.Empty<DroppedItem>()),Is.SameAs(fallback));Assert.That(item.ResolveIcon(profile),Is.SameAs(profile.BagIcon));

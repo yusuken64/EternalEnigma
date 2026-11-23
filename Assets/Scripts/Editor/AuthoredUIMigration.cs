@@ -38,7 +38,7 @@ public static class AuthoredUIMigration
             finally {PrefabUtility.UnloadPrefabContents(root);}
         }
         AssetDatabase.SaveAssets();
-        Debug.Log("Saved the four-line event feed and captured font/layout defaults to both shared prefabs.");
+        Debug.Log("Saved the padded scrolling event feed to both shared prefabs.");
     }
 
     [MenuItem("Tools/Eternal Enigma/UI/Repair Overworld Entry Dialogs")]

@@ -3,6 +3,7 @@
 public class TownBuilding : MonoBehaviour
 {
 	public string Name;
+    internal WorldSign Sign { get; set; }
 
 	public Vector3Int TilemapPosition { get; internal set; }
 

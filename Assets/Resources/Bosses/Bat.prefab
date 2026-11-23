@@ -32,6 +32,22 @@ PrefabInstance:
       propertyPath: StartingStats.EXPOnKill
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: a7b52db0d901150499776affdb8a8aed, type: 3}
+      propertyPath: DiagonalFootprintOffset.x
+      value: -0.005641365
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: a7b52db0d901150499776affdb8a8aed, type: 3}
+      propertyPath: DiagonalFootprintOffset.y
+      value: -0.074983306
+      objectReference: {fileID: 0}
+    - target: {fileID: 4466021958716761577, guid: a7b52db0d901150499776affdb8a8aed, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.005609487
+      objectReference: {fileID: 0}
+    - target: {fileID: 4466021958716761577, guid: a7b52db0d901150499776affdb8a8aed, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.025394836
+      objectReference: {fileID: 0}
     - target: {fileID: 5543747752720980080, guid: a7b52db0d901150499776affdb8a8aed, type: 3}
       propertyPath: m_Name
       value: Bat
@@ -117,3 +133,5 @@ MonoBehaviour:
   WarningTurns: 1
   CooldownTurns: 3
   EffectTurns: 2
+  SplashRadiusOverride: 0
+  RecoveryTurns: 0

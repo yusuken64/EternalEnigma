@@ -32,6 +32,22 @@ PrefabInstance:
       propertyPath: StartingStats.EXPOnKill
       value: 25
       objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: b5fb200ed427b224fa16a2dad8c024f8, type: 3}
+      propertyPath: DiagonalFootprintOffset.x
+      value: 0.13334629
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: b5fb200ed427b224fa16a2dad8c024f8, type: 3}
+      propertyPath: DiagonalFootprintOffset.y
+      value: -0.17802262
+      objectReference: {fileID: 0}
+    - target: {fileID: 3394695152097116964, guid: b5fb200ed427b224fa16a2dad8c024f8, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.46683034
+      objectReference: {fileID: 0}
+    - target: {fileID: 3394695152097116964, guid: b5fb200ed427b224fa16a2dad8c024f8, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.13262758
+      objectReference: {fileID: 0}
     - target: {fileID: 5543747752720980080, guid: b5fb200ed427b224fa16a2dad8c024f8, type: 3}
       propertyPath: m_Name
       value: CrabMonster
@@ -117,3 +133,5 @@ MonoBehaviour:
   WarningTurns: 1
   CooldownTurns: 3
   EffectTurns: 2
+  SplashRadiusOverride: 0
+  RecoveryTurns: 0

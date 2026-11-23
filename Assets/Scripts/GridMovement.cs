@@ -16,6 +16,16 @@ public static class GridMovement
         Facing.Right, Facing.UpLeft, Facing.Up, Facing.UpRight
     };
 
+    // Quantize to the nearest of eight grid directions, including the cardinal sectors.
+    public static Vector3Int InputDirection(Vector2 input)
+    {
+        if (input.sqrMagnitude <= .1f) return Vector3Int.zero;
+        float x = Mathf.Abs(input.x), y = Mathf.Abs(input.y);
+        const float diagonalThreshold = .41421356f; // tan(22.5 degrees)
+        return new Vector3Int(x > y * diagonalThreshold ? Math.Sign(input.x) : 0,
+            y > x * diagonalThreshold ? Math.Sign(input.y) : 0, 0);
+    }
+
     public static bool Contains(int width, int height, Vector3Int cell) =>
         cell.z == 0 && cell.x >= 0 && cell.y >= 0 && cell.x < width && cell.y < height;
 

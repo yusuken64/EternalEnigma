@@ -37,14 +37,15 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
         var grid = GetComponent<CampaignOverworld>().CurrentGrid;
         if (grid == null) return;
         Clear();
+        // Generated scenery, including roadside signs, has its own mesh owner.
+        hiddenRenderers = Array.FindAll(creator.worldObject.GetComponentsInChildren<Renderer>(),
+            r => r.GetComponentInParent<EnvironmentMeshOwner>() == null);
+        foreach (var renderer in hiddenRenderers) renderer.enabled = false;
         var painted = creator.worldObject.GetComponentInChildren<PaintedGroundOutput>();
         if (painted != null)
         {
             // Broad surfaces now belong to TWC; retain a handle for cache and inspectors.
             cachedSurfaces = painted.gameObject;
-            hiddenRenderers = Array.FindAll(creator.worldObject.GetComponentsInChildren<Renderer>(),
-                r => r.GetComponentInParent<EnvironmentMeshOwner>() == null);
-            foreach (var renderer in hiddenRenderers) renderer.enabled = false;
             return;
         }
         surfaces = new GameObject("Biome Floors") { hideFlags = HideFlags.DontSave };
@@ -77,9 +78,6 @@ public sealed class OverworldBiomeRenderer : MonoBehaviour
             var catalog=BiomeDecorationCatalog.Load();
             if(catalog!=null&&BiomeDecorations.Enabled){var root=BiomeDecorationPlacement.Reset(surfaces.transform);BiomeDecorationPlacement.Walls(surfaces.transform,root,catalog,grid.CampaignSeed,"overworld",creator.twcAsset.cellSize);}
         }
-        hiddenRenderers = System.Array.FindAll(creator.worldObject.GetComponentsInChildren<Renderer>(),
-            r => r.GetComponentInParent<EnvironmentMeshOwner>() == null);
-        foreach (var renderer in hiddenRenderers) renderer.enabled = false;
     }
 
     private void Draw(OverworldGrid grid, string layerName, Material material, float z, bool excludeWater = false, bool raised = false)

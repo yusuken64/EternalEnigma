@@ -49,13 +49,13 @@ MonoBehaviour:
     MinimumDiameterCells: 0
     ReferenceDiameter: 1
   Impact:
-    Prefab: {fileID: 2139992396127140739, guid: 1254e61a54855c243a8d476cc934e5f7, type: 3}
+    Prefab: {fileID: 2110861146045004955, guid: 2bf21a2f2100c2540b2878d5121a7d21, type: 3}
     Offset: {x: 0, y: 0, z: 0}
     Rotation: {x: -90, y: 0, z: 0}
     AlignWithCastDirection: 1
     FitToTarget: 1
     ScaleWithTarget: 0
-    Scale: 0.65
+    Scale: 0.28
     Delay: 0
     Lifetime: 0.3
     MinimumDiameterCells: 0

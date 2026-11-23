@@ -20,7 +20,7 @@ public class TileWorldDungeon : MonoBehaviour
 	internal int dungeonHeight => Floor.Height;
 	public bool IsThroneFloor;
 	public bool IsExitFloor;
-	// No boss floors exist yet; boss content sets this. Retreat is blocked while it is true.
+	// True while the floor's guardian is alive. Retreat becomes available after its defeat.
 	public bool IsBossFloor;
 
 	private DungeonFloor runtimeFloor;
@@ -420,9 +420,7 @@ public class TileWorldDungeon : MonoBehaviour
 	internal void SetStairs(Vector3Int stairPosition)
 	{
 		var itemInstance = Instantiate(StairsPrefab, this.transform);
-		itemInstance.transform.position = CellToWorld(stairPosition);
-		DungeonPresentation.GroundFloorObject(itemInstance.transform);
-		itemInstance.Position = stairPosition;
+		itemInstance.Place(this, stairPosition);
 		if (Floor.Variant == DungeonVariant.Town)
             foreach (var renderer in itemInstance.GetComponentsInChildren<Renderer>(true)) renderer.enabled = false;
 		Interactables.Add(itemInstance);
@@ -518,6 +516,9 @@ public class TileWorldDungeon : MonoBehaviour
 
     // Movement roots use the cell origin; models and ground markers use its center.
 	internal Vector3 CellToWorld(Vector3Int newMapPosition) => GridMovement.CellToWorld(newMapPosition, CellSize);
+
+    internal Vector3Int GroundPointToCell(Vector3 point) =>
+        new(Mathf.FloorToInt(point.x / CellSize), Mathf.FloorToInt(point.y / CellSize), 0);
 
     internal Vector3 CellCenterToWorld(Vector3Int cell) =>
         CellToWorld(cell) + new Vector3(CellSize * .5f, CellSize * .5f, 0);

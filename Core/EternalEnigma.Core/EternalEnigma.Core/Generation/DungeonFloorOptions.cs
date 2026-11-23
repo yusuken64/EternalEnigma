@@ -69,7 +69,17 @@ public sealed class DungeonFloorOptions : IEquatable<DungeonFloorOptions>
         GatheringCount = gatheringCount;
         Encounter = encounter; Objective = objective ?? new EternalEnigma.Core.World.DungeonObjectiveDefinition();
         EncounterFloor = encounterFloor; FinalEncounterFloor = finalEncounterFloor;
-        BossFamily = bossFamily;
+        BossFamily = string.IsNullOrWhiteSpace(bossFamily) ? null : bossFamily;
+    }
+
+    public DungeonFloorOptions WithEndBoss(int combatTier)
+    {
+        var kind = Objective.Kind == EternalEnigma.Core.World.DungeonObjectiveKind.ReachExit
+            ? EternalEnigma.Core.World.DungeonObjectiveKind.DefeatBoss : Objective.Kind;
+        return new DungeonFloorOptions(Seed, Width, Height, IsThroneFloor, EnemyCount, GoldCount, ItemCount,
+            TrapCount, GatheringCount, LayoutVersion, Biome, Tier, Role, Encounter,
+            new EternalEnigma.Core.World.DungeonObjectiveDefinition(kind), EncounterFloor, FinalEncounterFloor,
+            BossCatalog.Select(Seed, combatTier).Family, Variant);
     }
 
     public static DungeonFloorOptions Throne(int seed) => new(seed, 12, 12, true, 0, 0, 0, 0, 0);

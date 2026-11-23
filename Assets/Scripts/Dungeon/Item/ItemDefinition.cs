@@ -28,8 +28,9 @@ public abstract class ItemDefinition : ScriptableObject
 
     public DroppedItem DroppedItemPrefab;
     public Sprite Icon;
-    public DroppedItem ResolveDroppedPrefab(IEnumerable<DroppedItem> categories) =>
-        DroppedItemPrefab != null ? DroppedItemPrefab : categories?.FirstOrDefault(p=>p!=null&&p.DroppedItemVisual==DroppedItemVisual);
+    public DroppedItem ResolveDroppedPrefab(IEnumerable<DroppedItem> categories = null) =>
+        DroppedItemPrefab != null ? DroppedItemPrefab : (categories ?? DioramaItemCatalog.Load()?.Categories)
+            ?.FirstOrDefault(p => p != null && p.DroppedItemVisual == DroppedItemVisual);
     public Sprite ResolveIcon(GamePresentationProfile profile=null)
     {
         if(Icon!=null)return Icon;

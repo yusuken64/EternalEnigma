@@ -369,10 +369,10 @@ public partial class Game : SingletonMonoBehaviour<Game>
 		CurrentDungeon.SetStairs(floor.Stairs.ToCell());
 		Debug.Log("Stairs Created", this);
 
+        int difficulty = RunPlan?.Floor(PlayerController.Floor).CombatDifficulty ?? PlayerController.Floor;
+        Encounter.Populate(difficulty);
 		if (!throneFloor)
 		{
-            int difficulty = RunPlan?.Floor(PlayerController.Floor).CombatDifficulty ?? PlayerController.Floor;
-            Encounter.Populate(difficulty);
             // Spawn blockers before testing enemy footprints. A large creature can
             // overlap a neighboring prop even when its seeded center is free.
             foreach (var definition in floor.Scenery)

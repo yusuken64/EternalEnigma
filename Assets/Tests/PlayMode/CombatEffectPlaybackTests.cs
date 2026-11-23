@@ -110,11 +110,22 @@ namespace EternalEnigma.Tests
             finally { actor.Skills.Remove(skill); Object.Destroy(skill); }
         }
 
-        [UnityTest] public IEnumerator SlashImpactsFollowAllEightRecordedCastDirections()
+        [UnityTest] public IEnumerator SlashesFaceTheCameraFromAllEightCastDirections()
         {
             profile.Projectile.Prefab = null; profile.Area.Prefab = null;
             profile.Impact.AlignWithCastDirection = true;
             profile.Impact.Rotation = new Vector3(-90, 0, 0);
+            var rig = new GameObject("Angled dungeon camera");
+            rig.transform.SetParent(root.transform);
+            var view = rig.AddComponent<Camera>();
+            view.enabled = false;
+            view.transform.rotation = Quaternion.LookRotation(new Vector3(0, 12, 14), Vector3.up);
+            game.PlayerController = rig.AddComponent<PlayerController>();
+            game.PlayerController.enabled = false;
+            var cameraController = rig.AddComponent<CameraController>();
+            cameraController.enabled = false;
+            cameraController.Camera = view;
+            game.PlayerController.CameraController = cameraController;
             var player = CombatEffectPlayer.Get();
             foreach (var direction in new[] { Vector3.up, Vector3.right, Vector3.down, Vector3.left,
                 new Vector3(1,1), new Vector3(1,-1), new Vector3(-1,-1), new Vector3(-1,1) })
@@ -123,7 +134,10 @@ namespace EternalEnigma.Tests
                 actor.SetFacing(Facing.Down); // Playback uses the snapshot, not future actor facing.
                 yield return player.Deliver(sequence, actor.transform.position, true);
                 var effect = player.GetComponentsInChildren<ParticleSystem>().Single();
-                Assert.That(Vector3.Dot(effect.transform.forward, direction.normalized), Is.GreaterThan(.999f));
+                var camera = view.transform;
+                var projected = Vector3.ProjectOnPlane(direction, camera.forward).normalized;
+                Assert.That(Vector3.Dot(effect.transform.forward, projected), Is.GreaterThan(.999f));
+                Assert.That(Vector3.Dot(effect.transform.up, -camera.forward), Is.GreaterThan(.999f));
                 player.Clear(); yield return null;
             }
         }

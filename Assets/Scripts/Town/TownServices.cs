@@ -183,7 +183,7 @@ public sealed class TownServices
         if (Player.RecruitedAllies.Any(member => TownAllyManager.SameHero(member, ally)) ||
             (common.CampaignContext != null && common.GameSaveData.Roster.Any(member =>
                 member.AllyId == ally.Id || string.Equals(member.AllyName, ally.Name, StringComparison.OrdinalIgnoreCase)))) return false;
-        reason = $"Costs {ally.RecruitCost} gold; you have {Player.Gold}.";
+        reason = "Not enough gold.";
         if (Player.Gold < ally.RecruitCost) return false;
         var context = Common.Instance.CampaignContext;
         if (context != null) { context.Roster.Add(ally.Id); context.Active.Add(ally.Id); }

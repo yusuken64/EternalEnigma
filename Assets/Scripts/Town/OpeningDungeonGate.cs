@@ -31,17 +31,7 @@ public sealed class OpeningDungeonGate : MonoBehaviour
         tint.SetColor("_Color", color); tint.SetColor("_BaseColor", color);
         renderer.SetPropertyBlock(tint);
 
-        marker.label = new GameObject("Opening status").AddComponent<TextMeshPro>();
-        GameTypography.Apply(marker.label, GameTextRole.Utility);
-        marker.label.transform.SetParent(root.transform, false);
-        marker.label.transform.localPosition = new Vector3(0, -.8f, -.55f) * size;
-        marker.label.rectTransform.sizeDelta = new Vector2(3.5f, .55f) * size;
-        marker.label.fontSize = 2.1f * size;
-        marker.label.alignment = TextAlignmentOptions.Center;
-        marker.label.gameObject.AddComponent<BiomeSignLabel>().CameraOffset = .05f * size;
-        // Replace the fallback portal caption instead of stacking two labels.
-        foreach (var caption in entrance.GetComponentsInChildren<TextMeshPro>())
-            if (caption != marker.label && caption.text == "Dungeon gate") caption.gameObject.SetActive(false);
+        marker.label = entrance.Sign.Caption;
         marker.Refresh();
     }
 

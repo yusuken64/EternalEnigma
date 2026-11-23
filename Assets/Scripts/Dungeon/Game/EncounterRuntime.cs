@@ -10,7 +10,7 @@ public sealed class EncounterRuntime
 {
     readonly Game game;
     readonly DungeonFloor floor;
-    readonly Dictionary<string, GameObject> visuals = new();
+    readonly Dictionary<string, EncounterPuzzlePiece> visuals = new();
     readonly Dictionary<string, EncounterActor> actors = new();
     int witnessStep, summonSerial;
     bool witnessDiverged;
@@ -20,11 +20,13 @@ public sealed class EncounterRuntime
     public bool AllowsReset => floor.Objective.AllowsReset;
     public string ObjectiveText => floor.Objective.Kind switch {
         DungeonObjectiveKind.DefeatEnemies => $"Defeat the required enemies. {Progress.RemainingEnemyIds.Count} remain.",
-        DungeonObjectiveKind.DefeatBoss => "Defeat the arena boss.",
+        DungeonObjectiveKind.DefeatBoss => "Defeat the floor boss to open the exit.",
         DungeonObjectiveKind.PositionObjects => "Push every boulder onto a marked goal. Reset Floor restores the entry state.",
         DungeonObjectiveKind.MatchLights => "Step on lights to match the target board.",
         DungeonObjectiveKind.TrapEnemy => "Lure the invulnerable pursuer into the marked trap.",
         DungeonObjectiveKind.GuideEnemy => "Guide the fleeing creature onto its marked destination.",
+        DungeonObjectiveKind.RecoverPossessions when game.Prison?.Recovered == true => "Defeat the prison boss to open the exit.",
+        DungeonObjectiveKind.RecoverPossessions when Progress.RemainingEnemyIds.Count > 0 => "Recover the party's possessions and defeat the prison boss.",
         DungeonObjectiveKind.RecoverPossessions => "Recover the party's possessions from the guarded stash.",
         _ => "Reach the exit."
     };
@@ -37,20 +39,12 @@ public sealed class EncounterRuntime
 
     internal void Populate(int difficulty)
     {
+        game.CurrentDungeon.IsBossFloor = floor.ObjectiveEnemies.Any(p => p.IsBoss);
         foreach (var placement in floor.PuzzleObjects)
         {
             if (placement.Kind == PuzzleObjectKind.BasicSupplies)
             { EncounterStash.Create(game.CurrentDungeon, placement.Position.ToCell(), false); continue; }
-            Color color = placement.Kind switch {
-                PuzzleObjectKind.Boulder => new Color(.4f,.43f,.5f),
-                PuzzleObjectKind.Goal => new Color(.2f,.9f,.4f),
-                PuzzleObjectKind.Trap => new Color(1,.25f,.25f),
-                PuzzleObjectKind.Destination => new Color(.2f,.9f,.95f),
-                _ => placement.InitialState ? Color.yellow : new Color(.15f,.17f,.25f)
-            };
-            if (placement.Kind == PuzzleObjectKind.LightTarget) color = placement.TargetState ? Color.yellow : new Color(.15f,.17f,.25f);
-            var marker = Marker(game.CurrentDungeon, placement.Id, placement.Position.ToCell(), color, placement.Kind == PuzzleObjectKind.Boulder ? .72f : .08f);
-            visuals.Add(placement.Id, marker);
+            visuals.Add(placement.Id, EncounterPuzzlePiece.Create(game.CurrentDungeon, placement));
         }
         foreach (var stash in floor.RecoveryStashes) EncounterStash.Create(game.CurrentDungeon, stash.Position.ToCell(), true);
         foreach (var placement in floor.ObjectiveEnemies)
@@ -98,6 +92,8 @@ public sealed class EncounterRuntime
         var identity = actor.GetComponent<EncounterActor>();
         if (identity == null || identity.Resolved) return;
         identity.Resolved = true;
+        if (actor is Enemy { IsBoss: true })
+            game.CurrentDungeon.IsBossFloor = actors.Values.Any(a => a != null && !a.Resolved && a.GetComponent<Enemy>() is { IsBoss: true });
         bool before = CanExit; Progress.Defeat(identity.Id);
         if (actor.GetComponent<BigSlimeDieResponseBehavior>() == null) AnnounceCompletion(before);
 
@@ -228,9 +224,9 @@ public sealed class EncounterRuntime
     internal Vector3Int? AutoplayDestination(Ally ally)
     {
         if (CanExit) return null;
-        if (floor.Objective.Kind == DungeonObjectiveKind.RecoverPossessions)
+        if (floor.Objective.Kind == DungeonObjectiveKind.RecoverPossessions && game.Prison?.Recovered != true)
             return game.CurrentDungeon.Interactables.OfType<EncounterStash>().FirstOrDefault(s => s.IsRecovery)?.Position;
-        if (floor.Objective.Kind is DungeonObjectiveKind.DefeatBoss or DungeonObjectiveKind.DefeatEnemies)
+        if (floor.Objective.Kind is DungeonObjectiveKind.DefeatBoss or DungeonObjectiveKind.DefeatEnemies or DungeonObjectiveKind.RecoverPossessions)
         {
             var targets = actors.Values.Where(a => a != null && !a.Resolved).Select(a=>a.GetComponent<Enemy>()).Where(e=>e!=null).ToArray();
             return targets.SelectMany(e=>game.CurrentDungeon.GetWalkableNeighborhoodTiles(e.TilemapPosition)
@@ -247,10 +243,23 @@ public sealed class EncounterRuntime
 
     void RefreshVisuals()
     {
-        foreach (var boulder in Puzzle.Boulders)
-            if (visuals.TryGetValue(boulder.Key, out var go)) PositionMarker(game.CurrentDungeon, go, boulder.Value.ToCell(), .72f);
-        foreach (var light in Puzzle.Lights)
-            if (visuals.TryGetValue(light.Key, out var go)) go.GetComponent<Renderer>().material.color = light.Value ? Color.yellow : new Color(.15f,.17f,.25f);
+        foreach (var placement in floor.PuzzleObjects)
+        {
+            switch (placement.Kind)
+            {
+                case PuzzleObjectKind.Boulder:
+                    var cell = Puzzle.Boulders[placement.Id];
+                    bool onPlate = floor.PuzzleObjects.Any(p => p.Kind == PuzzleObjectKind.Goal && p.Position.Equals(cell));
+                    visuals[placement.Id].MoveTo(game.CurrentDungeon, cell, onPlate);
+                    break;
+                case PuzzleObjectKind.Goal:
+                    visuals[placement.Id].SetPressed(Puzzle.Boulders.Values.Contains(placement.Position));
+                    break;
+                case PuzzleObjectKind.Light:
+                    visuals[placement.Id].SetPressed(Puzzle.Lights[placement.Id]);
+                    break;
+            }
+        }
     }
 
     internal static GameObject Marker(TileWorldDungeon dungeon, string name, Vector3Int cell, Color color, float height = .08f)
@@ -258,7 +267,9 @@ public sealed class EncounterRuntime
         var go = GameObject.CreatePrimitive(PrimitiveType.Cube); go.name = name;
         go.transform.SetParent(dungeon.transform, false);
         UnityEngine.Object.Destroy(go.GetComponent<Collider>());
-        go.GetComponent<Renderer>().material = new Material(Shader.Find("Standard")) { color = color };
+        var material = new Material(Shader.Find("Standard"));
+        material.color = color;
+        go.GetComponent<Renderer>().sharedMaterial = material;
         go.AddComponent<EncounterMarkerMaterial>();
         PositionMarker(dungeon, go, cell, height); return go;
     }
@@ -281,7 +292,15 @@ public sealed class EncounterStash : Interactable
     internal bool IsRecovery => recovery;
     internal static void Create(TileWorldDungeon dungeon, Vector3Int cell, bool recovery)
     {
-        var go = EncounterRuntime.Marker(dungeon, recovery ? "Possessions stash" : "Escape supplies", cell, recovery ? new Color(.7f,.4f,1) : Color.cyan, .45f);
+        var go = new GameObject(recovery ? "Possessions stash" : "Escape supplies");
+        go.transform.SetParent(dungeon.transform, false);
+        go.transform.position = dungeon.CellToWorld(cell);
+        var prop = DioramaItemCatalog.Load().GetProp(recovery ? "treasure chest" : "bag");
+        var model = Instantiate(prop, go.transform, false);
+        float size = (dungeon.CellToWorld(Vector3Int.right) - dungeon.CellToWorld(Vector3Int.zero)).x;
+        var center = go.transform.position + new Vector3(size * .5f, size * .5f, 0);
+        center.z = DungeonPresentation.GroundPlaneZ;
+        DungeonPickupFootprint.Place(model.transform, center, size * .82f);
         var stash = go.AddComponent<EncounterStash>(); stash.Position = cell; stash.recovery = recovery;
         dungeon.Interactables.Add(stash);
     }

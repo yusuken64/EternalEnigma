@@ -29,6 +29,8 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
             var propCounts = new Dictionary<(int, int), int>();
             int propTriangles = 0;
             var diorama=DioramaCatalog.Load();
+            var actorCells = new HashSet<GridPoint>(plan.AllySlots.Select(ally => ally.Cell));
+            actorCells.UnionWith(EternalEnigma.Core.Generation.TownNpcPlacement.Generate(plan).Select(npc => npc.Cell));
             var groundStyle=PaintedGroundStyle.Load();
             bool district = plan.Layers.ContainsKey(TownLayers.Boundary);
             int margin = district ? TownSurroundings.InnerBorder : TownSurroundings.MarginCells(size);
@@ -62,7 +64,7 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
             {
                 var position = new Vector3(x + .5f, y + .5f, 0) * size;
                 if(groundStyle==null) batch.Add(Kit.Mesh("Paving"), Kit.Ground(biome), position + Vector3.forward * .02f, Vector3.one * size);
-                if (plan.Layers[TownLayers.Trees][x, y])
+                if (plan.Layers[TownLayers.Trees][x, y] && !actorCells.Contains(new GridPoint(x, y)))
                 {
                     uint hash=OverworldCosmetics.Hash(creator.currentSeed ^ 15401,x,y);
                     var picker=TreeModels!=null?TreeModels:Kit.TreeModels;
@@ -71,13 +73,13 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
                     if(tree!=null)
                     {
                         float variation=DioramaPlacement.Variation(hash)*.9f;
-                        bool Protected(int a,int b)=>a>=0&&b>=0&&a<plan.Width&&b<plan.Height&&(plan.Layers[TownLayers.Roads][a,b]||plan.IsReserved(new GridPoint(a,b))||plan.Layers[TownLayers.Buildings][a,b]);
+                        bool Protected(int a,int b)=>a>=0&&b>=0&&a<plan.Width&&b<plan.Height&&(plan.Layers[TownLayers.Roads][a,b]||plan.IsReserved(new GridPoint(a,b))||actorCells.Contains(new GridPoint(a,b))||plan.Layers[TownLayers.Buildings][a,b]);
                         if(DioramaPlacement.TreePosition(tree,x,y,size,variation,Protected,out var treePosition))
                             diorama.Add(batch,model,biome,treePosition,(hash>>16)%360,variation);
                     }
                     else batch.Add(Kit.Mesh(model),Kit.Material(biome),position,Vector3.one*size*(.85f+(hash>>8)%16*.01f),(hash>>16)%360);
                 }
-                if (plan.Layers.TryGetValue(TownLayers.Props, out var props) && props[x,y])
+                if (plan.Layers.TryGetValue(TownLayers.Props, out var props) && props[x,y] && !actorCells.Contains(new GridPoint(x, y)))
                 {
                     uint hash = OverworldCosmetics.Hash(creator.currentSeed ^ 18013, x, y);
                     var chunk = (x / 32, y / 32);
@@ -151,7 +153,7 @@ public sealed class TownEnvironmentLayer : TWCBuildLayer
             batch.Finish();
             TownGateVisuals.Create(Kit, biome, root.transform, plan.Exit, size, district ? "District entrance" : "Town gate", false,
                 rotation: district ? TownGateVisuals.DistrictRotation(plan, plan.Exit, false) : 0,
-                gateCell: district ? TownGateVisuals.DistrictGateCell(plan, plan.Exit) : null);
+                district: district ? plan : null);
         }
         finally { creator.executedBuildLayersCount += 1; }
     }

@@ -55,6 +55,8 @@ public sealed class DungeonObjectiveProgress
 {
     private readonly HashSet<string> remaining;
     private readonly HashSet<string> required;
+    private bool possessionsRecovered;
+    private bool TracksDefeats => Definition.Kind is DungeonObjectiveKind.DefeatEnemies or DungeonObjectiveKind.DefeatBoss or DungeonObjectiveKind.RecoverPossessions;
     public DungeonObjectiveDefinition Definition { get; }
     public bool Complete { get; private set; }
     public IReadOnlyCollection<string> RemainingEnemyIds => Array.AsReadOnly(remaining.OrderBy(x => x, StringComparer.Ordinal).ToArray());
@@ -67,7 +69,7 @@ public sealed class DungeonObjectiveProgress
     public bool IsRequired(string id) => required.Contains(id);
     public bool RegisterReinforcement(string id)
     {
-        if (Definition.Kind != DungeonObjectiveKind.DefeatEnemies && Definition.Kind != DungeonObjectiveKind.DefeatBoss) return false;
+        if (!TracksDefeats) return false;
         if (string.IsNullOrWhiteSpace(id) || !required.Add(id)) return false;
         // Death responses can spawn children after the parent's death was recorded.
         // They join the same objective before the next player decision.
@@ -75,12 +77,17 @@ public sealed class DungeonObjectiveProgress
     }
     public bool Defeat(string id)
     {
-        if (Definition.Kind != DungeonObjectiveKind.DefeatEnemies && Definition.Kind != DungeonObjectiveKind.DefeatBoss) return false;
-        if (!remaining.Remove(id)) return false;
-        Complete |= remaining.Count == 0; return true;
+        if (!TracksDefeats || !remaining.Remove(id)) return false;
+        Complete = remaining.Count == 0 && (Definition.Kind != DungeonObjectiveKind.RecoverPossessions || possessionsRecovered);
+        return true;
     }
     public void ObservePosition(GridPoint position, DungeonFloor floor) { if (Definition.Kind == DungeonObjectiveKind.ReachExit && position.Equals(floor.Stairs)) Complete = true; }
     public void ObservePuzzle(PuzzleState state) { if (Definition.AllowsReset && state.Complete) Complete = true; }
-    public void RecoverPossessions() { if (Definition.Kind == DungeonObjectiveKind.RecoverPossessions) Complete = true; }
+    public void RecoverPossessions()
+    {
+        if (Definition.Kind != DungeonObjectiveKind.RecoverPossessions) return;
+        possessionsRecovered = true;
+        Complete = remaining.Count == 0;
+    }
     public bool CanExit => Definition.Kind == DungeonObjectiveKind.ReachExit || Complete;
 }

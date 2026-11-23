@@ -35,8 +35,6 @@ namespace JuicyChickenGames.Menu
             RefreshPrompt();
             audioReady = false;
             SelectGate(targets.FirstOrDefault(route => route.Id == preferredRoute) ?? targets[0]);
-            lastMove = Vector2.zero;
-            nextMoveTime = 0;
             pointerReady = false;
             TerminalPointerFocus = null;
             lastPointer = MenuUIInputModule.Active?.UI.Point.ReadValue<Vector2>() ?? Vector2.zero;
@@ -72,7 +70,7 @@ namespace JuicyChickenGames.Menu
             selectedGate = route;
             var cell = GateCell(route);
             TargetIndicator.SetActive(!TerminalMode.Effective);
-            TargetIndicator.transform.position = targetingWorld.CellToWorld(new GridPoint(cell.x, cell.y)) + Vector3.back * .05f;
+            TargetIndicator.transform.position = targetingWorld.CellCenterToWorld(new GridPoint(cell.x, cell.y)) + Vector3.back * .05f;
             HudRefresh.Request(HudChange.Travel);
         }
 
@@ -111,19 +109,15 @@ namespace JuicyChickenGames.Menu
             RefreshPrompt();
             TargetIndicator.SetActive(!TerminalMode.Effective);
             if (ProcessPointer()) return;
-            var move = Common.Instance.MenuInputHandler.MoveInput;
-            if (move.sqrMagnitude < .25f) { lastMove = Vector2.zero; return; }
-            if (lastMove != Vector2.zero && Time.unscaledTime < nextMoveTime) return;
+            var direction = MenuUIInputModule.Active?.NavigationStep ?? Vector2.zero;
+            if (direction == Vector2.zero) return;
             TerminalPointerFocus = null;
-            var direction = Mathf.Abs(move.x) > Mathf.Abs(move.y) ? new Vector2(Mathf.Sign(move.x), 0) : new Vector2(0, Mathf.Sign(move.y));
             var current = GateCell(selectedGate);
             var choices = gateTargets.Where(route => route != selectedGate).ToList();
             var next = choices.Where(route => Vector2.Dot(((Vector2)(Vector3)(GateCell(route) - current)).normalized, direction) > .7f)
                 .OrderBy(route => (GateCell(route) - current).sqrMagnitude).FirstOrDefault();
             next ??= choices.OrderBy(route => Vector2.Dot((Vector2)(Vector3)GateCell(route), direction)).FirstOrDefault();
             if (next != null) SelectGate(next);
-            nextMoveTime = Time.unscaledTime + (lastMove == Vector2.zero ? .3f : .1f);
-            lastMove = move;
         }
 
         private void ConfirmGateTarget()

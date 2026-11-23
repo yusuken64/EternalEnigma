@@ -351,7 +351,7 @@ namespace EternalEnigma.Tests
                 Assert.That(cues, Is.Empty);
                 yield return new WaitForSecondsRealtime(.06f);
                 slider.OnSliderChanged(original > .5f ? .4f : .6f);
-                Assert.That(cues, Is.EqualTo(new[] { SoundCue.Navigate }));
+                Assert.That(cues, Is.EqualTo(new[] { SoundCue.Confirm }));
             }
             finally
             {

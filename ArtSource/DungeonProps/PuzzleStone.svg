@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+ <defs>
+  <filter id="granite" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+   <feTurbulence type="fractalNoise" baseFrequency=".012 .025" numOctaves="4" seed="42" stitchTiles="stitch" result="grain"/>
+   <feColorMatrix in="grain" type="matrix" values=".74 0 0 0 .16  .69 0 0 0 .20  .62 0 0 0 .25  0 0 0 0 1"/>
+  </filter>
+  <filter id="fleck" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+   <feTurbulence type="fractalNoise" baseFrequency=".18" numOctaves="2" seed="11" stitchTiles="stitch"/>
+   <feColorMatrix type="matrix" values="1 0 0 0 .28  1 0 0 0 .32  1 0 0 0 .30  1.7 0 0 0 -.70"/>
+  </filter>
+  <g id="faults" fill="none" stroke-linejoin="bevel" stroke-linecap="round">
+   <path d="M-4 132 38 119 61 120 78 101 110 94 144 75 171 75 193 57 224 48 243 28 268-4 M-4 420 34 407 61 378 78 375 101 340 127 328 147 308 171 302 192 286 211 285 M245 517 270 489 298 476 323 447 343 435 349 415 375 405 398 379 418 371 432 351 472 340 495 326 516 326"/>
+   <path d="m78 101-6-17 8-19-2-14m68 24 4 15 18 6 14 18m161 321 16 1 20-14 18-1m-295-81 4 11-5 20 4 16" stroke-width="2.8"/>
+  </g>
+ </defs>
+ <rect width="512" height="512" fill="#707982"/><rect width="512" height="512" filter="url(#granite)"/>
+ <g fill="#bcba9e" opacity=".23"><path d="m28 260 53-31 66-6-44 24Z m99-108 46-27 22-3-42 25Z m187 140 76-35 39-4-70 34Z m-165 157 25-22 41-12-36 25Z m250-362 37-22 33-6-36 23Z"/></g>
+ <use href="#faults" stroke="#3b434a" stroke-width="7" opacity=".77"/>
+ <use href="#faults" stroke="#cbbd9e" stroke-width="2.9" opacity=".9" transform="translate(0 -2)"/>
+ <g stroke="#d6d0b5" stroke-width="2.3" opacity=".65"><path d="m60 207 12-6m4-4 6-2m135 7 14-6m-10 11 8-3m74-106 9-5m103 221 15-7m-240 89 9-5m254-296 10-3m-377 283 12-5"/></g>
+ <rect width="512" height="512" filter="url(#fleck)" opacity=".65"/>
+</svg>

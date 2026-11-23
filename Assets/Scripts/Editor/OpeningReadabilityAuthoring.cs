@@ -32,8 +32,8 @@ public static class OpeningReadabilityAuthoring
         foreach (var guid in AssetDatabase.FindAssets("t:CombatEffectProfile", new[] { "Assets/Resources/CombatEffects/Profiles" }))
         {
             var profile = AssetDatabase.LoadAssetAtPath<CombatEffectProfile>(AssetDatabase.GUIDToAssetPath(guid));
-            if (!profile.name.StartsWith("Melee") || profile.Impact.Prefab == null || profile.Impact.Prefab.name != "LightSlashHit") continue;
-            profile.Impact.Scale = .65f;
+            if (!profile.name.StartsWith("Melee") || profile.Impact.Prefab == null || profile.Impact.Prefab.name != "ArcaneSlash") continue;
+            profile.Impact.Scale = .28f;
             profile.Impact.Lifetime = .3f;
             profile.Impact.FitToTarget = true;
             profile.Impact.ScaleWithTarget = false;

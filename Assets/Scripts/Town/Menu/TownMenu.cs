@@ -63,14 +63,21 @@ public class TownMenu : MonoBehaviour
 
     public static void ShowConversation(TownNpcDefinition npc)
     {
+        var choices = npc.DialogueTopics.Select(topic => (topic.Topic, (Action)(() =>
+            ShowMessage(npc.DisplayName + "\n\n" + topic.Answer)))).ToList();
+        ShowTopics("What do you want to know?", choices);
+    }
+
+    internal static PartyMenuPicker ShowTopics(string title, List<(string Label, Action Execute)> choices,
+        string leave = "That's all, thanks.")
+    {
         var manager = FindFirstObjectByType<TownMenuManager>();
         var partyMenu = PartyMenu.Create(manager.transform);
         PartyMenuPicker picker = null;
-        var choices = npc.DialogueTopics.Select(topic => (topic.Topic, (Action)(() =>
-            ShowMessage(npc.DisplayName + "\n\n" + topic.Answer)))).ToList();
-        choices.Add(("That's all, thanks.", () => picker.CloseDialog()));
-        picker = PartyMenuPicker.Build(partyMenu.transform.parent, "What do you want to know?", choices, closeOnChoose: false);
+        choices.Add((leave, () => picker.CloseDialog()));
+        picker = PartyMenuPicker.Build(partyMenu.transform.parent, title, choices, closeOnChoose: false);
         manager.Open(picker);
+        return picker;
     }
 
     public void OpenItemActions(InventoryMenu inventory, TownAlly character, InventoryItem item)

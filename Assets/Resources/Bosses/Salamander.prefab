@@ -32,9 +32,25 @@ PrefabInstance:
       propertyPath: StartingStats.EXPOnKill
       value: 100
       objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 04365c8f86a5bae42a72c1c19acfa03d, type: 3}
+      propertyPath: DiagonalFootprintOffset.x
+      value: 0.0011843941
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 04365c8f86a5bae42a72c1c19acfa03d, type: 3}
+      propertyPath: DiagonalFootprintOffset.y
+      value: -0.078639045
+      objectReference: {fileID: 0}
     - target: {fileID: 4825703149710853141, guid: 04365c8f86a5bae42a72c1c19acfa03d, type: 3}
       propertyPath: WaitUntilAttacked
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5355473611890284617, guid: 04365c8f86a5bae42a72c1c19acfa03d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.00000005298191
+      objectReference: {fileID: 0}
+    - target: {fileID: 5355473611890284617, guid: 04365c8f86a5bae42a72c1c19acfa03d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.22120957
       objectReference: {fileID: 0}
     - target: {fileID: 5543747752720980080, guid: 04365c8f86a5bae42a72c1c19acfa03d, type: 3}
       propertyPath: m_Name
@@ -121,3 +137,5 @@ MonoBehaviour:
   WarningTurns: 1
   CooldownTurns: 3
   EffectTurns: 2
+  SplashRadiusOverride: 0
+  RecoveryTurns: 0

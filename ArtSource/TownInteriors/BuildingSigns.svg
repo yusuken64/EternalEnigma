@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="432" viewBox="0 0 1024 432">
+  <title>Painted faces for the town's hanging signs</title>
+  <defs>
+  <linearGradient id="brass" x2=".26" y2="1" gradientUnits="objectBoundingBox">
+    <stop stop-color="#fff0ad"/><stop offset=".35" stop-color="#dbac64"/><stop offset=".69" stop-color="#875238"/><stop offset="1" stop-color="#e1ad63"/>
+  </linearGradient>
+  <linearGradient id="shade" x2="0" y2="1"><stop stop-color="#fff3b1" stop-opacity=".17"/><stop offset=".5" stop-color="#362631" stop-opacity="0"/><stop offset="1" stop-color="#18151f" stop-opacity=".58"/></linearGradient>
+  <linearGradient id="wood" x2="0" y2="1"><stop stop-color="#77503a"/><stop offset=".55" stop-color="#513329"/><stop offset="1" stop-color="#392827"/></linearGradient>
+  <linearGradient id="loaf" x2=".35" y2="1"><stop stop-color="#ffe398"/><stop offset=".5" stop-color="#edac58"/><stop offset="1" stop-color="#b76235"/></linearGradient>
+  <g id="pin"><circle r="3.3" fill="#52392a"/><circle cy="-.6" r="2.3" fill="#deab64"/><circle cx="-.55" cy="-1.3" r=".85" fill="#ffedac"/></g>
+  <g id="flourish" fill="#d8ac6d" stroke="#d8ac6d">
+    <path d="M24 57h28m-22 4h14" fill="none" stroke-width="1.8"/>
+    <path d="m57 57 4-3 4 3-4 3z" stroke="none"/>
+  </g>
+  <g id="panel">
+    <rect width="256" height="144" fill="#513428"/>
+    <path d="M17 4h222l13 13v110l-13 13H17L4 127V17Z" fill="url(#wood)" stroke="#392825" stroke-width="5"/>
+    <path d="M20 10h216l10 10v103l-10 10H20l-10-10V20Z" fill="currentColor" stroke="url(#brass)" stroke-width="5"/>
+    <path d="M20 13h216l7 8v101l-8 8H21l-8-8V21Z" fill="url(#shade)"/>
+    <path d="M16 100q53 5 112 2 67-3 112-2v20l-9 7H25l-9-7Z" fill="#30272a"/>
+    <path d="M16 98q56 5 112 2 67-3 112-2" fill="none" stroke="#d0a261" stroke-width="1.8"/>
+    <path d="M25 21h36m134 0h36M22 83v7l5 4m207-11v7l-5 4" fill="none" stroke="#ffdda1" stroke-opacity=".48" stroke-width="1.6"/>
+    <use href="#flourish"/><use href="#flourish" transform="translate(256 0) scale(-1 1)"/>
+    <use href="#pin" x="18" y="18"/><use href="#pin" x="238" y="18"/><use href="#pin" x="18" y="123"/><use href="#pin" x="238" y="123"/>
+    <!-- Small palette swatches live beyond the bevel and color the three-dimensional hardware. -->
+    <path d="M0 0h4v4H0Z" fill="#624232"/><path d="M252 0h4v4h-4Z" fill="#413336"/><path d="M0 140h4v4H0Z" fill="#d6a463"/>
+  </g>
+  </defs>
+  <rect width="1024" height="432" fill="#513428"/>
+  <g id="home" transform="translate(0 0)" color="#44685d">
+    <use href="#panel"/>
+    <g transform="translate(128 55)" stroke="#503b36" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><path d="M-43 1 -3-29 43 1v37h-85Z" fill="#e3b479"/><path d="M-37 3 -3-21 35 3v28h-72Z" fill="#f4d79b" stroke="none"/><path d="M15-27v-10h12v20" fill="#bc7954"/><path d="m-54 2 46-37q5-5 10-1L54 0l-7 10L-3-22l-44 33Z" fill="#b46648"/><path d="m-46 0 42-30 49 31" fill="none" stroke="#ffc584" stroke-width="4"/><path d="M-32 13h13v13h-13z" fill="#68a6a3"/><path d="M-4 35V14q6-12 15 0v21Z" fill="#876348"/><path d="M-43 37h86" stroke="#ffe6a5" stroke-width="5"/><circle cx="6" cy="22" r="1.6" fill="#f6ce76" stroke="none"/></g>
+  </g>
+  <g id="bakery" transform="translate(256 0)" color="#8b4535">
+    <use href="#panel"/>
+    <g transform="translate(128 55)" stroke="#503b36" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><g transform="rotate(-12)"><path d="M-59 10c-4-17 8-33 26-38 13-9 33-11 47-6 24-5 46 10 49 29 5 20-12 36-36 39-18 6-43 6-60-2-14-2-24-10-26-22Z" fill="url(#loaf)"/><path d="M-52 12c9 11 23 16 39 19 24 4 51-3 66-16-7 13-24 21-45 23-31 4-55-6-60-17Z" fill="#a85932" stroke="none"/><path d="M-43-7c3-13 13-21 25-23-8 6-11 15-15 24-3 7-11 10-10-1Zm31-8c4-13 13-19 24-21C3-27 3-19-3-10c-5 6-12 5-9-5Zm31 1c5-10 12-16 21-17-5 6-6 13-11 22-5 6-11 6-10-5Z" stroke="#a85e37" stroke-width="2" fill="#ffdf9a"/><path d="M-48 11q4 11 16 14m65-39 7-3" fill="none" stroke="#f8cd7c" stroke-width="3"/></g></g>
+  </g>
+  <g id="supplies" transform="translate(512 0)" color="#336b70">
+    <use href="#panel"/>
+    <g transform="translate(128 55)" stroke="#503b36" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><path d="M-14-30h28v17c0 6 8 11 18 17 12 8 13 29 0 36-12 6-49 6-61 0-14-8-13-25-2-35 11-8 17-12 17-18Z" fill="#b4e8dd"/><path d="M-29 14q15-8 28-1t31-1c7 8 6 19-2 23-11 6-37 6-49 2q-11-5-8-23Z" fill="#57b9b0" stroke="#267775" stroke-width="2.5"/><path d="m-13-30-2-10 28-1-1 11Z" fill="#db9c63"/><path d="M-18-29h36v7h-36z" fill="#f7e0a1"/><path d="M-21 7q-9 7-8 12m22-36v7" stroke="#fcffe8" stroke-width="5" fill="none"/><path d="m8 14 9 9-9 10-9-10Z" fill="#f7d78a" stroke-width="2"/></g>
+  </g>
+  <g id="items" transform="translate(768 0)" color="#69603b">
+    <use href="#panel"/>
+    <g transform="translate(128 55)" stroke="#503b36" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><path d="M-42-19q39-11 77 0l4 47q-40 12-84 1Z" fill="#b97547"/><path d="M-19-23v-7q0-11 13-11H8q12 0 13 11v6h-9v-6q0-3-5-3H-4q-5 0-5 4v6Z" fill="#edc382"/><path d="M-44-20q42-9 82 0l2 18Q-1 12-43 0Z" fill="#e0a162"/><path d="M-9-4H5v20H-9Z" fill="#eeca7a"/><path d="M-37 21q22 7 47 4" fill="none" stroke="#efb979" stroke-width="3"/><g fill="#dba64e" stroke="#795036" stroke-width="2.5"><ellipse cx="33" cy="32" rx="16" ry="6"/><ellipse cx="36" cy="26" rx="16" ry="6"/><ellipse cx="32" cy="21" rx="16" ry="6" fill="#ffe49a"/></g></g>
+  </g>
+  <g id="trainer" transform="translate(0 144)" color="#4e5878">
+    <use href="#panel"/>
+    <g transform="translate(128 55)" stroke="#503b36" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><path d="m-10 9-14 34m26-32 15 30" fill="none" stroke="#573b35" stroke-width="9"/><circle cx="-4" cy="0" r="36" fill="#efce84"/><circle cx="-4" cy="0" r="27" fill="#b55f4b" stroke-width="2"/><circle cx="-4" cy="0" r="17" fill="#f5d795" stroke-width="2"/><circle cx="-4" cy="0" r="7" fill="#b45d4a" stroke="none"/></g>
+  </g>
+  <g id="inn" transform="translate(256 144)" color="#565779">
+    <use href="#panel"/>
+    <g transform="translate(128 55)" stroke="#503b36" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><path d="M-47-29h10v28l72 2v-19h10v54h-9V23h-73v12h-10Z" fill="#deb281"/><path d="M-37-7q24-12 66-4l8 9v15h-74Z" fill="#80b7ae"/><path d="M-32-9q-5-5 1-11 10-6 20 0 5 5-2 11Z" fill="#fff0c6" stroke-width="3"/><path d="M-6-9q17-5 38-1l6 8v14H-7Z" fill="#76afb5"/><path d="M3-8v18m7-18v18" stroke="#e4cb8c" fill="none" stroke-width="3"/><path d="M15-36q-2 13 12 16-9 6-16 0-8-9 4-16Z" fill="#f6d38c" stroke-width="2.2"/></g>
+  </g>
+  <g id="dungeon" transform="translate(512 144)" color="#4d5a65">
+    <use href="#panel"/>
+    <g transform="translate(128 55)" stroke="#503b36" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><path d="M-40 32V3q1-34 39-41Q35-35 40 1v31Z" fill="#858890"/><path d="M-22 29V4q1-19 22-26 21 8 22 26v25Z" fill="#302e3c"/><path d="m-9-36 8-5 10 5-3 13H-6Z" fill="#ebbd79"/><path d="m-34-16 12 8m44 0 12-8M-39 6l16 1m46-1 16-2M-39 21l16 1m46-2 15-2" fill="none" stroke="#46505d" stroke-width="3"/><path d="M-14 13h28l4 6h-35Zm-7 9h43l5 6h-52Zm-10 10h62l8 7h-78Z" fill="#c4ae8c" stroke-width="2.5"/></g>
+  </g>
+  <g id="gate" transform="translate(768 144)" color="#44665d">
+    <use href="#panel"/>
+    <g transform="translate(128 55)" stroke="#503b36" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><path d="M-43 33v-64h9v8h8v-8h9v21h35v-21h9v8h8v-8h9v64H26V0h-52v33Z" fill="#d0b68c"/><path d="M-19-15q18-11 39 0v10h-39Z" fill="#b2784c"/><path d="M-41-4h18m-18 16h17M24-4h17M24 12h17" fill="none" stroke="#8d7460" stroke-width="3"/><path d="M-21 32V4h42v28M-13 4v11m13-11v11M13 4v11" fill="none" stroke="#deba7a" stroke-width="3.2"/></g>
+  </g>
+  <g id="statue" transform="translate(0 288)" color="#586478">
+    <use href="#panel"/>
+    <g transform="translate(128 55)" stroke="#503b36" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><path d="M-21-15q-2-19 19-23 20 2 22 20l-7 13-1 9q12 2 22 14H-34q7-12 22-15l-2-10Z" fill="#d8c596"/><path d="M-25 20h50v7h-50zm-7 9h64v9h-64z" fill="#a6b1aa"/><path d="m-14-16 3-10 20-3-5 6M-8 7l9 7 9-9" fill="none" stroke="#987c61" stroke-width="3"/></g>
+  </g>
+  <g id="public-building" transform="translate(256 288)" color="#635b70">
+    <use href="#panel"/>
+    <g transform="translate(128 54) rotate(-8)" stroke="#503b36" stroke-width="4" stroke-linejoin="round">
+      <path d="M-31-27q5-8 13-8h54q9 1 9 10t-11 9H21L9 26q-1 10-12 10h-40q-12-2-11-11t11-11h5Z" fill="#f3d594"/>
+      <path d="M19-32q9 2 5 15h12m-72 33h31q8 0 7 9" fill="none"/>
+      <path d="M-19-10H8m-31 9H5m-31 10h18" stroke="#a5754c" stroke-width="3"/>
+    </g>
+  </g>
+  <g id="district-exit" transform="translate(512 288)" color="#705337">
+    <use href="#panel"/>
+    <g transform="translate(128 54)" stroke="#493b33" stroke-width="4" stroke-linejoin="round">
+      <path d="M-42 35V-13q6-28 42-30 36 2 42 30v48H28V-8Q20-26 0-26t-28 18v43Z" fill="#ddbd83"/>
+      <path d="M-27 29V-7q8-18 27-18t27 18v36Z" fill="#4f7874"/>
+      <circle cx="-2" cy="-6" r="11" fill="#ffd679" stroke="none"/>
+      <path d="M-27 19-12 3 1 12 13 1l14 14v15h-54Z" fill="#8eaa82" stroke="none"/>
+      <path d="M-12 35 0 13l12 22" fill="#f2d29b" stroke="none"/>
+      <path d="M-45 35h17m56 0h17" stroke="#ffdf9f" stroke-width="5"/>
+    </g>
+  </g>
+</svg>

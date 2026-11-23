@@ -20,7 +20,7 @@ namespace EternalEnigma.Tests
         const string Folder = "Temp/DungeonGridAlignment";
         [UnitySetUp] public IEnumerator Setup()
         {
-            harness = new GameTestHarness();
+            harness = new GameTestHarness { TimeoutSeconds = 180 };
             yield return harness.LoadDungeon(new TestScenario());
             Directory.CreateDirectory(Folder);
         }
@@ -117,6 +117,169 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator StairFootprintIsCenteredInItsInteractionCellOnConsecutiveFloors()
+        {
+            for (int floor = 0; floor < 2; floor++)
+            {
+                var dungeon = harness.Game.CurrentDungeon;
+                var stairs = dungeon.Interactables.OfType<Stairs>().Single();
+                var cell = dungeon.GetStairPosition();
+                var center = dungeon.CellCenterToWorld(cell);
+                var bounds = stairs.GetComponentInChildren<MeshRenderer>(true).bounds;
+                Assert.That(stairs.Position, Is.EqualTo(cell));
+                Assert.That(stairs.transform.position, Is.EqualTo(dungeon.CellToWorld(cell)));
+                Assert.That(Vector2.Distance(bounds.center, center), Is.LessThan(.001f));
+                Assert.That(bounds.max.z, Is.EqualTo(DungeonPresentation.GroundPlaneZ).Within(.001f));
+                Assert.That(bounds.size.x, Is.LessThanOrEqualTo(dungeon.CellSize));
+                Assert.That(bounds.size.y, Is.LessThanOrEqualTo(dungeon.CellSize));
+                foreach (var collider in stairs.GetComponentsInChildren<BoxCollider>(true))
+                    Assert.That(Vector2.Distance(collider.bounds.center, center), Is.LessThan(.01f));
+
+                harness.PlaceBesideStairs();
+                yield return null;
+                Capture("stairs-" + floor + "-top", center, true);
+                Capture("stairs-" + floor + "-game", center, false);
+                if (floor == 0)
+                {
+                    harness.Game.AdvanceFloor();
+                    yield return harness.WaitForIdle();
+                }
+            }
+        }
+
+        [Test]
+        public void TargetSquaresAndPickingAgreeAcrossTheEntireCell()
+        {
+            var game = harness.Game;
+            var dungeon = game.CurrentDungeon;
+            var held = game.PlayerController.TargetIndicator;
+            var target = MenuManager.Instance.TargetDialog;
+            var ally = harness.Ally;
+            var center = Center(dungeon, ally.TilemapPosition);
+            held.SetTargetingPosition(ally.TilemapPosition);
+            Assert.That(Vector2.Distance(held.SquareIndicator.transform.position, center), Is.LessThan(.001f));
+            target.Setup(ally, new System.Collections.Generic.List<Character> { ally }, (_, _) => null);
+            Assert.That(Vector2.Distance(target.TargetIndicator.GetComponentInChildren<Renderer>(true).bounds.center, center), Is.LessThan(.001f));
+            Assert.That(Vector2.Distance(MenuManager.Instance.TargetArrow.transform.position, center), Is.LessThan(.001f));
+            float half = dungeon.CellToWorld(Vector3Int.right).x * .49f;
+            foreach (int x in new[] { -1, 1 })
+                foreach (int y in new[] { -1, 1 })
+                    Assert.That(dungeon.GroundPointToCell(center + new Vector3(x * half, y * half)), Is.EqualTo(ally.TilemapPosition));
+        }
+
+        [Test]
+        public void EnemySpawnCentersAnOffsetMeshAroundTheFootprintWhenTurning()
+        {
+            var dungeon = harness.Game.CurrentDungeon;
+            var prefab = AssetDatabase.LoadAssetAtPath<Enemy>("Assets/Prefabs/Dungeon/Enemies/Enemy_Slime.prefab");
+            var enemy = Object.Instantiate(prefab, dungeon.transform);
+            try
+            {
+                var cell = DungeonPlacement.OpenCells(dungeon, enemy).First();
+                enemy.SetPosition(cell);
+                enemy.SetFacing(Facing.Up);
+                var model = enemy.Animator.transform;
+                while (model.parent != enemy.VisualParent.transform) model = model.parent;
+                model.position += new Vector3(2, -1, 0);
+                var expected = Center(dungeon, cell);
+                var before = CombatEffectPlayer.ModelBounds(model).Value;
+                Assert.That(Vector2.Distance(before.center, expected), Is.GreaterThan(.5f));
+                enemy.InitializeSpawn();
+                foreach (var facing in new[] { Facing.Up, Facing.Right, Facing.Down, Facing.Left })
+                {
+                    enemy.SetFacing(facing);
+                    var center = CombatEffectPlayer.ModelBounds(model).Value.center;
+                    Assert.That(Vector2.Distance(center, expected), Is.LessThan(.01f), facing.ToString());
+                    Assert.That(center.z, Is.EqualTo(before.center.z).Within(.01f));
+                }
+            }
+            finally { Object.DestroyImmediate(enemy.gameObject); }
+        }
+
+        [UnityTest, Timeout(360000)]
+        public IEnumerator EveryThreeByThreeMonsterCentersItsVisibleMeshOnItsNineCells()
+        {
+            var dungeon = harness.Game.CurrentDungeon;
+            var paths = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefabs/Dungeon/Enemies", "Assets/Resources/Bosses", "Assets/Resources/Finale" })
+                .Select(AssetDatabase.GUIDToAssetPath).OrderBy(p => p);
+            using var footprintCamera = new MonsterSilhouetteCamera();
+            var rows = new StringBuilder("prefab,facing,x_error_in_tiles,y_error_in_tiles,clip,model_x,model_y\n");
+            var errors = new System.Collections.Generic.List<string>();
+            int tested = 0;
+            foreach (string path in paths)
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<Enemy>(path);
+                bool normalSlime = path == "Assets/Prefabs/Dungeon/Enemies/Enemy_Slime.prefab";
+                if (prefab == null || (!normalSlime && prefab.FootPrint != FootPrint.Size3x3)) continue;
+                var enemy = Object.Instantiate(prefab, dungeon.transform);
+                try
+                {
+                    var cell = DungeonPlacement.OpenCells(dungeon, enemy)
+                        .OrderBy(c => (c - harness.Ally.TilemapPosition).sqrMagnitude)
+                        .First(c => DungeonPlacement.CanStep(dungeon, enemy, c, c + Vector3Int.right));
+                    enemy.UpdateCachedStats();
+                    enemy.InitialzeVitalsFromStats();
+                    enemy.TilemapPosition = cell;
+                    enemy.Animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+                    foreach (var skin in enemy.ModelRoot.GetComponentsInChildren<SkinnedMeshRenderer>()) skin.updateWhenOffscreen = true;
+                    enemy.InitializeSpawn();
+                    harness.Game.Enemies.Add(enemy);
+                    float speed = enemy.Animator.speed;
+                    enemy.PlayIdleAnimation();
+                    enemy.Animator.speed = 0;
+                    yield return null;
+                    AssertCentered(enemy, dungeon);
+                    var spawned = (footprintCamera.Center(enemy) - (Vector2)dungeon.CellCenterToWorld(cell)) / dungeon.CellSize;
+                    string IdleClip() => enemy.Animator.GetCurrentAnimatorClipInfo(0).FirstOrDefault().clip?.name ?? "";
+                    void Record(string state, Vector2 offset) => rows.AppendLine($"{prefab.name},{state},{offset.x:F4},{offset.y:F4},{IdleClip()},{enemy.ModelRoot.localPosition.x:F4},{enemy.ModelRoot.localPosition.y:F4}");
+                    Record("Spawn", spawned);
+                    if (!normalSlime && spawned.magnitude > .02f) errors.Add($"{prefab.name} spawned {spawned.magnitude:F3} tiles off center");
+                    enemy.Animator.speed = speed;
+                    var move = new MovementAction(enemy, cell, cell + Vector3Int.right);
+                    move.ExecuteImmediate(enemy);
+                    yield return move.ExecuteRoutine(enemy);
+                    Assert.That(enemy.TilemapPosition, Is.EqualTo(cell + Vector3Int.right), path);
+                    enemy.PlayIdleAnimation();
+                    enemy.Animator.speed = 0;
+                    yield return null;
+                    var tiles = enemy.ToBounds().Cells().ToArray();
+                    int width = normalSlime ? 1 : 3;
+                    Assert.That(tiles.Length, Is.EqualTo(width * width), path);
+                    Assert.That(enemy.ModelRoot.localScale, Is.EqualTo(prefab.ModelRoot.localScale), path);
+                    Assert.That(enemy.VisualParent.transform.localScale, Is.EqualTo(prefab.VisualParent.transform.localScale), path);
+                    Vector3 center = tiles.Select(dungeon.CellCenterToWorld).Aggregate(Vector3.zero, (a, b) => a + b) / tiles.Length;
+                    foreach (Facing facing in Enum.GetValues(typeof(Facing)))
+                    {
+                        enemy.SetFacing(facing);
+                        AssertCentered(enemy, dungeon);
+                        var offset = (footprintCamera.Center(enemy) - (Vector2)center) / dungeon.CellSize;
+                        Record(facing.ToString(), offset);
+                        if (!normalSlime && offset.magnitude > .02f)
+                            errors.Add($"{prefab.name} facing {facing} is {offset.magnitude:F3} tiles off center");
+                        if (facing == Facing.Down)
+                        {
+                            string snapshot = prefab.name switch
+                            {
+                                "Enemy_Slime" => "slime-normal", "Enemy_Slime_Big" => "slime-big",
+                                "Slime" => "slime-boss", "CrabMonster" => "crab-footprint", _ => null
+                            };
+                            if (snapshot != null) Capture(snapshot, center, true, dungeon.CellSize, width);
+                        }
+                    }
+                    if (!normalSlime) tested++;
+                }
+                finally
+                {
+                    harness.Game.Enemies.Remove(enemy);
+                    Object.DestroyImmediate(enemy.gameObject);
+                }
+            }
+            File.WriteAllText(Folder + "/large-monster-footprints.csv", rows.ToString());
+            Assert.That(tested, Is.GreaterThanOrEqualTo(33), "Large variants and the original Big Slime must all be covered.");
+            Assert.That(errors, Is.Empty, string.Join("\n", errors.Take(12)));
+        }
+
+        [UnityTest]
         public IEnumerator EveryEnemyPrefabAndSpawnAnimationEndsAtItsCellCenter()
         {
             var dungeon = harness.Game.CurrentDungeon;
@@ -177,7 +340,7 @@ namespace EternalEnigma.Tests
             }
         }
 
-        static void Capture(string name, Vector3 center, bool topDown)
+        static void Capture(string name, Vector3 center, bool topDown, float footprintCellSize = 0, int footprintWidth = 3)
         {
             var camera = Camera.main;
             var position = camera.transform.position;
@@ -202,6 +365,22 @@ namespace EternalEnigma.Tests
                 camera.Render();
                 RenderTexture.active = target;
                 image.ReadPixels(new Rect(0, 0, 1280, 900), 0, 0);
+                if (footprintCellSize > 0)
+                {
+                    // Mark the actual occupied tile edges in the top-down comparison.
+                    float step = image.height * footprintCellSize / (2 * camera.orthographicSize);
+                    int X(float cell) => Mathf.RoundToInt(image.width * .5f + cell * step);
+                    int Y(float cell) => Mathf.RoundToInt(image.height * .5f + cell * step);
+                    var ink = new Color(.48f, 1f, .84f);
+                    void Mark(int x, int y, float alpha) => image.SetPixel(x, y, Color.Lerp(image.GetPixel(x, y), ink, alpha));
+                    float half = footprintWidth * .5f;
+                    for (int i = 0; i <= footprintWidth; i++)
+                    {
+                        float alpha = i == 0 || i == footprintWidth ? .95f : .42f;
+                        for (int x = X(-half); x <= X(half); x++) Mark(x, Y(i - half), alpha);
+                        for (int y = Y(-half); y <= Y(half); y++) Mark(X(i - half), y, alpha);
+                    }
+                }
                 image.Apply();
                 File.WriteAllBytes(Folder + "/" + name + ".png", image.EncodeToPNG());
             }

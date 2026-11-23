@@ -15,9 +15,6 @@ internal static class BiomeDecorationCapture
         var source=Camera.main;Assert.That(source,Is.Not.Null);
         yield return null;yield return null;
         foreach(var label in root.GetComponentsInChildren<TextMeshPro>()) {
-            var signLabel=label.GetComponent<BiomeSignLabel>();
-            if(signLabel!=null&&Common.Instance?.CampaignContext!=null)
-                Assert.That(signLabel.DisplayName,Is.EqualTo(Common.Instance.CampaignContext.GetTownDisplayName(label.name.Substring("Destination ".Length))));
             label.ForceMeshUpdate();
             Assert.That(label.textInfo.lineCount,Is.LessThanOrEqualTo(2),label.text);
             Assert.That(label.textBounds.size.x,Is.LessThanOrEqualTo(label.rectTransform.rect.width+.01f),label.text);
@@ -28,8 +25,8 @@ internal static class BiomeDecorationCapture
         File.WriteAllText(file,"enabled,samples,median_camera_render_ms,decoration_triangles,decoration_meshes\n");
         var cameraObject=new GameObject("Biome audit camera");var camera=cameraObject.AddComponent<Camera>();camera.CopyFrom(source);
         camera.transform.rotation=source.transform.rotation;
-        var sign=root.GetComponentInChildren<BiomeSignLabel>();var effect=root.GetComponentsInChildren<BiomeDecorationEffect>().FirstOrDefault(e=>e.FloorVisible);
-        var center=sign!=null?sign.transform.parent.position:effect!=null?effect.transform.position:Game.Instance!=null?Game.Instance.PlayerController.ControlledAlly.transform.position:root.position;
+        var sign=world.GetComponentsInChildren<EnvironmentMeshOwner>().FirstOrDefault(o=>o.name==BiomeRoadSigns.ObjectName);var effect=root.GetComponentsInChildren<BiomeDecorationEffect>().FirstOrDefault(e=>e.FloorVisible);
+        var center=sign!=null?sign.transform.position:effect!=null?effect.transform.position:Game.Instance!=null?Game.Instance.PlayerController.ControlledAlly.transform.position:root.position;
         camera.transform.position=center-camera.transform.forward*50;camera.orthographic=true;camera.orthographicSize=20;
         source.tag="Untagged";camera.tag="MainCamera";
         var target=RenderTexture.GetTemporary(1600,1200,24);

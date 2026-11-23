@@ -464,10 +464,13 @@ namespace EternalEnigma.Tests
             talk.Show(recruit, AllyRecruitDialogMode.Recruit);
             Manager.Open(talk); yield return null;
             Assert.That(talk.RecruitButton.interactable, Is.True);
-            Assert.That(talk.DescriptionText.text, Does.Contain($"Costs {recruit.RecruitCost} gold; you have 0"));
+            Assert.That(talk.RecruitButtonText.text, Is.EqualTo(GameplayText.Format($"Recruit for {recruit.RecruitCost} gold")));
+            Assert.That(talk.DescriptionText.text, Does.EndWith(GameplayText.Format(recruit.Description)));
             Assert.That(UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject, Is.SameAs(talk.CancelButton.gameObject));
             talk.RecruitButton.Select();
             talk.Recruit_Clicked();
+            Assert.That(talk.DescriptionText.text, Does.EndWith("Not enough gold."));
+            Assert.That(talk.DescriptionText.text, Does.Not.Contain("you have"));
             Assert.That(Manager.CurrentDialog, Is.SameAs(talk));
             Assert.That(World.TownPlayer.Gold, Is.Zero);
             Assert.That(World.TownAllies, Does.Contain(recruit));

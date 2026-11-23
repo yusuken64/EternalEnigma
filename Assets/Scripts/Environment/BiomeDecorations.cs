@@ -23,7 +23,9 @@ public static class BiomeDecorations
     public static List<Vector2Int> TownPosts(TownPlan plan)
     {
         bool At(string layer,Vector2Int p)=>plan.Layers.TryGetValue(layer,out var mask)&&mask.At(new GridPoint(p.x,p.y));
-        var reserved=plan.BuildingSlots.Concat(plan.AllySlots.Select(p=>p.Cell)).Concat(new[]{plan.Exit,plan.DungeonEntrance,plan.PartySpawn}).ToArray();
+        var reserved = plan.BuildingSlots.Concat(plan.AllySlots.Select(p => p.Cell))
+            .Concat(EternalEnigma.Core.Generation.TownNpcPlacement.Generate(plan).Select(npc => npc.Cell))
+            .Concat(new[] { plan.Exit, plan.DungeonEntrance, plan.PartySpawn }).ToArray();
         var candidates=new List<Vector2Int>();
         for(int y=1;y<plan.Height-1;y++)for(int x=1;x<plan.Width-1;x++) {
             var p=new Vector2Int(x,y);
@@ -55,7 +57,7 @@ public static class BiomeDecorations
         var root=BiomeDecorationPlacement.Reset(creator.worldObject.transform);
         BiomeDecorationPlacement.Walls(creator.worldObject.transform,root,catalog,grid.CampaignSeed,"overworld",creator.twcAsset.cellSize);
         if(!creator.twcAsset.mapBuildLayers.OfType<OverworldSettlementLayer>().Any(l=>l.active))
-            BiomeRoadSigns.Build(grid,root,catalog,creator.twcAsset.cellSize);
+            BiomeRoadSigns.Build(grid, root, catalog, creator.twcAsset.cellSize);
     }
     public static void Dungeon(TileWorldCreator creator,DungeonFloor floor,DungeonVisualSelection selection,bool preview=false)
     {

@@ -31,9 +31,44 @@ public class Enemy : Character
 
     public List<PolicyBase> Policies;
     public override bool IsWaitingForPlayerInput { get; set; }
+    // Difference between the resting silhouette centers at axial and diagonal headings, in pivot space.
+    [SerializeField, HideInInspector] internal Vector2 DiagonalFootprintOffset;
+    private Transform largeModel;
+    private Vector3 cardinalModelPosition;
+
+    internal Transform ModelRoot
+    {
+        get
+        {
+            if (Animator == null || VisualParent == null) return null;
+            var pivot = VisualParent.transform;
+            var model = Animator.transform;
+            if (model == pivot || !model.IsChildOf(pivot)) return null;
+            while (model.parent != pivot) model = model.parent;
+            return model;
+        }
+    }
+
+    internal override void SetFacing(Facing facing)
+    {
+        base.SetFacing(facing);
+        if (largeModel == null) return;
+        bool diagonal = facing is Facing.UpLeft or Facing.UpRight or Facing.DownLeft or Facing.DownRight;
+        largeModel.localPosition = cardinalModelPosition + (diagonal ? (Vector3)DiagonalFootprintOffset : Vector3.zero);
+    }
+
     private bool spawnInitialized;
 
-    private void Start() => InitializeSpawn();
+    private IEnumerator Start()
+    {
+        if (spawnInitialized) yield break;
+        var game = Game.Instance;
+        // Scene actors can start while the loading cover still shows the preview grid.
+        while (game != null && !spawnInitialized &&
+            (game.CurrentDungeon == null || !game.CurrentDungeon.EnsureRuntimeData()))
+            yield return null;
+        if (game != null && !spawnInitialized) InitializeSpawn();
+    }
 
     internal void InitializeSpawn()
 	{
@@ -41,9 +76,24 @@ public class Enemy : Character
         spawnInitialized = true;
         ApplyFloorTwoStats();
         if (GetComponent<EnemyGroundMarker>() == null) gameObject.AddComponent<EnemyGroundMarker>();
+        SetPosition(TilemapPosition);
+        var model = ModelRoot;
+        if (model != null)
+        {
+            if (FootPrint == FootPrint.Size3x3)
+            {
+                // The prefab's resting mesh is already fitted to its nine ground cells.
+                largeModel = model;
+                cardinalModelPosition = model.localPosition;
+            }
+            else if (CombatEffectPlayer.ModelBounds(model) is Bounds bounds)
+            {
+                var offset = VisualParent.transform.position - bounds.center;
+                model.position += new Vector3(offset.x, offset.y, 0);
+            }
+        }
         SetFacing(VisualRandom.Pick(spawnFacings));
         gameObject.AddComponent<FogHiddenVisual>();
-        SetPosition(TilemapPosition);
 
         GetComponent<EnemyBehavior>()?.Initialize(this);
 		CurrentEnemyState = EnemyState.Pursuit;

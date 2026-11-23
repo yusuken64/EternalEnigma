@@ -198,10 +198,11 @@ public sealed class OverworldMenuManager : MonoBehaviour
     private void Update()
     {
         var common=Common.Instance;
-        if(common==null || !world.IsReady || world.IsMoving || common.Travel.IsTransitioning || common.GlobalSettings.IsOpen ||
+        if(common==null || !world.IsReady || common.Travel.IsTransitioning || common.GlobalSettings.IsOpen ||
             AutoplayRunner.BlocksPlayerInput || MenuUIInputModule.Active?.InputConsumed==true)return;
         var input=common.MenuInputHandler;
-        if(Opened && input.OptionInput){common.GlobalSettings.ShowDialog();return;}
+        if (input.OptionInput && (!Opened || !input.CancelMenuInput)) { common.GlobalSettings.ShowDialog(); return; }
+        if (world.IsMoving) return;
         if (TargetDialog != null && dialogs.Current == TargetDialog)
         {
             if (input.SubmitMenuInput) TargetDialog.ConfirmTarget();

@@ -654,7 +654,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/start"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""Options"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -907,12 +907,12 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""Navigate"",
-                    ""type"": ""PassThrough"",
+                    ""type"": ""Value"",
                     ""id"": ""7d2c4006-96ce-4ce5-a120-453059997ab8"",
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""Submit"",
@@ -1471,7 +1471,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/start"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""Options"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -1482,7 +1482,7 @@ public partial class @DungeonControls: IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Options"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false

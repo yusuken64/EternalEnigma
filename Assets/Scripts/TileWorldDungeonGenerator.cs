@@ -145,8 +145,11 @@ public partial class TileWorldDungeonGenerator : MonoBehaviour
         {
             int floor = Game.Instance.PlayerController.Floor;
             var role = floor == run.StartFloor ? DungeonFloorRole.Entry : floor == run.EndFloor ? DungeonFloorRole.Exit : DungeonFloorRole.Regular;
-            ConfigureFloor(creator, DungeonLayoutProfile.Options(creator.twcAsset.randomSeed, run.LayoutBiome, run.LayoutTier, role, variant: run.Variant, floorNumber: floor));
+            var options = DungeonLayoutProfile.Options(creator.twcAsset.randomSeed, run.LayoutBiome, run.LayoutTier, role, variant: run.Variant, floorNumber: floor);
+            ConfigureFloor(creator, floor == run.EndFloor ? options.WithEndBoss(run.LayoutTier) : options);
         }
+        else if (run != null && Game.Instance.PlayerController.Floor == run.EndFloor)
+            ConfigureFloor(creator, DungeonFloorOptions.Throne(creator.twcAsset.randomSeed).WithEndBoss(run.LayoutTier));
         else if (run != null && Game.Instance.PlayerController.Floor == 2 && run.StartFloor < 2 && run.EndFloor > 2)
         {
             // The standalone dungeon uses its authored legacy template rather than a campaign run plan.

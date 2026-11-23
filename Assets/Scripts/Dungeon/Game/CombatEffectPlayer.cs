@@ -55,15 +55,8 @@ public sealed class CombatEffectPlayer : MonoBehaviour
     internal static Bounds? TargetBounds(Character target, Vector3Int cell)
     {
         if (target == null) return null;
-        Bounds? bounds = null;
         var model = target.VisualParent != null ? target.VisualParent.transform : target.transform;
-        foreach (var renderer in model.GetComponentsInChildren<Renderer>())
-        {
-            // Selection sprites, trails and status particles must not inflate the body size.
-            if (!renderer.enabled || renderer is not MeshRenderer && renderer is not SkinnedMeshRenderer) continue;
-            if (bounds.HasValue) { var combined = bounds.Value; combined.Encapsulate(renderer.bounds); bounds = combined; }
-            else bounds = renderer.bounds;
-        }
+        var bounds = ModelBounds(model);
         var dungeon = Game.Instance.CurrentDungeon;
         float cellSize = Mathf.Abs(dungeon.CellToWorld(Vector3Int.right).x - dungeon.CellToWorld(Vector3Int.zero).x);
         if (!bounds.HasValue)
@@ -74,6 +67,19 @@ public sealed class CombatEffectPlayer : MonoBehaviour
         var snapshot = bounds.Value;
         snapshot.center += dungeon.CellToWorld(cell) - target.transform.position;
         return snapshot;
+    }
+
+    internal static Bounds? ModelBounds(Transform model)
+    {
+        Bounds? bounds = null;
+        foreach (var renderer in model.GetComponentsInChildren<Renderer>())
+        {
+            if (!renderer.enabled || renderer is not MeshRenderer && renderer is not SkinnedMeshRenderer) continue;
+            var combined = bounds ?? renderer.bounds;
+            combined.Encapsulate(renderer.bounds);
+            bounds = combined;
+        }
+        return bounds;
     }
 
     internal static (Vector3 point, float size) FitImpact(Bounds bounds, Vector3 forward, Vector3 right, Vector3 up, float cellSize)
@@ -174,12 +180,16 @@ public sealed class CombatEffectPlayer : MonoBehaviour
 
     internal static Quaternion StageOrientation(CombatEffectStage stage, CombatVisualSequence sequence)
     {
-        if (!stage.AlignWithCastDirection) return Quaternion.identity;
+        var camera = Game.Instance?.PlayerController?.CameraController?.Camera ?? Camera.main;
+        bool bodyHit = stage == sequence.Profile.Impact && stage.MinimumDiameterCells == 0;
+        var plane = (bodyHit || stage == sequence.Profile.Muzzle) && camera != null
+            ? camera.transform.rotation : Quaternion.identity;
+        if (!stage.AlignWithCastDirection) return plane;
+
         var direction = sequence.Direction != Vector3.zero ? sequence.Direction : sequence.Center - sequence.Origin;
-        direction.z = 0;
-        return direction.sqrMagnitude > .001f
-            ? Quaternion.Euler(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90)
-            : Quaternion.identity;
+        var screen = Quaternion.Inverse(plane) * new Vector3(direction.x, direction.y, 0);
+        return (Vector2)screen == Vector2.zero ? plane :
+            plane * Quaternion.AngleAxis(Mathf.Atan2(screen.y, screen.x) * Mathf.Rad2Deg - 90, Vector3.forward);
     }
 
     internal IEnumerator Cast(CombatVisualSequence sequence)
@@ -189,8 +199,7 @@ public sealed class CombatEffectPlayer : MonoBehaviour
         var binding = actor != null ? actor.GetComponent<CharacterCombatEffects>() : null;
         var origin = binding?.CastSocket != null ? binding.CastSocket.position : sequence.Origin;
         if (actor != null) actor.PlayAttackAnimation();
-        var facing = sequence.Center - origin;
-        StartCoroutine(Burst(profile.Muzzle, origin, orientation: facing.sqrMagnitude > .001f ? Quaternion.LookRotation(facing, Vector3.back) : Quaternion.identity));
+        StartCoroutine(Burst(profile.Muzzle, origin, orientation: StageOrientation(profile.Muzzle, sequence)));
         StartCoroutine(Burst(profile.GroundCircle, Ground(sequence.Origin)));
         yield return new WaitForSecondsRealtime(Mathf.Max(profile.CastSeconds, Mathf.Max(profile.Muzzle.Delay, profile.GroundCircle.Delay)));
         if (actor != null) actor.PlayIdleAnimation();
@@ -253,7 +262,7 @@ public sealed class CombatEffectPlayer : MonoBehaviour
         var point = destination; float size = 1;
         if (profile.Impact.FitToTarget && targetBounds.HasValue)
         {
-            var camera = Camera.main;
+            var camera = Game.Instance?.PlayerController?.CameraController?.Camera ?? Camera.main;
             float cellSize = Mathf.Abs(Game.Instance.CurrentDungeon.CellToWorld(Vector3Int.right).x - Game.Instance.CurrentDungeon.CellToWorld(Vector3Int.zero).x);
             (point, size) = FitImpact(targetBounds.Value, camera != null ? camera.transform.forward : Vector3.forward,
                 camera != null ? camera.transform.right : Vector3.right, camera != null ? camera.transform.up : Vector3.up, cellSize);

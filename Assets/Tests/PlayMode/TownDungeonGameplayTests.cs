@@ -145,6 +145,14 @@ namespace EternalEnigma.Tests
             }
             Assert.That(harness.Game.CurrentDungeon.IsExitFloor, Is.True);
             Assert.That(harness.Game.CurrentDungeon.IsThroneFloor, Is.True);
+            var guardian = harness.Game.Enemies.OfType<Enemy>().Single(e => e.IsBoss);
+            var finalFloor = harness.Game.CurrentDungeon.Floor;
+            var placement = finalFloor.ObjectiveEnemies.Single(p => p.IsBoss);
+            Assert.That(guardian.GetComponent<LargeBossBehavior>().Family, Is.EqualTo(placement.Family));
+            Assert.That(TownDungeonGenerator.BossSquare(finalFloor.TownPlan).Contains(placement.Position), Is.True);
+            Assert.That(harness.Game.CheckFloorExit(false), Is.False);
+            yield return harness.ExecuteAction(new TakeDamageAction(harness.Ally, guardian, 1000000, false));
+            Assert.That(harness.Game.CanExitFloor, Is.True);
         }
 
         static IEnumerator Capture(string name)

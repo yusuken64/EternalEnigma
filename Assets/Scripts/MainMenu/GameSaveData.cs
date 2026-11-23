@@ -21,6 +21,7 @@ public class GameSaveData
     public int ArrivalX, ArrivalY;
     public Facing ArrivalFacing;
     public List<string> VisitedRegions = new();
+    public bool MetMochi, HeardOpeningGateInvitation;
     public CampaignSaveSummary Summary;
     public CampaignCompletionRecord Completion;
     [NonSerialized] public bool NeedsInitialSave;

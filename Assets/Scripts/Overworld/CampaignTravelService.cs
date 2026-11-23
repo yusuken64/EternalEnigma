@@ -255,9 +255,6 @@ public sealed class CampaignTravelService
         $"<b>{CampaignRewardNames.Name(context, source.Capability)}</b>\n" + CampaignRewardNames.Purpose(source.Capability) +
         (source.CompanionId != null ? "\nA new companion can do this. Add them to your party at a town." : "");
 
-    private string CapabilityName(EternalEnigma.Core.Capabilities.Capability capability) =>
-        CampaignRewardNames.Name(Context, capability);
-
     private IEnumerator ShowKeyRewards(string[] keys, Action continueTravel, bool inDungeon = true, string[] capabilityRewards = null)
     {
         var rewards = keys.Select(key =>
@@ -273,14 +270,6 @@ public sealed class CampaignTravelService
         yield return ShowKeyMessage($"<b>{heading}</b>\n\n" + string.Join("\n\n", rewards), continueTravel, inDungeon);
     }
 
-    public void ShowKeyUsed(string key)
-    {
-        if (transitioning) return;
-        transitioning = true;
-        common.StartCoroutine(ShowKeyMessage($"<b>GATE UNLOCKED!</b>\n\nYou used <b>{KeyLabel(key)}</b>.\n\nThe way is now open!",
-            () => transitioning = false, false));
-    }
-
     /// <summary>Keys are identified by id in saves and shown by name. <paramref name="lockText"/> is the gate's own fiction, which names the key.</summary>
     public void ShowMissingKey(string key, string lockText = null)
     {
@@ -292,16 +281,6 @@ public sealed class CampaignTravelService
     }
 
     private string KeyLabel(string key) => Context?.Campaign.KeyLabel(key) ?? key;
-
-    public void ShowCapabilityUsed(Requirement requirement, EternalEnigma.Core.Capabilities.CapabilitySet held)
-    {
-        if (transitioning || requirement.IsOpen) return;
-        var used = requirement.Alternatives.Where(held.ContainsAll).OrderBy(set => set.Count).First();
-        string names = string.Join(" + ", used.Values.Select(CapabilityName));
-        transitioning = true;
-        common.StartCoroutine(ShowKeyMessage($"<b>CAPABILITY USED!</b>\n\nYou used <b>{names}</b>.\n\nThe way is now open!",
-            () => transitioning = false, false));
-    }
 
     private IEnumerator ShowKeyMessage(string message, Action continueTravel, bool inDungeon)
     {

@@ -32,6 +32,22 @@ PrefabInstance:
       propertyPath: StartingStats.EXPOnKill
       value: 3750
       objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: feeab1c362c77be4f8a79c60f34958df, type: 3}
+      propertyPath: DiagonalFootprintOffset.x
+      value: -0.0034030653
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: feeab1c362c77be4f8a79c60f34958df, type: 3}
+      propertyPath: DiagonalFootprintOffset.y
+      value: -0.028041812
+      objectReference: {fileID: 0}
+    - target: {fileID: 4997849541392517582, guid: feeab1c362c77be4f8a79c60f34958df, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.21481891
+      objectReference: {fileID: 0}
+    - target: {fileID: 4997849541392517582, guid: feeab1c362c77be4f8a79c60f34958df, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.24867758
+      objectReference: {fileID: 0}
     - target: {fileID: 5543747752720980080, guid: feeab1c362c77be4f8a79c60f34958df, type: 3}
       propertyPath: m_Name
       value: DemonKing
@@ -117,3 +133,5 @@ MonoBehaviour:
   WarningTurns: 1
   CooldownTurns: 3
   EffectTurns: 2
+  SplashRadiusOverride: 0
+  RecoveryTurns: 0

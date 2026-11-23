@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -46,7 +47,18 @@ public sealed class LargeBossBehavior : MonoBehaviour
         if (target == null) return actions;
         if (warning > 0)
         {
-            if (--warning == 0) { Feedback(turn, true); actions.AddRange(ResolveSpecial()); ClearMarks(); cooldown = CooldownTurns; recovery = RecoveryTurns; }
+            if (--warning == 0)
+            {
+                var special = ResolveSpecial();
+                var leap = Family == "Slime" ? special.OfType<BossPlaceAction>().FirstOrDefault() : null;
+                var release = (GameAction)leap ?? turn;
+                Feedback(release, true);
+                if (leap != null) leap.Visuals.AfterMovement = true;
+                actions.AddRange(special);
+                ClearMarks();
+                cooldown = CooldownTurns;
+                recovery = RecoveryTurns;
+            }
             return actions;
         }
         if (combo > 0)
@@ -148,7 +160,7 @@ public sealed class LargeBossBehavior : MonoBehaviour
             }
             else destination = Enumerable.Range(-3,7).SelectMany(x=>Enumerable.Range(-3,7).Select(y=>markedCenter+new Vector3Int(x,y)))
                 .Where(p => SkillMovement.CanOccupy(owner,p)).OrderBy(p => TileWorldDungeon.ChevDistance(p,markedCenter)).ThenBy(p=>p.x).ThenBy(p=>p.y).Cast<Vector3Int?>().FirstOrDefault();
-            if (destination.HasValue) actions.Add(new BossPlaceAction(owner,destination.Value));
+            if (destination.HasValue) actions.Add(new BossPlaceAction(owner, destination.Value, leap: Family == "Slime"));
         }
         var hit = Game.Instance.AllCharacters.Where(c => c != null && c.Team != owner.Team && c.Vitals.HP > 0 && c.ToBounds().Cells().Any(warned.Contains)).ToArray();
         foreach (var target in hit)
@@ -249,11 +261,46 @@ internal sealed class BossAilmentAction : GameAction
 }
 internal sealed class BossPlaceAction : GameAction
 {
-    readonly Character target; readonly Vector3Int destination;
-    public BossPlaceAction(Character target,Vector3Int destination) { this.target=target;this.destination=destination; }
-    internal override bool IsValid(Character c) => target!=null && SkillMovement.CanOccupy(target,destination);
-    internal override List<GameAction> ExecuteImmediate(Character c) { if(IsValid(c)) SkillMovement.Place(target,destination);return new(); }
-    internal override IEnumerator ExecuteRoutine(Character c,bool skipAnimation=false) { if(target!=null) target.transform.position=Game.Instance.CurrentDungeon.CellToWorld(target.TilemapPosition);yield break; }
+    readonly Character target;
+    readonly Vector3Int destination;
+    readonly bool leap;
+    Vector3Int landingCell;
+
+    public BossPlaceAction(Character target, Vector3Int destination, bool leap = false)
+    { this.target = target; this.destination = destination; this.leap = leap; }
+
+    internal override bool IsValid(Character c) => target != null && SkillMovement.CanOccupy(target, destination);
+    internal override List<GameAction> ExecuteImmediate(Character c)
+    {
+        if (IsValid(c)) SkillMovement.Place(target, destination);
+        if (target != null) landingCell = target.TilemapPosition;
+        return new();
+    }
+
+    internal override IEnumerable<Vector3Int> AnimationCells(Character actor) =>
+        leap ? AnimationPath(actor, landingCell) : base.AnimationCells(actor);
+
+    internal override IEnumerator ExecuteRoutine(Character c, bool skipAnimation = false)
+    {
+        if (target == null) yield break;
+        var dungeon = Game.Instance.CurrentDungeon;
+        var landing = dungeon.CellToWorld(landingCell);
+        if (leap && !skipAnimation)
+        {
+            var body = target.transform;
+            var start = body.position;
+            // DOJump supplies the arc on world Y. On the dungeon's XY grid elevation is -Z.
+            var jump = body.DOJump(new Vector3(landing.x, start.y, landing.z), dungeon.CellSize * 1.6f, 1, .52f)
+                .SetEase(Ease.Linear).SetLink(target.gameObject);
+            jump.OnUpdate(() =>
+            {
+                float height = body.position.y - start.y;
+                body.position = Vector3.Lerp(start, landing, jump.ElapsedPercentage()) + Vector3.back * height;
+            });
+            yield return jump.WaitForCompletion();
+        }
+        if (target != null) target.transform.position = landing;
+    }
 }
 internal sealed class BossDisplaceAction : GameAction
 {

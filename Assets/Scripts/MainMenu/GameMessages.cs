@@ -14,7 +14,7 @@ public sealed class GameMessages : MonoBehaviour
     private readonly List<string> turnEvents = new();
     [SerializeField] private ScrollRect scroll;
     [SerializeField] private Button historyButton;
-    [SerializeField, Min(1)] private int previewLines = 4;
+    private const int MinimumVisibleLines = 5;
     private EventHistoryDialog historyDialog;
     private readonly JuicyChickenGames.Menu.DialogController historyController = new();
     // Center the 55%-wide feed on screen. Menus never change these bounds;
@@ -143,19 +143,21 @@ public sealed class GameMessages : MonoBehaviour
         AuthorCompactLayout();
     }
 
-    // Keep the chosen font and four-line preview in the shared compact layout.
+    // Keep the event header and parchment border clear of the scrollable text.
     // Runtime reads the serialized prefab geometry, including Inspector edits.
     public void AuthorCompactLayout()
     {
-        previewLines=4;
         JuicyChickenGames.Menu.Dialog.Fit(group.transform,normalMin.x,normalMin.y,normalMax.x,normalMax.y);
-        JuicyChickenGames.Menu.Dialog.Fit(historyButton.transform,.70f,.72f,.975f,.98f);
+        JuicyChickenGames.Menu.Dialog.Fit(historyButton.transform,.70f,1,.975f,1);
+        var header = (RectTransform)historyButton.transform;
+        header.offsetMin = new Vector2(0,-66);
+        header.offsetMax = new Vector2(0,-6);
         var label=historyButton.GetComponentInChildren<TMP_Text>(true);
         label.fontSize=26;label.enableAutoSizing=true;label.fontSizeMin=16;label.fontSizeMax=26;
         label.margin=new Vector4(0,1.789804f,0,1.78980434f);
-        // Reserve a separate header row so a full four-line preview cannot run
-        // underneath the History button. FitPreviewHeight supplies the text room.
-        JuicyChickenGames.Menu.Dialog.Fit(scroll.viewport,.035f,.03f,.965f,.68f);
+        JuicyChickenGames.Menu.Dialog.Fit(scroll.viewport,.035f,0,.965f,1);
+        scroll.viewport.offsetMin = new Vector2(0,20);
+        scroll.viewport.offsetMax = new Vector2(0,-71);
         historyButton.transform.SetAsLastSibling();
         text.fontSize=33.11f;text.enableAutoSizing=false;text.color=GameUITheme.Ink;
         text.lineSpacing=text.paragraphSpacing=0;
@@ -265,25 +267,26 @@ public sealed class GameMessages : MonoBehaviour
         try
         {
         textDirty = false;
-        var entries = history;
-        int lines=Mathf.Max(1,previewLines);
-        int start = Mathf.Max(0,entries.Count-lines);
-        text.text = InputPrompts.Format(string.Join("\n", entries.GetRange(start, entries.Count-start)));
-        Canvas.ForceUpdateCanvases();
+        bool followNewest = scroll.content.rect.height <= scroll.viewport.rect.height + 1 ||
+            scroll.verticalNormalizedPosition <= .001f;
+        float readingOffset = scroll.content.anchoredPosition.y;
+        text.text = InputPrompts.Format(string.Join("\n", history));
         FitPreviewHeight();
         Canvas.ForceUpdateCanvases();
-        text.ForceMeshUpdate();
-        // Count rendered lines, including wrapping and embedded newlines. The full
-        // unabridged messages remain in History.
-        if(text.textInfo.lineCount>lines)
+        float contentHeight = Mathf.Max(scroll.viewport.rect.height,
+            text.GetPreferredValues(text.text, scroll.viewport.rect.width, 0).y);
+        text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, contentHeight);
+        if (followNewest)
         {
-            int first=text.textInfo.lineInfo[text.textInfo.lineCount-lines].firstCharacterIndex;
-            text.text=text.text.Substring(text.textInfo.characterInfo[first].index);
+            scroll.StopMovement();
+            scroll.verticalNormalizedPosition = 0;
         }
-        text.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
-            Mathf.Max(scroll.viewport.rect.height, text.GetPreferredValues(text.text, scroll.viewport.rect.width, 0).y));
-        scroll.StopMovement();
-        scroll.verticalNormalizedPosition = 0;
+        else
+        {
+            var position = scroll.content.anchoredPosition;
+            position.y = Mathf.Clamp(readingOffset, 0, contentHeight - scroll.viewport.rect.height);
+            scroll.content.anchoredPosition = position;
+        }
         layoutWidth = scroll.viewport.rect.width;
         }
         finally { refreshingText = false; }
@@ -298,12 +301,11 @@ public sealed class GameMessages : MonoBehaviour
         float height=parentSize.y*(feedPanel.anchorMax.y-feedPanel.anchorMin.y)+authoredOffsetMax.y-authoredOffsetMin.y;
         float stretch=scroll.viewport.anchorMax.y-scroll.viewport.anchorMin.y;
         if(stretch<=0)return false;
-        var sample=new string[Mathf.Max(1,previewLines)];
+        var sample=new string[MinimumVisibleLines];
         for(int i=0;i<sample.Length;i++)sample[i]="Ag";
         float required=text.GetPreferredValues(string.Join("\n",sample),scroll.viewport.rect.width,0).y+1;
         float available=height*stretch+scroll.viewport.sizeDelta.y;
-        // Preserve the authored size at the reference aspect ratio. Only add
-        // vertical room if a wider window would otherwise clip the fourth line.
+        // Short windows grow just enough for the minimum. Taller viewports show every line that fits.
         var maximum=authoredOffsetMax;maximum.y+=Mathf.Max(0,(required-available)/stretch);
         feedPanel.offsetMin=authoredOffsetMin;feedPanel.offsetMax=maximum;
         return true;

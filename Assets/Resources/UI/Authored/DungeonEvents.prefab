@@ -34,10 +34,10 @@ RectTransform:
   - {fileID: 6648059189482511315}
   m_Father: {fileID: 7079761979158041874}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.035, y: 0.03}
-  m_AnchorMax: {x: 0.965, y: 0.68}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.035, y: 0}
+  m_AnchorMax: {x: 0.965, y: 1}
+  m_AnchoredPosition: {x: 0, y: -25.5}
+  m_SizeDelta: {x: 0, y: -91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7945392551773058419
 MonoBehaviour:
@@ -140,7 +140,6 @@ MonoBehaviour:
   group: {fileID: 333573435506020489}
   scroll: {fileID: 7424758362944963590}
   historyButton: {fileID: 6333755246671405722}
-  previewLines: 4
 --- !u!1 &1906796579286340168
 GameObject:
   m_ObjectHideFlags: 0
@@ -723,7 +722,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0.98
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMin.x
@@ -731,7 +730,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0.72
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_SizeDelta.x
@@ -739,7 +738,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_LocalPosition.x
@@ -775,7 +774,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -36
       objectReference: {fileID: 0}
     - target: {fileID: 4577867017743698083, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -916,6 +915,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: EternalEnigma.Game::DungeonUIRole
   Role: 3
+  caption: {fileID: 0}
 --- !u!114 &6333755246671405722 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9178358729106878970, guid: dab49e15d0e51f5468aac3dd3d325676, type: 3}

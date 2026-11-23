@@ -10,6 +10,69 @@ namespace EternalEnigma.Core.Tests.Generation;
 public sealed class EncounterTests
 {
     [Fact]
+    public void EveryCombatDungeonEndsWithOneBossAndKeepsItsOtherObjectives()
+    {
+        foreach (int seed in new[] { 7, 42 })
+        {
+            var context = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, seed));
+            var locations = context.Campaign.Locations.Where(l => l.Encounter != null ||
+                l.Kind is LocationKind.StoryDungeon or LocationKind.RepeatableDungeon).Select(l => l.Id).Append(context.BookDungeon.Id);
+            foreach (string id in locations)
+            {
+                var plan = context.RunPlan(id);
+                var last = plan.Floors.Last();
+                var kind = last.Options.Encounter;
+                bool peaceful = kind is EncounterKind.Sokoban or EncounterKind.LightPattern or EncounterKind.Lure or EncounterKind.Herding or EncounterKind.Bridge;
+                Assert.All(plan.Floors.Take(plan.Floors.Count - 1), step => Assert.Null(step.Options.BossFamily));
+                var floor = DungeonFloorGenerator.Generate(last.Options);
+                if (peaceful) { Assert.DoesNotContain(floor.ObjectiveEnemies, e => e.IsBoss); continue; }
+                var boss = Assert.Single(floor.ObjectiveEnemies, e => e.IsBoss);
+                Assert.Equal(last.Options.BossFamily, boss.Family);
+                Assert.All(new GridRect(boss.Position.X - 1, boss.Position.Y - 1, 3, 3).Cells(), cell => {
+                    Assert.True(floor.IsWalkable(cell)); Assert.NotEqual(floor.Start, cell); Assert.NotEqual(floor.Stairs, cell); });
+                var progress = new DungeonObjectiveProgress(floor);
+                Assert.False(progress.CanExit);
+                foreach (var enemy in floor.ObjectiveEnemies.Where(e => !e.IsBoss)) progress.Defeat(enemy.Id);
+                if (kind == EncounterKind.Prison)
+                {
+                    var reversed = new DungeonObjectiveProgress(floor);
+                    reversed.Defeat(boss.Id); Assert.False(reversed.CanExit);
+                    reversed.RecoverPossessions(); Assert.True(reversed.CanExit);
+                    progress.RecoverPossessions(); Assert.False(progress.CanExit);
+                }
+                progress.Defeat(boss.Id); Assert.True(progress.CanExit);
+                if (id == "story-0") Assert.Equal("Slime", boss.Family);
+            }
+        }
+    }
+
+    [Fact]
+    public void GateResultNamesOnlyTheCompletedAlternativeAndItsActualObstacle()
+    {
+        var context = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, 42));
+        var pair = CapabilitySet.Of(Capability.Engineering, Capability.Breach);
+        var route = new CampaignRoute("gate", "town-0", "town-1",
+            new Requirement(pair, CapabilitySet.Of(Capability.Grapple)), LockForm.Interaction,
+            skinId: "engineering.interaction.2");
+        using var session = new LockInteractionSession(route, () => true, _ => true, () => true);
+        Assert.Equal(LockOutcome.Progress, session.Attempt(new CapabilityLockAction(Capability.Engineering)));
+        var action = new CapabilityLockAction(Capability.Grapple);
+        Assert.Equal(LockOutcome.Opened, session.Attempt(action));
+        Assert.Equal(CapabilitySet.Of(Capability.Grapple), session.CompletedSolution);
+        Assert.Equal($"You used {CampaignRewardNames.Name(context, Capability.Grapple)} to lower the seized toll bridge.",
+            CampaignRewardNames.OpenedGate(context,session,action));
+        using var combined = new LockInteractionSession(route, () => true, _ => true, () => true);
+        combined.Attempt(new CapabilityLockAction(Capability.Engineering));
+        var breach = new CapabilityLockAction(Capability.Breach);
+        Assert.Equal(LockOutcome.Opened, combined.Attempt(breach));
+        Assert.Equal(pair, combined.CompletedSolution);
+        var result = CampaignRewardNames.OpenedGate(context,combined,breach);
+        Assert.Contains(CampaignRewardNames.Name(context, Capability.Engineering),result);
+        Assert.Contains(CampaignRewardNames.Name(context, Capability.Breach),result);
+        Assert.EndsWith("to lower the seized toll bridge.",result);
+    }
+
+    [Fact]
     public void EveryCampaignCoversAllArchetypesAndCompletionGatesKeys()
     {
         for (int seed = 0; seed < 32; seed++)

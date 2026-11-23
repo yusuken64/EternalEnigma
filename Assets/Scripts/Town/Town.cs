@@ -22,6 +22,7 @@ public class Town : MonoBehaviour
     public bool IsOccupied(Vector3Int cell) => TownAllies.Any(a=>a!=null && a.TilemapPosition==cell) || ShopVendors.Any(v=>v!=null && v.TilemapPosition==cell) || Townsfolk.Any(n=>n!=null && n.Cell==cell) || GetComponentsInChildren<HomeBed>().Any(b=>b.Tile==cell);
     public OpeningHomeLesson HomeLesson { get; private set; }
     public TownDungeonBook DungeonBook { get; private set; }
+    internal TownGuide Guide { get; private set; }
     public bool CanEnter(Vector3Int cell) => Plan != null && Plan.IsWalkable(cell.ToGridPoint()) && !IsOccupied(cell) &&
         (HomeLesson == null || HomeLesson.AllowsEntry(cell));
     private readonly List<GameObject> shopWalls = new();
@@ -247,8 +248,7 @@ public class Town : MonoBehaviour
             allyInstance.EnsureStartingSkills();
             allyInstance.RefreshEquipmentVisuals();
         }
-
-
+        Guide?.PlaceGateRecruit();
 	}
 
 	[ContextMenu("Generate Entrance")]
@@ -410,6 +410,7 @@ public class Town : MonoBehaviour
         DungeonBook = TownDungeonBook.Create(this);
         GenerateRoofs();
         TownInteriorRendering.SpawnTownsfolk(this);
+        Guide = new TownGuide(this);
 
         Debug.Log("Generate Allies");
         GenerateAllies();

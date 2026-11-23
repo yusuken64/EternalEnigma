@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 /// <summary>Small keys belong to the dungeon run, not the bag: any key opens any door on any later floor of the run.</summary>
@@ -42,33 +41,11 @@ public sealed class SmallKey : Interactable
         var key = go.AddComponent<SmallKey>();
         key.Position = cell;
         float size = dungeon.CellToWorld(Vector3Int.right).x - dungeon.CellToWorld(Vector3Int.zero).x;
-        GameObject model;
-        if (dungeon.SmallKeyPrefab != null)
-        {
-            model = Instantiate(dungeon.SmallKeyPrefab, go.transform, false);
-            // The project-owned prefab contains its authored XY floor pose.
-        }
-        else
-        {
-            model = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            Destroy(model.GetComponent<Collider>());
-            model.transform.SetParent(go.transform, false);
-            model.GetComponent<Renderer>().material.color = new Color(1f, .8f, .25f);
-        }
-        model.transform.localPosition = Vector3.zero;
-        var renderers = model.GetComponentsInChildren<Renderer>();
-        if (renderers.Length > 0)
-        {
-            Bounds Bounds() { var b = renderers[0].bounds; foreach (var r in renderers.Skip(1)) b.Encapsulate(r.bounds); return b; }
-            var bounds = Bounds();
-            // Authored dungeon adapters already have a measured screen silhouette. Only shrink
-            // a fallback/oversized model to fit; never enlarge it to the old universal footprint.
-            model.transform.localScale *= Mathf.Min(1f, size*.82f / Mathf.Max(.01f, Mathf.Max(bounds.size.x, bounds.size.y)));
-            bounds = Bounds();
-            var center = go.transform.position + new Vector3(size * .5f, size * .5f, 0f);
-            model.transform.position += new Vector3(center.x - bounds.center.x, center.y - bounds.center.y, 0f);
-        }
-        DungeonPresentation.GroundFloorObject(go.transform);
+        var prefab = dungeon.SmallKeyPrefab != null ? dungeon.SmallKeyPrefab : DioramaItemCatalog.Load().GetProp("key");
+        var model = Instantiate(prefab, go.transform, false);
+        var center = go.transform.position + new Vector3(size * .5f, size * .5f, 0);
+        center.z = DungeonPresentation.GroundPlaneZ;
+        DungeonPickupFootprint.Place(model.transform, center, size * .82f);
         return key;
     }
 }

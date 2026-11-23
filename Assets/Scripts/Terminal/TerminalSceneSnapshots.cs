@@ -233,7 +233,8 @@ internal static class TerminalSceneSnapshots
         string title = Common.Instance.CampaignContext?.GetTownDisplayName(town.Configuration.Id) ?? town.Configuration.name;
         return new TownTerminalSnapshot(plan.Width, plan.Height, focus, title, cachedTownTerrain, actors, null, Tail(messages),
             context: new[] { HeroContext(town.TownPlayer.ControllingTownAlly),
-                "Facing " + town.TownPlayer.ControllingTownAlly.CurrentFacing, $"Talk/use: {InputPrompts.Interact}" },
+                "Facing " + town.TownPlayer.ControllingTownAlly.CurrentFacing,
+                town.Guide?.ShowMochiPrompt() == true ? $"Face Mochi and press {InputPrompts.Attack} to talk." : $"Talk/use: {InputPrompts.Attack}" },
             legend: new[] { "@ you  a party/recruit", "n townsfolk  v vendor", "b bakery  i items  c supplies",
                 "I inn  R trainer  G guild", "h home  S statue  D dungeon  X exit", "H house  B book  + wall  f furniture",
                 "T tree  = : - roads  . ground" });

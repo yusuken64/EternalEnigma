@@ -32,6 +32,22 @@ PrefabInstance:
       propertyPath: StartingStats.EXPOnKill
       value: 200
       objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 6c6e346e349ecc945b0ee35baad89ce3, type: 3}
+      propertyPath: DiagonalFootprintOffset.x
+      value: 0.00078677473
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 6c6e346e349ecc945b0ee35baad89ce3, type: 3}
+      propertyPath: DiagonalFootprintOffset.y
+      value: -0.082716115
+      objectReference: {fileID: 0}
+    - target: {fileID: 4764475793972716408, guid: 6c6e346e349ecc945b0ee35baad89ce3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.00000026490954
+      objectReference: {fileID: 0}
+    - target: {fileID: 4764475793972716408, guid: 6c6e346e349ecc945b0ee35baad89ce3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.43014058
+      objectReference: {fileID: 0}
     - target: {fileID: 5543747752720980080, guid: 6c6e346e349ecc945b0ee35baad89ce3, type: 3}
       propertyPath: m_Name
       value: WormMonster
@@ -117,3 +133,5 @@ MonoBehaviour:
   WarningTurns: 1
   CooldownTurns: 3
   EffectTurns: 2
+  SplashRadiusOverride: 0
+  RecoveryTurns: 0

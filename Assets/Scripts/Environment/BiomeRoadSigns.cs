@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using EternalEnigma.Core.Progression;
 using EternalEnigma.Core.World;
-using TMPro;
 using UnityEngine;
 
 /// <summary>Cardinal visual-road graph. No capability queries, discoveries, or navigation changes.</summary>
@@ -28,62 +27,72 @@ public sealed class BiomeRoadGraph
             if(Edges.TryGetValue(current.p,out var edges))foreach(var next in edges.OrderBy(p=>p.x).ThenBy(p=>p.y))if(seen.Add(next))queue.Enqueue((next,current.distance+1));}
         return(best,distance);
     }
+    // The first road step gives the posted direction. Stable compass order breaks ties in loops.
+    public Dictionary<Vector2Int, (Vector2Int direction, int distance)> RoutesFrom(Vector2Int road)
+    {
+        var paths = new Dictionary<Vector2Int, (Vector2Int direction, int distance)> { [road] = (Vector2Int.zero, 0) };
+        var queue = new Queue<Vector2Int>();
+        queue.Enqueue(road);
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            if (!Edges.TryGetValue(current, out var edges)) continue;
+            var path = paths[current];
+            foreach (var direction in BiomeDecorations.Directions)
+            {
+                var next = current + direction;
+                if (!edges.Contains(next) || paths.ContainsKey(next)) continue;
+                paths.Add(next, (current == road ? direction : path.direction, path.distance + 1));
+                queue.Enqueue(next);
+            }
+        }
+        return paths;
+    }
+
     public static BiomeRoadGraph From(OverworldGrid grid)
     {
         var graph=new BiomeRoadGraph();var roads=grid.Layers[OverworldLayers.Roads];
         for(int y=0;y<grid.Height;y++)for(int x=0;x<grid.Width;x++)if(roads[x,y])graph.Add(new Vector2Int(x,y));
         foreach(var p in graph.Edges.Keys.ToArray())foreach(var d in BiomeDecorations.Directions)if(graph.Edges.ContainsKey(p+d))graph.Connect(p,p+d);
-        var warps=new HashSet<string>(grid.Warps.Select(w=>w.Id));
-        foreach(var route in grid.Routes.Where(r=>!warps.Contains(r.Key)))for(int i=1;i<route.Value.Count;i++) {
-            var a=route.Value[i-1];var b=route.Value[i];graph.Connect(new Vector2Int(a.X,a.Y),new Vector2Int(b.X,b.Y));
-        }
         return graph;
     }
 }
 
 public static class BiomeRoadSigns
 {
-    public sealed class Branch {public string TownId;public Vector2Int Direction,FirstCell;public int Distance;}
-    public sealed class Sign {public Vector2Int Road,Verge;public OverworldBiome Biome;public Branch[] Branches;public int Priority;public HashSet<Vector2Int> JunctionCells;}
+    public sealed class Branch {public string TownId;public Vector2Int Direction;public int Distance;}
+    public sealed class Sign {public Vector2Int Road,Verge;public OverworldBiome Biome;public Branch[] Branches;public int Priority;public Dictionary<string, (Vector2Int direction, int distance)> Routes;}
 
-    // Signs name places as the rest of the game does, never by generator id.
-    private static string SignName(CampaignContext context, string locationId)
+    private static string SignName(CampaignContext context, CampaignLocation location)
     {
-        string name = CampaignGuidance.LocationName(context, locationId);
+        if (location.Kind == LocationKind.Town) return context.GetTownDisplayName(location.Id);
+        if (location.Encounter != null)
+            return location.Encounter.Kind switch
+            {
+                EncounterKind.Herding => "Herding grounds",
+                EncounterKind.Lure => "Trapping grounds",
+                EncounterKind.Sokoban => "Boulder chamber",
+                EncounterKind.LightPattern => "Light chamber",
+                EncounterKind.Ambush => "Ambush site",
+                _ => location.Encounter.DisplayName
+            };
+        if (location.Variant == DungeonVariant.Town) return "Hostile town district";
+        string name = CampaignGuidance.LocationName(context, location.Id);
         if (name.StartsWith("the ", System.StringComparison.Ordinal)) name = name.Substring(4);
         return name.Length == 0 ? name : char.ToUpperInvariant(name[0]) + name.Substring(1);
     }
 
+    internal static string Compass(Vector2Int d) => d.x > 0 ? "East" : d.x < 0 ? "West" : d.y > 0 ? "North" : "South";
+
     public static string Directions(CampaignContext context, Sign sign)
     {
-        var grid = context.Grid;
-        var graph = BiomeRoadGraph.From(grid);
-        var distances = new Dictionary<Vector2Int, int> { [sign.Road] = 0 };
-        var directions = new Dictionary<Vector2Int, Vector2Int>();
-        var queue = new Queue<Vector2Int>(); queue.Enqueue(sign.Road);
-        while (queue.Count > 0)
-        {
-            var current = queue.Dequeue();
-            if (!graph.Edges.TryGetValue(current, out var edges)) continue;
-            foreach (var next in edges.OrderBy(p => p.x).ThenBy(p => p.y))
-            {
-                if (distances.ContainsKey(next)) continue;
-                distances[next] = distances[current] + 1;
-                directions[next] = current == sign.Road ? next - current : directions[current];
-                queue.Enqueue(next);
-            }
-        }
-        string Compass(Vector2Int d) => d.x > 0 ? "East" : d.x < 0 ? "West" : d.y > 0 ? "North" : "South";
         var entries = new List<(bool Town, string Id, int Distance, string Text)>();
         foreach (var location in context.Campaign.Locations.Where(l => l.ParentTownId == null))
         {
-            var cell = grid.TownFootprints.FirstOrDefault(t => t.LocationId == location.Id)?.Entrance ?? grid.Locations[location.Id];
-            var p = new Vector2Int(cell.X, cell.Y);
-            if (!distances.TryGetValue(p, out int distance) || distance == 0) continue;
+            if (!sign.Routes.TryGetValue(location.Id, out var route)) continue;
             bool town = location.Kind == LocationKind.Town;
-            string name = town ? context.GetTownDisplayName(location.Id) : location.Encounter?.DisplayName ??
-                (location.Variant == DungeonVariant.Town ? "Hostile town district" : SignName(context, location.Id));
-            entries.Add((town, location.Id, distance, $"{Compass(directions[p])} — {name} · {distance} road steps"));
+            string name = SignName(context, location);
+            entries.Add((town, location.Id, route.distance, $"{Compass(route.direction)} — {name}"));
         }
         var sorted = entries.OrderBy(e => e.Distance).ThenBy(e => e.Id, StringComparer.Ordinal).ToArray();
         var selected = sorted.Where(e => e.Town).Take(2).Concat(sorted.Where(e => !e.Town).Take(3)).OrderBy(e => e.Distance);
@@ -92,7 +101,7 @@ public static class BiomeRoadSigns
     public static List<Sign> Plan(OverworldGrid grid)
     {
         var graph=BiomeRoadGraph.From(grid);var towns=grid.TownFootprints.Where(t=>!t.IsHostile).ToDictionary(t=>new Vector2Int(t.Entrance.X,t.Entrance.Y),t=>t.LocationId);
-        var candidates=new List<(Vector2Int p,HashSet<Vector2Int> group,int priority,string approach)>();
+        var candidates=new List<(Vector2Int p,HashSet<Vector2Int> roadCells,int priority,string approach)>();
         foreach(var town in towns.OrderBy(t=>t.Value,StringComparer.Ordinal)) {
             var seen=new HashSet<Vector2Int>{town.Key};var queue=new Queue<(Vector2Int p,int d)>();queue.Enqueue((town.Key,0));
             while(queue.Count>0){var cur=queue.Dequeue();if(cur.d>=3&&cur.d<=5)candidates.Add((cur.p,new HashSet<Vector2Int>{cur.p},0,town.Value));
@@ -122,54 +131,57 @@ public static class BiomeRoadSigns
         }
         foreach(var c in candidates.OrderBy(c=>c.priority).ThenBy(c=>BiomeDecorationPlacement.Hash(grid.CampaignSeed,"signs",c.p.x+","+c.p.y)).ThenBy(c=>c.p.x).ThenBy(c=>c.p.y)) {
             if(c.approach!=null&&approaches.Contains(c.approach))continue;
-            var exits=c.group.OrderBy(p=>p.x).ThenBy(p=>p.y).SelectMany(p=>graph.Edges[p].Where(n=>!c.group.Contains(n)).Select(n=>(from:p,to:n))).ToArray();
-            var branches=new List<Branch>();
-            foreach(var exit in exits){var nearest=graph.Nearest(exit.to,c.group,towns);if(nearest.town!=null)branches.Add(new Branch{TownId=nearest.town,Distance=nearest.distance,Direction=exit.to-exit.from,FirstCell=exit.to});}
-            var selected=branches.OrderBy(b=>b.Distance).ThenBy(b=>b.TownId,StringComparer.Ordinal).GroupBy(b=>b.TownId).Select(g=>g.First()).Take(3).ToArray();
-            if(selected.Length==0)continue;
-            foreach(var verge in c.group.OrderBy(p=>p.x).ThenBy(p=>p.y).SelectMany(p=>BiomeDecorations.Directions.Select(d=>p+d)).Distinct()) {
-                if(!Supported(verge)||result.Any(s=>(s.Verge-verge).sqrMagnitude<36))continue;
-                var chunk=new Vector2Int(verge.x/32,verge.y/32);chunks.TryGetValue(chunk,out int count);if(count>=8)continue;
-                var biome=c.approach!=null?OverworldCosmetics.Biome(grid,towns.First(t=>t.Value==c.approach).Key.x,towns.First(t=>t.Value==c.approach).Key.y):OverworldCosmetics.Biome(grid,verge.x,verge.y);
-                result.Add(new Sign{Road=c.p,Verge=verge,Biome=biome,Branches=selected,Priority=c.priority,JunctionCells=c.group});chunks[chunk]=count+1;if(c.approach!=null)approaches.Add(c.approach);break;
+            var verges = from road in c.roadCells.OrderBy(p => p.x).ThenBy(p => p.y)
+                         from direction in BiomeDecorations.Directions
+                         select (road, verge: road + direction);
+            foreach (var (road, verge) in verges)
+            {
+                if (!Supported(verge) || result.Any(sign => (sign.Verge - verge).sqrMagnitude < 36)) continue;
+                if (BiomeDecorations.Directions.Any(d => verge + d != road && graph.Edges.ContainsKey(verge + d))) continue;
+                var chunk = new Vector2Int(verge.x / 32, verge.y / 32);
+                chunks.TryGetValue(chunk, out int count);
+                if (count >= 8) continue;
+                var paths = graph.RoutesFrom(road);
+                var routes = new Dictionary<string, (Vector2Int direction, int distance)>();
+                foreach (var location in grid.Locations)
+                {
+                    var cell = new Vector2Int(location.Value.X, location.Value.Y);
+                    if (paths.TryGetValue(cell, out var path) && path.distance > 0) routes.Add(location.Key, path);
+                }
+                var selected = towns.Values.Where(routes.ContainsKey)
+                    .OrderBy(id => routes[id].distance).ThenBy(id => id, StringComparer.Ordinal).Take(2)
+                    .Select(id => new Branch { TownId = id, Direction = routes[id].direction, Distance = routes[id].distance }).ToArray();
+                if (selected.Length == 0) continue;
+                var biomeCell = c.approach != null ? towns.First(t => t.Value == c.approach).Key : verge;
+                result.Add(new Sign { Road = road, Verge = verge, Biome = OverworldCosmetics.Biome(grid, biomeCell.x, biomeCell.y),
+                    Branches = selected, Priority = c.priority, Routes = routes });
+                chunks[chunk] = count + 1;
+                if (c.approach != null) approaches.Add(c.approach);
+                break;
             }
         }
         return result;
     }
-    public static void Build(OverworldGrid grid,Transform parent,BiomeDecorationCatalog catalog,float size)
+    internal const string ObjectName = "Road sign";
+
+    public static void Build(OverworldGrid grid, Transform parent, BiomeDecorationCatalog decorations, float size)
     {
-        var common=UnityEngine.Object.FindFirstObjectByType<Common>();
-        var context=common?.CampaignContext;
-        if(context==null||context.State.Seed!=grid.CampaignSeed)context=new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Sandbox,grid.CampaignSeed));
-        foreach(var sign in Plan(grid)) {
-            var root=new GameObject("Road sign").transform;root.SetParent(parent,false);root.localPosition=new Vector3(sign.Verge.x+.5f,sign.Verge.y+.5f,0)*size;
-            var batch=new EnvironmentBatch(root);float scale=size*.8f;
-            var diorama=DioramaCatalog.Load();
-            if(diorama!=null)diorama.Add(batch,"Signboard",sign.Biome,Vector3.zero,scale:new Vector3(1.65f,1,1));
-            else BiomeDecorationPlacement.Add(batch,root,catalog,catalog.Get(sign.Biome,BiomeDecorationKind.SignPost),Vector3.zero,scale,0,false);
-            for(int i=0;i<sign.Branches.Length;i++) {
-                var branch=sign.Branches[i];float z=-(1.15f-i*.35f)*scale;
-                float angle=Mathf.Atan2(branch.Direction.y,branch.Direction.x)*Mathf.Rad2Deg;
-                // Tilt the writing face upward: north/south boards otherwise become edge-on
-                // to the production camera. The long arrow axis still follows the road branch.
-                var rotation=Quaternion.Euler(0,0,angle)*Quaternion.Euler(55,0,0);
-                if(diorama==null)BiomeDecorationPlacement.Add(batch,root,catalog,catalog.Get(sign.Biome,BiomeDecorationKind.SignPanel),new Vector3(0,0,z),scale,rotation,false);
-                var label=new GameObject("Destination "+branch.TownId).AddComponent<TextMeshPro>();label.transform.SetParent(root,false);
-                GameTypography.Apply(label, GameTextRole.Heading);
-                label.transform.localPosition=new Vector3(0,-.08f*scale,z-.02f);label.text=context.GetTownDisplayName(branch.TownId);
-                label.fontSizeMin=.5f;label.fontSizeMax=1.6f;label.enableAutoSizing=true;label.textWrappingMode=TextWrappingModes.Normal;
-                label.overflowMode=TextOverflowModes.Overflow;label.alignment=TextAlignmentOptions.Center;label.color=new Color(1,.96f,.83f);
-                label.outlineColor=Color.black;label.outlineWidth=.18f;
-                label.rectTransform.sizeDelta=new Vector2(.95f*scale,.20f*scale);
-                var facing=label.gameObject.AddComponent<BiomeSignLabel>();facing.DisplayName=label.text;facing.Direction=new Vector3(branch.Direction.x,branch.Direction.y,0);facing.CameraOffset=scale*1.4f;
-                if(diorama!=null)
-                {
-                    float rowHeight=.30f/sign.Branches.Length;
-                    label.transform.localPosition=new Vector3(0,-.042f,-1.06f+(i-(sign.Branches.Length-1)*.5f)*rowHeight);
-                    label.rectTransform.sizeDelta=new Vector2(2.03f,rowHeight);label.fontSizeMin=.6f;label.fontSizeMax=3.2f;
-                    label.textWrappingMode=TextWrappingModes.NoWrap;label.overflowMode=TextOverflowModes.Ellipsis;
-                    facing.CameraOffset=.045f;
-                }
+        var diorama = DioramaCatalog.Load();
+        foreach (var sign in Plan(grid))
+        {
+            var root = new GameObject(ObjectName).transform;
+            root.SetParent(parent, false);
+            root.localPosition = new Vector3(sign.Verge.x + .5f, sign.Verge.y + .5f, 0) * size;
+            var batch = new EnvironmentBatch(root);
+            if (diorama != null)
+                diorama.Add(batch, "Signboard", sign.Biome, Vector3.zero);
+            else
+            {
+                var post = decorations.Get(sign.Biome, BiomeDecorationKind.SignPost);
+                float scale = size * post.OverworldScale;
+                BiomeDecorationPlacement.Add(batch, root, decorations, post, Vector3.zero, scale, 0, false);
+                BiomeDecorationPlacement.Add(batch, root, decorations, decorations.Get(sign.Biome, BiomeDecorationKind.SignPanel),
+                    Vector3.back * scale, scale, Quaternion.Euler(55, 0, 0), false);
             }
             batch.Finish();
         }

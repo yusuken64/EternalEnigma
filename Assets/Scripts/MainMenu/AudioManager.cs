@@ -13,7 +13,8 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
 	public List<AudioSource> EffectAudioSources;
     public List<AudioSource> UIAudioSources = new();
     private int uiClipIndex;
-    private Coroutine musicTransition;
+    private Coroutine musicTransition, playlist;
+    private readonly Dictionary<AudioClip, int> musicPositions = new();
     private const float MusicFadeSeconds = 0.4f;
     public event System.Action<AudioClip, AudioMixerGroup> SoundPlayed;
     public event System.Action<SoundCue, AudioClip, AudioMixerGroup> CuePlayed;
@@ -82,9 +83,47 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
     /// Plays <paramref name="musicClip"/>, or, when a deferred build shipped the music separately,
     /// the named <paramref name="track"/> once it has downloaded. The current music keeps playing meanwhile.
     /// </summary>
+    internal void PlayScore(AudioClip first, string firstTrack, AudioClip second, string secondTrack)
+    {
+        PlayMusic(first, firstTrack);
+        if (MusicAudioSource == null || (first == null && string.IsNullOrEmpty(firstTrack)) ||
+            (second == null && string.IsNullOrEmpty(secondTrack)) ||
+            (first != null ? first == second : firstTrack == secondTrack)) return;
+        playlist = StartCoroutine(AlternateTracks(first, firstTrack, second, secondTrack));
+    }
+
+    private IEnumerator AlternateTracks(AudioClip first, string firstTrack, AudioClip second, string secondTrack)
+    {
+        bool onFirst = true;
+        int previousSample = -1;
+        while (true)
+        {
+            yield return null;
+            var source = MusicAudioSource;
+            var expected = onFirst ? first : second;
+            string track = onFirst ? firstTrack : secondTrack;
+            if (!source.isPlaying || source.clip == null || (expected != null ? source.clip != expected : source.clip.name != track))
+                continue;
+            int sample = source.timeSamples;
+            if (sample >= source.clip.samples - source.clip.frequency * MusicFadeSeconds || sample < previousSample)
+            {
+                onFirst = !onFirst;
+                previousSample = -1;
+                RequestTrack(onFirst ? first : second, onFirst ? firstTrack : secondTrack);
+            }
+            else previousSample = sample;
+        }
+    }
+
     internal void PlayMusic(AudioClip musicClip, string track)
     {
-        if (musicClip != null || string.IsNullOrEmpty(track)) { PlayMusic(musicClip); return; }
+        if (playlist != null) { StopCoroutine(playlist); playlist = null; }
+        RequestTrack(musicClip, track);
+    }
+
+    private void RequestTrack(AudioClip musicClip, string track)
+    {
+        if (musicClip != null || string.IsNullOrEmpty(track)) { requestedTrack = null; ChangeTo(musicClip); return; }
         if (requestedTrack == track) return;
         requestedTrack = track;
         GameContent.LoadTrack(track, clip =>
@@ -93,11 +132,7 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
         });
     }
 
-	internal void PlayMusic(AudioClip musicClip)
-	{
-        requestedTrack = null;
-        ChangeTo(musicClip);
-	}
+	internal void PlayMusic(AudioClip musicClip) => PlayMusic(musicClip, null);
 
 	private void ChangeTo(AudioClip musicClip)
 	{
@@ -118,13 +153,20 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
 
     private IEnumerator ChangeMusic(AudioClip next)
     {
-        if (MusicAudioSource.isPlaying) yield return FadeMusic(0);
+        var outgoing = MusicAudioSource.clip;
+        if (outgoing != null && MusicAudioSource.isPlaying)
+        {
+            int sample = MusicAudioSource.timeSamples;
+            musicPositions[outgoing] = sample < outgoing.samples - outgoing.frequency ? sample : 0;
+            yield return FadeMusic(0);
+        }
         MusicAudioSource.Stop();
         MusicAudioSource.clip = next;
         if (next != null)
         {
             MusicAudioSource.loop = true;
             MusicAudioSource.volume = 0;
+            if (musicPositions.TryGetValue(next, out int resume)) MusicAudioSource.timeSamples = resume;
             MusicAudioSource.Play();
             yield return FadeMusic(1);
         }

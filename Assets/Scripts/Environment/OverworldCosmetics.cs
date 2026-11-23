@@ -54,6 +54,7 @@ public static class OverworldCosmetics
             if(footprint.OtherApproach is { } far)Mark(far.X,far.Y,1);
         }
         foreach (var gate in grid.Locks) foreach (var cell in gate.Cells) Mark(cell.X, cell.Y, 2);
+        foreach (var pickup in grid.Pickups) Mark(pickup.Position.X, pickup.Position.Y, 0);
         Mark(grid.PlayerStart.X, grid.PlayerStart.Y, 3);
         return result;
     }
@@ -70,7 +71,15 @@ public static class OverworldCosmetics
         var result = new List<CosmeticPlacement>(); var protect = Protected(grid);
         var diorama=DioramaCatalog.Load();
         treeModels=treeModels!=null?treeModels:kit.TreeModels;
-        var chunks = new Dictionary<(int, int), int>(); int triangles = 0;
+        var pickupVerge = new HashSet<(int, int)>();
+        foreach (var pickup in grid.Pickups)
+            for (int dy = -2; dy <= 2; dy++)
+                for (int dx = -2; dx <= 2; dx++)
+                    if (Math.Abs(dx) + Math.Abs(dy) <= 3)
+                        pickupVerge.Add((pickup.Position.X + dx, pickup.Position.Y + dy));
+        grid.Layers.TryGetValue(OverworldLayers.Roads, out var roads);
+        var candidates = new List<(uint priority, int x, int y, CosmeticPlacement prop)>();
+        bool IsRoad(int x, int y) => roads != null && x >= 0 && y >= 0 && x < grid.Width && y < grid.Height && roads[x, y];
         for (int y = 1; y < grid.Height - 1; y++) for (int x = 1; x < grid.Width - 1; x++)
         {
             if (protect[x, y] || InLayer(grid, OverworldLayers.Mountains, x, y)) continue;
@@ -81,9 +90,12 @@ public static class OverworldCosmetics
             if(tree && diorama!=null && diorama.TreeWalls)continue;
             bool cliff=BiomeDecorations.Directions.Any(d=>InLayer(grid,OverworldLayers.Mountains,x+d.x,y+d.y));
             uint patch=Hash(grid.CampaignSeed^13817,x/4,y/4);
-            if (h % 1000 >= (tree ? 180 : cliff?180:patch%4==0?160:45)) continue;
-            var chunk = (x / 32, y / 32); chunks.TryGetValue(chunk, out int count);
-            if (count >= PropsPerChunk) continue;
+            // Roads retain a clear shoulder. Cluster scenery just beyond it and around discoveries.
+            bool roadside = IsRoad(x - 2, y) || IsRoad(x + 2, y) || IsRoad(x, y - 2) || IsRoad(x, y + 2);
+            bool discovery = pickupVerge.Contains((x, y));
+            int density = discovery ? 675 : roadside ? (patch % 3 == 0 ? 640 : 355) :
+                tree || cliff ? 180 : patch % 4 == 0 ? 220 : 50;
+            if (h % 1000 >= density) continue;
             string model =
                 biome switch {
                     OverworldBiome.Desert => h % 3 == 0 ? "Rock" : "Cactus",
@@ -100,9 +112,27 @@ public static class OverworldCosmetics
                 string replacement=DioramaPlacement.GroundCover(biome,h,cliff);
                 if(diorama?.Get(replacement)!=null)model=replacement;
             }
-            int cost = kit.Triangles(model); if (triangles + cost > TriangleBudget) continue;
-            triangles += cost; chunks[chunk] = count + 1;
-            result.Add(new CosmeticPlacement(x, y, model, biome, diorama?.Get(model)!=null?DioramaPlacement.Variation(h):.8f + (h >> 8) % 20 / 100f, (h >> 16) % 360));
+            var prop = new CosmeticPlacement(x, y, model, biome,
+                diorama?.Get(model) != null ? DioramaPlacement.Variation(h) : .8f + (h >> 8) % 20 / 100f, (h >> 16) % 360);
+            uint priority = Hash(grid.CampaignSeed ^ 23143, x, y) / (discovery ? 8u : roadside ? 4u : 1u);
+            candidates.Add((priority, x, y, prop));
+        }
+
+        // Allocate the mesh budget across the whole map, independent of row traversal.
+        var chunks = new Dictionary<(int, int), int>();
+        var costs = new Dictionary<string, int>();
+        int triangles = 0;
+        foreach (var candidate in candidates.OrderBy(c => c.priority).ThenBy(c => c.y).ThenBy(c => c.x))
+        {
+            var prop = candidate.prop;
+            var chunk = (prop.X / 32, prop.Y / 32);
+            chunks.TryGetValue(chunk, out int count);
+            if (count >= PropsPerChunk) continue;
+            if (!costs.TryGetValue(prop.Model, out int cost)) costs[prop.Model] = cost = kit.Triangles(prop.Model);
+            if (triangles + cost > TriangleBudget) continue;
+            triangles += cost;
+            chunks[chunk] = count + 1;
+            result.Add(prop);
         }
         return result;
     }

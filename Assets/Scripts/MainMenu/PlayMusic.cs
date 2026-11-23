@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayMusic : MonoBehaviour
@@ -8,10 +7,12 @@ public class PlayMusic : MonoBehaviour
     // Filled by the deferred web build, which ships music separately and clears the clip.
     [HideInInspector] public string MainMenuMusicTrack;
 
-    // Start is called before the first frame update
+    public AudioClip AlternateMusic;
+    [HideInInspector] public string AlternateMusicTrack;
+
     IEnumerator Start()
     {
         yield return LoadingSceneIntegration.EnsureCommon();
-        Common.Instance.AudioManager.PlayMusic(MainMenuMusic, MainMenuMusicTrack);
+        Common.Instance.AudioManager.PlayScore(MainMenuMusic, MainMenuMusicTrack, AlternateMusic, AlternateMusicTrack);
     }
 }

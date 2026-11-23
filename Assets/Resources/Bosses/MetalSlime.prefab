@@ -33,6 +33,14 @@ PrefabInstance:
       value: 2500
       objectReference: {fileID: 0}
     - target: {fileID: 962086013001910613, guid: ce9a9091e9503724cb446aa996f88f14, type: 3}
+      propertyPath: DiagonalFootprintOffset.x
+      value: 0.0000000016556847
+      objectReference: {fileID: 0}
+    - target: {fileID: 962086013001910613, guid: ce9a9091e9503724cb446aa996f88f14, type: 3}
+      propertyPath: DiagonalFootprintOffset.y
+      value: 0.031763237
+      objectReference: {fileID: 0}
+    - target: {fileID: 962086013001910613, guid: ce9a9091e9503724cb446aa996f88f14, type: 3}
       propertyPath: StartingStats.ActionsPerTurnMax
       value: 1
       objectReference: {fileID: 0}
@@ -51,6 +59,14 @@ PrefabInstance:
     - target: {fileID: 6775089565007069877, guid: ce9a9091e9503724cb446aa996f88f14, type: 3}
       propertyPath: m_Name
       value: MetalSlime
+      objectReference: {fileID: 0}
+    - target: {fileID: 7036420424338884301, guid: ce9a9091e9503724cb446aa996f88f14, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.000000052981903
+      objectReference: {fileID: 0}
+    - target: {fileID: 7036420424338884301, guid: ce9a9091e9503724cb446aa996f88f14, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.03272176
       objectReference: {fileID: 0}
     - target: {fileID: 7572286026523007700, guid: ce9a9091e9503724cb446aa996f88f14, type: 3}
       propertyPath: m_LocalPosition.x
@@ -125,3 +141,5 @@ MonoBehaviour:
   WarningTurns: 1
   CooldownTurns: 3
   EffectTurns: 2
+  SplashRadiusOverride: 0
+  RecoveryTurns: 0

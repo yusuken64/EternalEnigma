@@ -83,8 +83,7 @@ public class AllyRecruitDialog : Dialog
                 RecruitButtonText.alignment = TextAlignmentOptions.Center;
                 RecruitButtonText.raycastTarget = false;
                 blockedReason = player.RecruitedAllies.Count >= town.Configuration.MaxPartySize ? $"Party limit is {town.Configuration.MaxPartySize}." :
-                    !town.TownAllies.Contains(_ally) ? "This ally is no longer available." :
-                    player.Gold < _ally.RecruitCost ? $"Costs {_ally.RecruitCost} gold; you have {player.Gold}." : null;
+                    !town.TownAllies.Contains(_ally) ? "This ally is no longer available." : null;
                 RecruitButton.interactable = true;
 				break;
 			case AllyRecruitDialogMode.Talk:

@@ -19,6 +19,17 @@ public static class DungeonFloorGenerator
     public static DungeonFloor Generate(DungeonFloorOptions options)
     {
         var floor = GenerateTerrain(options);
+        if (options.BossFamily != null && !options.Encounter.HasValue)
+        {
+            var preferred = floor.TownPlan == null ? floor.Stairs : TownDungeonGenerator.BossSquare(floor.TownPlan).Center;
+            var occupied = floor.Scenery.Select(p => p.Cell).Concat(floor.Locks.Select(p => p.Door)).ToHashSet();
+            var center = BossCatalog.LandingCell(GridSearch.VisitOrder(floor.Start, floor.Neighbors), floor.Start, preferred,
+                p => floor.IsWalkable(p) && !occupied.Contains(p) && !p.Equals(floor.Stairs));
+            floor = new DungeonFloor(floor.Seed, floor.IsThroneFloor, floor.Layers.ToDictionary(p => p.Key, p => p.Value),
+                floor.Rooms, floor.Start, floor.Stairs, floor.Enemies, floor.Gold, floor.Items, floor.Traps, floor.GatheringSites,
+                floor.Scenery, floor.Locks, options.Objective, objectiveEnemies: new[] {
+                    new ObjectiveEnemyPlacement("boss", center, options.BossFamily, footprint: 3) }, townPlan: floor.TownPlan);
+        }
         // Legacy floors place safe traps before gathering and validate inside their retry loop.
         return options.Variant == DungeonVariant.Standard && !options.Encounter.HasValue && options.LayoutVersion == 0
             ? floor : DungeonTrapPlacement.Populate(floor, options);

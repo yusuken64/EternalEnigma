@@ -95,9 +95,10 @@ public sealed class CoreTownLayerGenerator : TWCBlueprintAction, ITWCAction
     /// Writes configuration-derived options onto every CoreTownLayerGenerator in the asset. AllyCount is left as authored.
     public static void Configure(TileWorldCreatorAsset asset, TownConfiguration configuration)
     {
-        foreach(var houses in asset.mapBuildLayers.OfType<EnvironmentSmartTileLayer>().Where(l=>l.Buildings))
-            houses.BuildingServices=(configuration.SlotBuildings??configuration.Buildings).Select(b=>b==null?"":
-                b.DialogId=="entrance"?"Dungeon":b.Id=="inn"?"Inn":b.ShopCatalog.Count>0?"Shop":b.Id.Contains("trainer")||b.DialogId=="trainer"?"Trainer":"").ToArray();
+        // Live town buildings own their signs. The terrain layer still needs the dungeon masonry slot.
+        foreach (var houses in asset.mapBuildLayers.OfType<EnvironmentSmartTileLayer>().Where(l => l.Buildings))
+            houses.BuildingServices = (configuration.SlotBuildings ?? configuration.Buildings)
+                .Select(b => b?.DialogId == "entrance" ? "Dungeon" : "").ToArray();
         if (configuration.Layout != null)
         {
             var options = configuration.Layout.Options;

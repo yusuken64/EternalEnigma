@@ -88693,8 +88693,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39847c1b36905644dafc1ab79c2db260, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MainMenuMusic: {fileID: 8300000, guid: 0a2e6afd58359474ab4e28509c74aaf2, type: 3}
-  MainMenuMusicTrack: 
+  MainMenuMusic: {fileID: 8300000, guid: 7816fb8c9d586a046ac48aab5f883230, type: 3}
+  MainMenuMusicTrack:
+  AlternateMusic: {fileID: 8300000, guid: 171c69d47c1e3ba4da9363141867484f, type: 3}
+  AlternateMusicTrack:
 --- !u!114 &1656518435
 MonoBehaviour:
   m_ObjectHideFlags: 0

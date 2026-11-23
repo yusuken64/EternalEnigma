@@ -187,6 +187,63 @@ namespace EternalEnigma.Tests
             }
         }
 
+        [UnityTest] public IEnumerator BuildingsHaveReadableWorldSignsAtTheirDoors()
+        {
+            yield return StartCampaign();
+            harness.UnlockOpeningHome();
+            var start = Hero.TilemapPosition;
+            var step = new[] { Vector3Int.down, Vector3Int.right, Vector3Int.left, Vector3Int.up }.Select(d => start + d)
+                .First(p => Town.CanEnter(p) && Town.WalkableMap.CanWalkTo(start, p));
+            Town.TownPlayer.SetAction(new TownMovement(Town.TownPlayer, start, step));
+            yield return null;
+            Assert.That(Context.State.MovedInOpening, Is.True);
+            float size = Town.WalkableMap.TileWorldCreator.twcAsset.cellSize;
+            var camera = Town.TownPlayer.CameraController.Camera;
+            var buildings = Town.TownBuildings;
+            Assert.That(buildings.Select(b => b.Sign.Symbol), Is.Unique);
+            foreach (var building in buildings)
+            {
+                var sign = building.Sign;
+                var artwork = sign.GetComponentsInChildren<MeshRenderer>().Single(r => r.GetComponent<TMP_Text>() == null);
+                Assert.That(artwork.sharedMaterial.mainTexture, Is.Not.Null, building.Name);
+                Assert.That(artwork.bounds.size.x / size, Is.InRange(1.65f, 1.95f), building.Name);
+                Assert.That(sign.GetComponentsInChildren<Collider>(), Is.Empty, building.Name);
+                Assert.That(building.GetComponentsInChildren<WorldSign>().Length, Is.EqualTo(1));
+                Assert.That(Vector3.Dot(sign.Caption.transform.forward, camera.transform.forward), Is.GreaterThan(.97f));
+                sign.Caption.ForceMeshUpdate();
+                Assert.That(sign.Caption.isTextOverflowing, Is.False, sign.Caption.text);
+                var doorCenter = Town.WalkableMap.CellToWorld(building.TilemapPosition) + Vector3.right * size * .5f;
+                Assert.That(Mathf.Abs(artwork.bounds.center.x - doorCenter.x) - artwork.bounds.extents.x,
+                    Is.GreaterThanOrEqualTo(size * .5f), building.Name + " must leave the doorway clear.");
+                if (building.Definition.DialogId != "entrance")
+                    Assert.That(sign.Caption.text, Is.EqualTo(building.Name));
+            }
+            Assert.That(buildings.SelectMany(b => b.GetComponentsInChildren<TMP_Text>())
+                .Any(t => t.name.StartsWith("Door label")), Is.False);
+            var gate = Town.WalkableMap.TileWorldCreator.worldObject.GetComponentsInChildren<WorldSign>()
+                .Single(s => s.Symbol == WorldSign.Emblem.Gate);
+            Assert.That(gate.Caption.text, Is.EqualTo("Town gate"));
+
+            IEnumerator ViewFrom(Vector3Int tile, Facing direction, string id)
+            {
+                Hero.TilemapPosition = tile;
+                Hero.transform.position = Town.WalkableMap.CellToWorld(tile);
+                Hero.SetFacing(direction);
+                Town.RefreshRoofs();
+                Town.TownPlayer.CameraController.SnapToFollowTarget();
+                yield return Capture("world-sign-" + id);
+            }
+            foreach (var building in buildings)
+                yield return ViewFrom(building.TilemapPosition, Facing.Up, building.Definition.Id);
+            Assert.That(gate.transform.parent.Find("Gate direction indicator"), Is.Null);
+            yield return ViewFrom(Town.Plan.Exit.ToCell() + Vector3Int.up, Facing.Down, "town-gate");
+            var dungeon = buildings.Single(b => b.Definition.Id == "entrance").Sign;
+            Assert.That(dungeon.Caption.text, Is.EqualTo("Opens tomorrow"));
+            harness.PrepareOpening();
+            yield return null; yield return null;
+            Assert.That(dungeon.Caption.text, Is.EqualTo("Dungeon open"));
+        }
+
         [UnityTest] public IEnumerator FirstTownHasOnlyUsefulHousesAndDungeonSmartTileEntrance()
         {
             yield return StartCampaign();
@@ -238,6 +295,7 @@ namespace EternalEnigma.Tests
             Assert.That(harness.Store.Writes, Is.EqualTo(writes));
             Common.MessageDialog.Ok_Clicked();
 
+            harness.UnlockOpeningHome();
             Town.TownPlayer.Gold = 0;
             var bakery = Town.TownBuildings.Single(b => b.Definition.Id == "bakery");
             bakery.Interact(Town.TownPlayer, null); yield return null;
@@ -316,6 +374,7 @@ namespace EternalEnigma.Tests
         [UnityTest] public IEnumerator SkillFirstEarlySaveAndConsumedBreadStillOpenTomorrow()
         {
             yield return StartCampaign();
+            harness.UnlockOpeningHome();
             string skill = LearnSkill();
             Assert.That(Context.ReadyForOpeningDay, Is.False);
             Bed.Interact(); yield return null;

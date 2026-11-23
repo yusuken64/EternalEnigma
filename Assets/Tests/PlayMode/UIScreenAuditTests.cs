@@ -317,7 +317,7 @@ namespace EternalEnigma.Tests
             {
                 npc.Greet(town.TownPlayer.ControllingTownAlly.TilemapPosition); yield return null;
                 yield return CaptureSizes("town-npc-" + npcIndex++);
-                Common.Instance.MessageDialog.CloseDialog(); yield return null;
+                menus.CurrentDialog.CloseDialog(); yield return null;
             }
             var longestItem = Common.Instance.ItemManager.ItemDefinitions
                 .OrderByDescending(item => item.Description?.Length ?? 0).First();

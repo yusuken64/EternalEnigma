@@ -44,6 +44,13 @@ internal static class ForestMazeGenerator
             Carve(room.Center);
             Grow();
         }
+        if (options.BossFamily != null)
+        {
+            // Two clearings in the original forest footprint leave room for both the boss and the exit.
+            foreach (var room in footprint.Rooms.OrderByDescending(r =>
+                Math.Abs(r.Center.X - start.X) + Math.Abs(r.Center.Y - start.Y)).Take(2))
+                foreach (var p in room.Cells()) Carve(p);
+        }
         return (mask, start);
     }
 }

@@ -33,31 +33,47 @@ namespace EternalEnigma.Tests
             finally { SceneManager.SetActiveScene(previous); EditorSceneManager.CloseScene(scene, true); }
         }
 
-        [Test] public void PortraitDisplayUsesSavedImageWithoutChangingModelLayers()
+        [TestCase(320, 180)]
+        [TestCase(160, 360)]
+        public void PortraitDisplayFitsSpriteRegionAndRestoresLiveView(int width, int height)
         {
             var prefab = AssetDatabase.LoadAssetAtPath<TownAlly>("Assets/Prefabs/Town/Allies/Ally_MC01.prefab");
             var hero = new GameObject("Hero"); hero.SetActive(false);
-            var displayObject = new GameObject("Portrait", typeof(RectTransform), typeof(RawImage));
+            var display = Object.Instantiate(AssetDatabase.LoadAssetAtPath<FaceCamDisplay>("Assets/Prefabs/Menu/AllyImage.prefab"));
+            var slot = (RectTransform)display.transform;
+            slot.sizeDelta = new Vector2(width, height);
+            var portrait = Sprite.Create(prefab.Portrait.texture, new Rect(12, 16, 60, 90), Vector2.one * .5f,
+                100, 0, SpriteMeshType.FullRect);
             try
             {
-                var data = hero.AddComponent<TownAlly>(); data.Portrait = prefab.Portrait;
+                var data = hero.AddComponent<TownAlly>(); data.Portrait = portrait;
                 var visual = new GameObject("Visual"); visual.transform.SetParent(hero.transform); visual.layer = 4;
-                var display = displayObject.AddComponent<FaceCamDisplay>();
-                var image = displayObject.GetComponent<RawImage>();
+                var image = display.GetComponentInChildren<RawImage>();
+                var fitter = image.GetComponent<AspectRatioFitter>();
+                float liveAspect = fitter.aspectRatio;
                 image.texture = Texture2D.blackTexture;
                 image.uvRect = new Rect(.1f,.2f,.7f,.6f);
                 display.SetFollow(visual);
-                Assert.That(image.texture, Is.SameAs(prefab.Portrait.texture));
-                var rect = prefab.Portrait.textureRect;
-                Assert.That(image.uvRect, Is.EqualTo(new Rect(rect.x / prefab.Portrait.texture.width,
-                    rect.y / prefab.Portrait.texture.height, rect.width / prefab.Portrait.texture.width,
-                    rect.height / prefab.Portrait.texture.height)));
+                Assert.That(image.texture, Is.SameAs(portrait.texture));
+                var rect = portrait.textureRect;
+                Assert.That(image.uvRect, Is.EqualTo(new Rect(rect.x / portrait.texture.width,
+                    rect.y / portrait.texture.height, rect.width / portrait.texture.width, rect.height / portrait.texture.height)));
+                float scale = Mathf.Min(width / rect.width, height / rect.height);
+                Assert.That(image.rectTransform.rect.width, Is.EqualTo(rect.width * scale).Within(.01f));
+                Assert.That(image.rectTransform.rect.height, Is.EqualTo(rect.height * scale).Within(.01f));
+                Assert.That(image.rectTransform.anchoredPosition, Is.EqualTo(Vector2.zero));
                 Assert.That(visual.layer, Is.EqualTo(4));
                 display.Unfollow(visual);
+                Assert.That(fitter.aspectRatio, Is.EqualTo(liveAspect));
                 Assert.That(image.texture, Is.SameAs(Texture2D.blackTexture));
                 Assert.That(image.uvRect, Is.EqualTo(new Rect(.1f,.2f,.7f,.6f)));
             }
-            finally { Object.DestroyImmediate(hero); Object.DestroyImmediate(displayObject); }
+            finally
+            {
+                Object.DestroyImmediate(hero);
+                Object.DestroyImmediate(display.gameObject);
+                Object.DestroyImmediate(portrait);
+            }
         }
     }
 }

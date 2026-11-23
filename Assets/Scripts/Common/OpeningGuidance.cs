@@ -19,7 +19,7 @@ public sealed class OpeningGuidance : MonoBehaviour
     private DungeonHud hud;
     private readonly System.Collections.Generic.List<HomeBed> beds = new();
     private string formattedSource, formattedObjective, bookButton, bookPrompt;
-    private string moveKey, moveText, bedKey, bedText, vendorKey, vendorText;
+    private string moveKey, moveText, bedKey, bedText, vendorKey, vendorText, talkButton, talkPrompt;
 
     private TownMenuManager TownMenu()
     {
@@ -89,6 +89,20 @@ public sealed class OpeningGuidance : MonoBehaviour
             ShowBookPrompt(ready, homeLesson);
             return;
         }
+        if (ready && town?.Guide?.ShowMochiPrompt() == true && !common.ScreenTransition.BlocksInput && !ControlBindings.SuppressInput)
+        {
+            var hero = town.TownPlayer.ControllingTownAlly;
+            var mochi = town.Guide.Mochi;
+            bool facing = hero.TilemapPosition + Dungeon.GetFacingOffset(hero.CurrentFacing) == mochi.Cell;
+            string button = facing ? InputPrompts.InteractionButton : "";
+            if (talkPrompt == null || talkButton != button)
+            {
+                talkButton = button;
+                talkPrompt = string.IsNullOrEmpty(button) ? "Talk to Mochi" : $"[{button}] Talk to Mochi";
+            }
+            float size = town.WalkableMap.TileWorldCreator.twcAsset.cellSize;
+            if (ShowWorldPrompt(mochi.transform.position + new Vector3(.5f, .5f, -1f) * size, talkPrompt)) return;
+        }
         string objective = ready ? context.OpeningObjective : "";
         if (ready && game != null && game.GetComponent<OpeningDungeonLesson>() is { } lesson && lesson.enabled)
             objective = lesson.Objective;
@@ -130,11 +144,15 @@ public sealed class OpeningGuidance : MonoBehaviour
             !homeLesson.TryGetBookPromptAnchor(out var anchor)) return;
         string button = InputPrompts.InteractionButton;
         if (string.IsNullOrEmpty(button)) return;
-        var camera = town.TownPlayer.CameraController.Camera;
-        var screen = camera.WorldToScreenPoint(anchor);
-        if (screen.z <= 0 || screen.x < 0 || screen.x > Screen.width || screen.y < 0 || screen.y > Screen.height) return;
         if (button != bookButton) { bookButton = button; bookPrompt = $"[{button}] Read"; }
-        if (label.text != bookPrompt) label.text = bookPrompt;
+        ShowWorldPrompt(anchor, bookPrompt);
+    }
+
+    private bool ShowWorldPrompt(Vector3 anchor, string prompt)
+    {
+        var screen = town.TownPlayer.CameraController.Camera.WorldToScreenPoint(anchor);
+        if (screen.z <= 0 || screen.x < 0 || screen.x > Screen.width || screen.y < 0 || screen.y > Screen.height) return false;
+        if (label.text != prompt) label.text = prompt;
         label.alignment = TextAlignmentOptions.Center;
         label.textWrappingMode = TextWrappingModes.NoWrap;
         // Normalized anchors keep the prompt on the prop while the canvas scaler catches up to a resize.
@@ -142,6 +160,7 @@ public sealed class OpeningGuidance : MonoBehaviour
         panelRect.sizeDelta = new Vector2(label.preferredWidth + 36, label.preferredHeight + 20);
         panelRect.anchoredPosition = new Vector2(0, 8);
         canvas.enabled = true;
+        return true;
     }
 
     internal static IEnumerator RevealOpenedGate(Town town)

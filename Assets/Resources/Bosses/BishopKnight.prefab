@@ -32,6 +32,22 @@ PrefabInstance:
       propertyPath: StartingStats.EXPOnKill
       value: 200
       objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: ff649f367b5c3d34eaa15e27319491f0, type: 3}
+      propertyPath: DiagonalFootprintOffset.x
+      value: -0.1407849
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: ff649f367b5c3d34eaa15e27319491f0, type: 3}
+      propertyPath: DiagonalFootprintOffset.y
+      value: -0.18574353
+      objectReference: {fileID: 0}
+    - target: {fileID: 3441567682816711688, guid: ff649f367b5c3d34eaa15e27319491f0, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.24720417
+      objectReference: {fileID: 0}
+    - target: {fileID: 3441567682816711688, guid: ff649f367b5c3d34eaa15e27319491f0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.31560287
+      objectReference: {fileID: 0}
     - target: {fileID: 5543747752720980080, guid: ff649f367b5c3d34eaa15e27319491f0, type: 3}
       propertyPath: m_Name
       value: BishopKnight
@@ -117,3 +133,5 @@ MonoBehaviour:
   WarningTurns: 1
   CooldownTurns: 3
   EffectTurns: 2
+  SplashRadiusOverride: 0
+  RecoveryTurns: 0

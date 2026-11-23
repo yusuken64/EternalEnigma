@@ -105,21 +105,21 @@ public sealed class GameTestHarness
             !Common.Instance.ScreenTransition.BlocksInput, "direct main menu startup and reveal");
     }
 
+    public void UnlockOpeningHome()
+    {
+        var context = Common.Instance.CampaignContext;
+        if (context?.HasHomeLesson != true || context.State.HomeDoorUnlocked) return;
+        context.ReadOpeningBook();
+        context.ClaimHomeKey();
+        Assert.That(context.UnlockHomeDoor(), Is.True, "The hero must be able to leave home.");
+    }
+
     // Travel/save fixtures start after the opening, using the real transactions and save path.
     public void PrepareOpening()
     {
         var common = Common.Instance;
         if (common.CampaignContext?.IsPreparingForOpening != true) return;
-        var context = common.CampaignContext;
-        // These fixtures begin after the tutorial. Complete its domain actions
-        // too, so the real sleep/save transaction has every current prerequisite.
-        if (context.HasHomeLesson)
-        {
-            context.ReadOpeningBook();
-            context.ClaimHomeKey();
-            context.UnlockHomeDoor();
-            Assert.That(context.State.HomeDoorUnlocked, Is.True, "Opening fixture must unlock the home door.");
-        }
+        UnlockOpeningHome();
         var town = Object.FindFirstObjectByType<Town>();
         if (!common.CampaignContext.State.BoughtOpeningBread)
             Assert.That(town.Services.Buy(town.Configuration.Buildings.Single(b => b.Id == "bakery"), "Bread", out var buyReason), Is.True, buyReason);

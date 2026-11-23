@@ -161,8 +161,6 @@ public static class PaintedEnvironmentCapture
     }
     static void Save(Camera camera, string name)
     {
-        foreach(var label in UnityEngine.Object.FindObjectsByType<BiomeSignLabel>(FindObjectsSortMode.None))
-        {label.Face(camera);label.GetComponent<TMPro.TMP_Text>().ForceMeshUpdate();}
         var rt = RenderTexture.GetTemporary(1280,800,24); var previous = RenderTexture.active; var target = camera.targetTexture;
         var image = new Texture2D(1280,800,TextureFormat.RGB24,false);
         try { camera.targetTexture=rt; camera.Render(); RenderTexture.active=rt; image.ReadPixels(new Rect(0,0,1280,800),0,0); image.Apply(); File.WriteAllBytes(destination+"/"+name+".png",image.EncodeToPNG()); }

@@ -17,12 +17,6 @@ public sealed class DioramaTownAccentLayer : TWCBuildLayer
             var root=creator.AddLayerObject(layerName,guid);root.transform.SetParent(creator.worldObject.transform,false);root.transform.localRotation=Quaternion.identity;
             foreach(var child in root.transform.Cast<Transform>().ToArray()){child.gameObject.SetActive(false);DungeonPresentation.Release(child.gameObject);}
             float size=creator.twcAsset.cellSize;
-            foreach(var interior in plan.Interiors.Where(i=>i.Spec.HasVendor))
-            {
-                var marker=Place(interior.Spec.Kind==TownInteriorKind.Trainer?"question mark":"exclamation mark",
-                    new Vector3(interior.Door.X+.5f,interior.Door.Y+.6f,-DioramaScale.Door/size-.22f)*size,.6f);
-                if(marker!=null)marker.AddComponent<DioramaBob>().Phase=(OverworldCosmetics.Hash(plan.Seed,interior.Door.X,interior.Door.Y)%1000)*.00628f;
-            }
             // Prefab renderers retain shared atlas materials. They are created by
             // this TWC layer without requiring Read/Write on the Adorable pack.
             foreach(var interior in plan.Interiors.Where(i=>i.Spec.Kind==TownInteriorKind.Shop))

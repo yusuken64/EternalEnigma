@@ -21,10 +21,8 @@ public static class TownDungeonPresentation
         CoreDungeonLayerGenerator.Configure(asset, options);
         foreach (var town in asset.mapBlueprintLayers.SelectMany(l => l.stack).Select(s => s.action).OfType<CoreTownLayerGenerator>())
             town.DungeonSource = source;
-        var plan = TownDungeonGenerator.TownOptions(options);
         foreach (var buildings in asset.mapBuildLayers.OfType<EnvironmentSmartTileLayer>().Where(l => l.Buildings))
-            buildings.BuildingServices = plan.Interiors.Select(i => i.Kind == TownInteriorKind.Inn ? "Inn" :
-                i.Kind == TownInteriorKind.Trainer ? "Trainer" : i.Kind == TownInteriorKind.Shop ? "Shop" : "").ToArray();
+            buildings.BuildingServices = Array.Empty<string>();
         var style = creator.GetComponent<TownBiomeStyle>() ?? creator.gameObject.AddComponent<TownBiomeStyle>();
         style.OverrideBiome = true; style.Biome = options.Biome;
         CoreLayoutCache.Clear(creator);
@@ -39,11 +37,13 @@ public static class TownDungeonPresentation
         // the party can see through its doorway, including enemies targeted from the street.
         var visibility = creator.worldObject.GetComponent<TownDungeonVisibility>() ?? creator.worldObject.AddComponent<TownDungeonVisibility>();
         visibility.Initialize(floor, creator.twcAsset.cellSize, preview);
+        foreach (var room in floor.TownPlan.Interiors.Where(i => i.Spec.HasVendor))
+            WorldSign.AtDistrictBuilding(creator.worldObject.transform, floor.TownPlan, room, creator.twcAsset.cellSize);
         var kit = EnvironmentKit.Load();
         var biome = creator.GetComponent<TownBiomeStyle>().Current;
         TownGateVisuals.Create(kit, biome, creator.worldObject.transform, floor.Stairs,
             creator.twcAsset.cellSize, "District exit", false, true, TownGateVisuals.DistrictRotation(floor.TownPlan, floor.Stairs, true),
-            TownGateVisuals.DistrictGateCell(floor.TownPlan, floor.Stairs));
+            floor.TownPlan);
         ScenePresentation.RegisterWorld(creator.worldObject.transform);
     }
 

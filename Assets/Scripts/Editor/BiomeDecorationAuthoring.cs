@@ -26,20 +26,8 @@ public static class BiomeDecorationAuthoring
         var assets=new List<BiomeDecorationAsset>();
         foreach(OverworldBiome biome in Enum.GetValues(typeof(OverworldBiome)))
         foreach(BiomeDecorationKind kind in Enum.GetValues(typeof(BiomeDecorationKind))) {
-            string id=biome+"_"+kind,path="Assets/Art/EternalEnigma/BiomeDecorations/"+id+".fbx";
-            var importer=(ModelImporter)AssetImporter.GetAtPath(path);
-            importer.globalScale=1;importer.useFileScale=true;importer.bakeAxisConversion=true;importer.importAnimation=false;
-            importer.animationType=ModelImporterAnimationType.None;importer.isReadable=true;importer.materialImportMode=ModelImporterMaterialImportMode.None;importer.addCollider=false;importer.SaveAndReimport();
-            var source=AssetDatabase.LoadAssetAtPath<GameObject>(path);
-            var combines=new List<CombineInstance>();
-            foreach(var filter in source.GetComponentsInChildren<MeshFilter>()) for(int sub=0;sub<filter.sharedMesh.subMeshCount;sub++)
-                combines.Add(new CombineInstance {mesh=filter.sharedMesh,subMeshIndex=sub,transform=Matrix4x4.Rotate(Quaternion.Euler(-90,0,0))*filter.transform.localToWorldMatrix});
-            var mesh=new Mesh {name=id};mesh.CombineMeshes(combines.ToArray(),true,true);mesh.RecalculateBounds();
-            int budget=kind==BiomeDecorationKind.LampPost || kind==BiomeDecorationKind.SignPost ? 240 : 120;
-            if(mesh.triangles.Length/3>budget || kind!=BiomeDecorationKind.SignPanel && mesh.bounds.size.z>.1f && mesh.bounds.center.z>0)throw new InvalidOperationException("Invalid model "+id+" "+mesh.bounds);
-            var saved=AssetDatabase.LoadAssetAtPath<Mesh>(Folder+"/"+id+".asset");
-            if(saved==null){saved=mesh;AssetDatabase.CreateAsset(saved,Folder+"/"+id+".asset");}
-            else{EditorUtility.CopySerialized(mesh,saved);UnityEngine.Object.DestroyImmediate(mesh);EditorUtility.SetDirty(saved);}
+            string id=biome+"_"+kind;
+            var saved=ImportMesh(id,kind);
             var obj=new GameObject(id);obj.AddComponent<MeshFilter>().sharedMesh=saved;obj.AddComponent<MeshRenderer>().sharedMaterial=material;
             var prefab=PrefabUtility.SaveAsPrefabAsset(obj,Folder+"/"+id+".prefab");UnityEngine.Object.DestroyImmediate(obj);
             var entry=new BiomeDecorationAsset {Biome=biome,Kind=kind,Mesh=saved,Prefab=prefab,
@@ -55,6 +43,33 @@ public static class BiomeDecorationAuthoring
         catalog.Material=material;catalog.Assets=assets.ToArray();catalog.Facades=Facades();EditorUtility.SetDirty(catalog);AssetDatabase.SaveAssets();
         Debug.Log("Biome decorations imported in "+Application.dataPath+": "+assets.Count+" bounded meshes. GUIDs preserved.");
     }
+    [MenuItem("Tools/Eternal Enigma/Art/Import Biome Sign Panels")]
+    public static void ImportSignPanels()
+    {
+        foreach (OverworldBiome biome in Enum.GetValues(typeof(OverworldBiome)))
+            ImportMesh(biome + "_SignPanel", BiomeDecorationKind.SignPanel);
+        AssetDatabase.SaveAssets();
+    }
+
+    static Mesh ImportMesh(string id, BiomeDecorationKind kind)
+    {
+        string path="Assets/Art/EternalEnigma/BiomeDecorations/"+id+".fbx";
+        var importer=(ModelImporter)AssetImporter.GetAtPath(path);
+        importer.globalScale=1;importer.useFileScale=true;importer.bakeAxisConversion=true;importer.importAnimation=false;
+        importer.animationType=ModelImporterAnimationType.None;importer.isReadable=true;importer.materialImportMode=ModelImporterMaterialImportMode.None;importer.addCollider=false;importer.SaveAndReimport();
+        var source=AssetDatabase.LoadAssetAtPath<GameObject>(path);
+        var combines=new List<CombineInstance>();
+        foreach(var filter in source.GetComponentsInChildren<MeshFilter>()) for(int sub=0;sub<filter.sharedMesh.subMeshCount;sub++)
+            combines.Add(new CombineInstance {mesh=filter.sharedMesh,subMeshIndex=sub,transform=Matrix4x4.Rotate(Quaternion.Euler(-90,0,0))*filter.transform.localToWorldMatrix});
+        var mesh=new Mesh {name=id};mesh.CombineMeshes(combines.ToArray(),true,true);mesh.RecalculateBounds();
+        int budget=kind==BiomeDecorationKind.LampPost || kind==BiomeDecorationKind.SignPost ? 240 : 120;
+        if(mesh.triangles.Length/3>budget || kind!=BiomeDecorationKind.SignPanel && mesh.bounds.size.z>.1f && mesh.bounds.center.z>0)throw new InvalidOperationException("Invalid model "+id+" "+mesh.bounds);
+        var saved=AssetDatabase.LoadAssetAtPath<Mesh>(Folder+"/"+id+".asset");
+        if(saved==null){saved=mesh;AssetDatabase.CreateAsset(saved,Folder+"/"+id+".asset");}
+        else{EditorUtility.CopySerialized(mesh,saved);UnityEngine.Object.DestroyImmediate(mesh);EditorUtility.SetDirty(saved);}
+        return saved;
+    }
+
     static BiomeFacadeDefinition[] Facades()
     {
         // Coordinates audited against the editable EnvironmentKit.blend meshes (XY/-Z after import).

@@ -186,8 +186,8 @@ def post(i,sign=False):
     return m
 def panel(i):
     m=Model()
-    # Arrow silhouette is independent from its pole, for up to three branches.
-    p=[(-.48,0,-.09),(.31,0,-.09),(.49,0,0),(.31,0,.09),(-.48,0,.09)]
+    # Flat ends and a gently crowned top keep the plaque readable from either side.
+    p=[(-.48,0,-.09),(.49,0,-.09),(.49,0,.06),(.005,0,.09),(-.48,0,.06)]
     m.poly([(x,y-.035,z) for x,y,z in p]+[(x,y+.035,z) for x,y,z in p],
         [(4,3,2,1,0),(5,6,7,8,9)]+[(j,(j+1)%5,(j+1)%5+5,j+5) for j in range(5)],base[i])
     if i==2:m.gem((-.40,-.055,0),(.07,.025,.06),5,n=5)

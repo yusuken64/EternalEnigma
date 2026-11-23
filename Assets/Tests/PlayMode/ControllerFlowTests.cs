@@ -44,6 +44,15 @@ namespace EternalEnigma.Tests
         }
 
         IEnumerator Press(GamepadButton button) => Send(new GamepadState().WithButton(button));
+        IEnumerator Tap(GamepadButton button) => Tap(new GamepadState().WithButton(button));
+        IEnumerator Tap(GamepadState state)
+        {
+            InputSystem.QueueStateEvent(pad, state);
+            InputSystem.QueueStateEvent(pad, new GamepadState());
+            yield return null;
+            yield return null;
+        }
+
         IEnumerator Send(GamepadState state)
         {
             InputSystem.QueueStateEvent(pad, state);
@@ -110,6 +119,10 @@ namespace EternalEnigma.Tests
             ConnectPad();
             var menu = Object.FindFirstObjectByType<MainMenu>();
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(menu.StartButton));
+            yield return Tap(GamepadButton.DpadDown);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.Not.EqualTo(menu.StartButton));
+            yield return Tap(GamepadButton.DpadUp);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(menu.StartButton));
             yield return Press(GamepadButton.South);
             Assert.That(Object.FindFirstObjectByType<CampaignSlots>(), Is.Not.Null);
             yield return Press(GamepadButton.South);
@@ -117,9 +130,15 @@ namespace EternalEnigma.Tests
             Assert.That(picker, Is.Not.Null);
             var first = EventSystem.current.currentSelectedGameObject;
             Assert.That(first, Is.EqualTo(picker.ChoiceButtons[0].gameObject));
-            yield return Press(GamepadButton.DpadDown);
+            var nextRow = picker.ChoiceButtons[0].navigation.selectOnDown;
+            Assert.That(nextRow, Is.Not.Null);
+            yield return Tap(GamepadButton.DpadDown);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(nextRow.gameObject));
+            yield return Tap(GamepadButton.DpadUp);
+            Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(first));
+            yield return Tap(GamepadButton.DpadUp);
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(picker.BackButton.gameObject));
-            yield return Press(GamepadButton.DpadUp);
+            yield return Tap(GamepadButton.DpadDown);
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(first));
             yield return Press(GamepadButton.DpadRight);
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(picker.ChoiceButtons[1].gameObject));
@@ -153,12 +172,20 @@ namespace EternalEnigma.Tests
                         !town.TownBuildings.Any(b => b.TilemapPosition == origin + d) &&
                         !town.TownAllies.Any(a => a.TilemapPosition == origin + d) &&
                         !town.ShopVendors.Any(v => v.TilemapPosition == origin + d));
-                yield return Send(Direction(offset, stick));
+                yield return stick ? Send(Direction(offset, true)) : Tap(Direction(offset, false));
                 yield return harness.WaitUntil(() => !player.IsBusy, "town movement");
                 Assert.That(player.ControllingTownAlly.TilemapPosition, Is.Not.EqualTo(origin), stick ? "stick" : "dpad");
             }
             yield return Press(GamepadButton.West);
             Assert.That(menus.Opened, Is.True);
+            yield return Tap(GamepadButton.DpadRight);
+            Assert.That(menus.PartyMenu.Tab, Is.EqualTo(PartyMenuTab.Equipment));
+            yield return Tap(GamepadButton.DpadRight);
+            Assert.That(menus.PartyMenu.Tab, Is.EqualTo(PartyMenuTab.Skills));
+            yield return Tap(GamepadButton.DpadLeft);
+            Assert.That(menus.PartyMenu.Tab, Is.EqualTo(PartyMenuTab.Equipment));
+            yield return Tap(GamepadButton.DpadLeft);
+            Assert.That(menus.PartyMenu.Tab, Is.EqualTo(PartyMenuTab.Inventory));
             var position = player.ControllingTownAlly.TilemapPosition;
             yield return Press(GamepadButton.DpadDown);
             Assert.That(player.ControllingTownAlly.TilemapPosition, Is.EqualTo(position), "Menus must block walking.");
@@ -412,7 +439,7 @@ namespace EternalEnigma.Tests
             Assert.That(EventSystem.current.currentSelectedGameObject, Is.EqualTo(boltButton.gameObject));
             yield return Press(GamepadButton.South);
             Assert.That(MenuManager.Instance.CurrentDialog, Is.TypeOf<TargetDialog>());
-            yield return Send(new GamepadState { leftStick = Vector2.right });
+            yield return Tap(GamepadButton.DpadRight);
             Assert.That(MenuManager.Instance.TargetDialog.Direction, Is.EqualTo(Vector3Int.right));
             var aim = target.TilemapPosition - hero.TilemapPosition;
             yield return Send(Direction(aim, false));

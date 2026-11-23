@@ -10,6 +10,19 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class HarnessTestRunner
 {
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Exploration Controls And Feedback")]
+    public static void RunExplorationControlsAndFeedback() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.ControllerFlowTests", "EternalEnigma.Tests.DungeonFastWalkTests", "HeldWalkingTests",
+        "EternalEnigma.Tests.SettingsInteractionTests", "EternalEnigma.Tests.DungeonGridAlignmentTests",
+        "EternalEnigma.Tests.CombatEffectPlaybackTests.SlashesFaceTheCameraFromAllEightCastDirections",
+        "EternalEnigma.Tests.GameplayAudioTests.ScoreAlternatesAtTheEndAndResumesAnInterruptedTrack",
+        "EternalEnigma.Tests.OverworldSceneTests.RoadSignOpensTownAndLandmarkDirectionsWithoutChangingProgression");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Exploration Scenery")]
+    public static void RunExplorationScenery() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests",
+        "EternalEnigma.Tests.CoreIntegration.EnvironmentKitTests.CosmeticPlanIsRepeatableBudgetedAndAvoidsProtectedCells");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Visibility")]
     public static void RunDungeonVisibility() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.DungeonVisibilityTests",
@@ -27,6 +40,12 @@ public static class HarnessTestRunner
         "EternalEnigma.Tests.DungeonGridAlignmentTests", "EternalEnigma.Tests.EnemySpawnVisualTests",
         "MovementRegressionTests.DungeonInputStillTurnsInPlaceThenMovesThroughTurnPipeline",
         "EternalEnigma.Tests.DungeonControlTests.NormalAllyPlaybackKeepsIndicatorsAlignedAtEverySpeed");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Large Monster Alignment")]
+    public static void RunLargeMonsterAlignment() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.DungeonGridAlignmentTests.EveryThreeByThreeMonsterCentersItsVisibleMeshOnItsNineCells",
+        "EternalEnigma.Tests.DungeonGridAlignmentTests.EnemySpawnCentersAnOffsetMeshAroundTheFootprintWhenTurning",
+        "EternalEnigma.Tests.EncounterGameplayTests.SlimeSplashReplaysAnAirborneJumpAndLandsOnItsResolvedTile");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon Grid Audit")]
     public static void RunDungeonGridAudit() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
@@ -268,7 +287,7 @@ public static class HarnessTestRunner
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Event Feed Defaults")]
     public static void RunEventFeedDefaults() => Run(TestMode.PlayMode,"EternalEnigma.Tests.PlayMode",
-        "EternalEnigma.Tests.GameMessageTests.CompactPreviewUsesAuthoredSettingsAndFourRenderedLines",
+        "EternalEnigma.Tests.GameMessageTests.CompactFeedFitsWholeLinesKeepsPaddingAndScrollsHistory",
         "EternalEnigma.Tests.UnifiedPartyMenuTests.HistoryShortcutTogglesAcrossPresentationsAndRespectsRebinding",
         "EternalEnigma.Tests.UnifiedPartyMenuTests.TownTabsNestedBackAndRecoveryPreserveCheckpoint",
         "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentConflictsKeepCopiesAndOverworldCommitsSurviveReload");
@@ -329,6 +348,34 @@ public static class HarnessTestRunner
     public static void RunControlsRebindingPlayMode() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.ControlsRebindingTests", "EternalEnigma.Tests.SettingsInteractionTests",
         "EternalEnigma.Tests.DiagonalMovementTests");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run World Sign And Item Assets")]
+    public static void RunWorldSignAndItemAssets() => Run(TestMode.EditMode, "EternalEnigma.Tests.EditMode",
+        "EternalEnigma.Tests.CoreIntegration.BiomeDecorationTests.AllSignPanelsHaveBluntEnds",
+        "EternalEnigma.Tests.EditMode.PresentationGeometryTests", "EternalEnigma.Tests.EditMode.DioramaItemTests",
+        "EternalEnigma.Tests.WeaponCatalogTests.GeneratedOverworldPickupsResolveFromProductionCatalog");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Boss And Event Feed Gameplay")]
+    public static void RunBossAndEventFeedGameplay() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.EncounterGameplayTests.SlimeSplashReplaysAnAirborneJumpAndLandsOnItsResolvedTile",
+        "EternalEnigma.Tests.TownDungeonGameplayTests.GatesKeepProgressionLootBossClearanceAndReleaseOldGeometry",
+        "EternalEnigma.Tests.GameMessageTests.CompactFeedFitsWholeLinesKeepsPaddingAndScrollsHistory",
+        "EternalEnigma.Tests.GameMessageTests.NewMessagesPushEarlierLinesUpFromTheBottom",
+        "EternalEnigma.Tests.OverworldSceneTests.GateUnlockAudioOnlyPlaysForANewUnlock",
+        "EternalEnigma.Tests.OverworldSceneTests.UniqueCampaignRewardUsesTheSameNameInPopupMenuAndGateAction",
+        "EternalEnigma.Tests.EncounterGameplayTests.SokobanUsesProductionMovementAndRejectsUnfinishedExit");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run World Sign Gameplay")]
+    public static void RunWorldSignGameplay() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.DungeonGridAlignmentTests.StairFootprintIsCenteredInItsInteractionCellOnConsecutiveFloors",
+        "EternalEnigma.Tests.EncounterGameplayTests.ResetRestoresInventoryIdentityGoldExperienceAndSamePuzzle",
+        "EternalEnigma.Tests.EncounterGameplayTests.SupplyStashesAndUnassignedKeysHaveTexturedModelsOnTheirCells",
+        "EternalEnigma.Tests.EncounterGameplayTests.SokobanUsesProductionMovementAndRejectsUnfinishedExit",
+        "EternalEnigma.Tests.OverworldSceneTests.RoadSignOpensTownAndLandmarkDirectionsWithoutChangingProgression",
+        "EternalEnigma.Tests.CampaignTravelTests.TownDistrictEntryFromOverworldPreservesRunVariant",
+        "EternalEnigma.Tests.OpeningPreparationTests.BuildingsHaveReadableWorldSignsAtTheirDoors",
+        "EternalEnigma.Tests.OpeningPreparationTests.FirstTownHasOnlyUsefulHousesAndDungeonSmartTileEntrance",
+        "EternalEnigma.Tests.TownAmbientGameplayTests.TownsfolkGreetBlockPartyMovementAndRegenerateWithoutDuplicates");
 
     [MenuItem("Tools/Eternal Enigma/Tests/Run Opening Interaction Prompt")]
     public static void RunOpeningInteractionPrompt() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",

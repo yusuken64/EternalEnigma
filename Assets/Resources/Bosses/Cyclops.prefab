@@ -32,6 +32,22 @@ PrefabInstance:
       propertyPath: StartingStats.EXPOnKill
       value: 1900
       objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 882a0cfb035486f4695a33a96502cd5c, type: 3}
+      propertyPath: DiagonalFootprintOffset.x
+      value: 0.022294715
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 882a0cfb035486f4695a33a96502cd5c, type: 3}
+      propertyPath: DiagonalFootprintOffset.y
+      value: -0.11892759
+      objectReference: {fileID: 0}
+    - target: {fileID: 4961653365588041305, guid: 882a0cfb035486f4695a33a96502cd5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.07571724
+      objectReference: {fileID: 0}
+    - target: {fileID: 4961653365588041305, guid: 882a0cfb035486f4695a33a96502cd5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.14223005
+      objectReference: {fileID: 0}
     - target: {fileID: 5543747752720980080, guid: 882a0cfb035486f4695a33a96502cd5c, type: 3}
       propertyPath: m_Name
       value: Cyclops
@@ -117,3 +133,5 @@ MonoBehaviour:
   WarningTurns: 1
   CooldownTurns: 3
   EffectTurns: 2
+  SplashRadiusOverride: 0
+  RecoveryTurns: 0

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+ <defs>
+  <linearGradient id="slate" x2=".8" y2="1" gradientUnits="objectBoundingBox"><stop stop-color="#959b98"/><stop offset=".5" stop-color="#697477"/><stop offset="1" stop-color="#444f55"/></linearGradient>
+  <linearGradient id="rim" x2=".42" y2="1"><stop stop-color="#ffe6a2"/><stop offset=".26" stop-color="#c39750"/><stop offset=".55" stop-color="#795030"/><stop offset=".82" stop-color="#ce9f58"/><stop offset="1" stop-color="#ecbf75"/></linearGradient>
+  <radialGradient id="iron" cx=".36" cy=".3" r=".82"><stop stop-color="#afbab4"/><stop offset=".6" stop-color="#8c9c98"/><stop offset="1" stop-color="#58686b"/></radialGradient>
+  <filter id="wear" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+   <feTurbulence type="fractalNoise" baseFrequency=".08 .16" numOctaves="3" seed="19"/>
+   <feColorMatrix type="matrix" values="1 0 0 0 .10  1 0 0 0 .13  1 0 0 0 .14  1.5 0 0 0 -.38"/>
+  </filter>
+  <g id="bolt"><circle r="16" fill="#394747"/><circle cy="-1" r="12" fill="url(#rim)" stroke="#4c483d" stroke-width="2"/><path d="m-5 3 10-6" stroke="#584936" stroke-width="3"/></g>
+  <g id="carve"><path d="M0-88 66 0 0 88-66 0Z M0-54 38 0 0 54-38 0Z" fill-rule="evenodd"/><path d="m0-21 15 21L0 21-15 0Z"/></g>
+ </defs>
+ <rect width="512" height="512" fill="#374349"/><path d="M63 17h386l47 47v384l-47 47H64l-47-47V64Z" fill="url(#slate)" stroke="#303d43" stroke-width="9"/>
+ <path d="M69 27h374l42 42v373l-43 43H70l-43-43V69Z" fill="none" stroke="#c6b995" stroke-width="5"/>
+ <path d="M75 37h362l38 38v362l-38 38H75l-38-38V75Z" fill="none" stroke="#3e4c4e" stroke-width="5"/>
+ <g fill="none" stroke-linejoin="bevel"><path d="m114 37 11 24 17 5 11 23m322 40-23 15-4 16-20 8M37 333l27-16 22 1 19-18m234 175-11-21 5-13-18-21" stroke="#39474c" stroke-width="5"/>
+ <path d="m112 37 11 25 17 6m332 63-23 15-4 14M38 337l27-16h16m255 153-11-21" stroke="#a2a7a0" stroke-width="2"/></g>
+ <g transform="translate(256 256)"><circle r="181" fill="#37454a" stroke="#343e40" stroke-width="5"/><circle r="173" fill="none" stroke="url(#rim)" stroke-width="13"/>
+ <circle r="160" fill="#313f43"/><circle r="149" fill="url(#iron)" stroke="#c1bb9f" stroke-width="4"/>
+ <circle r="132" fill="none" stroke="#475456" stroke-width="5"/><circle r="127" fill="none" stroke="#c5c4ae" stroke-width="2"/>
+ <g fill="#e8dec0"><circle cy="-113" r="4"/><circle cy="113" r="4"/><circle cx="-113" r="4"/><circle cx="113" r="4"/></g>
+ <use href="#carve" fill="#35484a" stroke="#384b4d" stroke-width="9"/><use href="#carve" fill="#ece4bf" stroke="#a8aa93" stroke-width="2" transform="translate(0 -2)"/></g>
+ <use href="#bolt" x="74" y="74"/><use href="#bolt" x="438" y="74"/><use href="#bolt" x="74" y="438"/><use href="#bolt" x="438" y="438"/>
+ <rect width="512" height="512" filter="url(#wear)" opacity=".60"/>
+</svg>

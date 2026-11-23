@@ -113,8 +113,10 @@ namespace EternalEnigma.Tests
         [UnityTest]
         public IEnumerator TownDistrictEntryFromOverworldPreservesRunVariant()
         {
+            harness.TimeoutSeconds = 180; // Cold editor imports can overlap the first scene load.
             yield return StartCampaign();
             var common = Common.Instance; var context = common.CampaignContext;
+            context.Completed.Add("story-0");
             context.Resolved.UnionWith(context.Campaign.Routes.Where(r => r.IsTownExit).Select(r => r.Id));
             Assert.That(common.Travel.ExitTown(Object.FindFirstObjectByType<Town>()), Is.True);
             yield return WaitWorld();
@@ -133,6 +135,13 @@ namespace EternalEnigma.Tests
             Assert.That(harness.Game.CurrentDungeon.Floor.Variant, Is.EqualTo(DungeonVariant.Town));
             Assert.That(harness.Game.CurrentDungeon.Floor.TownPlan, Is.Not.Null);
             Assert.That(Object.FindObjectsByType<TownPlayer>(FindObjectsSortMode.None), Is.Empty);
+            var signs = harness.Game.gameObject.scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<WorldSign>(true));
+            Assert.That(signs.Select(s => s.Caption.text), Does.Contain("District entrance").And.Contain("District exit"));
+            Assert.That(signs.Count(), Is.EqualTo(2 + harness.Game.CurrentDungeon.Floor.TownPlan.Interiors.Count(i => i.Spec.HasVendor)));
+            System.IO.Directory.CreateDirectory("Temp/WorldSigns");
+            yield return harness.WaitUntil(() => !common.ScreenTransition.BlocksInput, "district entrance visible");
+            ScreenCapture.CaptureScreenshot("Temp/WorldSigns/district.png");
+            yield return new WaitForSecondsRealtime(.2f);
         }
 
         [UnityTest]

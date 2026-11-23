@@ -51,6 +51,22 @@ public static class CampaignRewardNames
         return context.GetTownDisplayName(town.Id) + " " + title;
     }
 
+    public static string OpenedGate(CampaignContext context, LockInteractionSession session, LockAction action)
+    {
+        var route = session.Route;
+        if (action is KeyLockAction key)
+        {
+            string keyName = context.Campaign.KeyLabel(key.KeyId);
+            string result = route.IsWarp ? "activate the waystone" : route.IsTownExit ? "unlock the town gate" : "unlock the road gate";
+            return $"You used the {keyName} to {result}.";
+        }
+        var names = session.CompletedSolution.Values.Select(c => Name(context, c)).ToArray();
+        string used = names.Length == 1 ? names[0] : string.Join(", ", names.Take(names.Length - 1)) + " and " + names.Last();
+        var skin = LockSkinCatalog.Skins.FirstOrDefault(s => s.Id == route.SkinId);
+        string effect = skin?.Resolution ?? "open the shortcut to " + CampaignGuidance.LocationName(context, route.To);
+        return $"You used {used} to {effect}.";
+    }
+
     public static string Purpose(Capability capability) => capability switch
     {
         Capability.HomeKey => "Unlock the front door of your first home.",

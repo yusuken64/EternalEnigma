@@ -154,7 +154,7 @@ public static class CombatEffectAuthoring
                 profile = UnityEngine.Object.Instantiate(skill.VisualProfile);
                 AssetDatabase.CreateAsset(profile, path);
             }
-            profile.Impact = Stage(effect, .5f, effect.Contains("Wall") || effect.Contains("Pillar"));
+            profile.Impact = Stage(effect, .5f, effect.Contains("Wall") || effect.Contains("Pillar") || effect == "ArcaneSlash");
             profile.Impact.FitToTarget = true;
             if (effect.Contains("Wall")) profile.Area = Stage(effect, .4f, true);
             string charge = skill.SkillName switch
@@ -323,11 +323,11 @@ public static class CombatEffectAuthoring
         { "Fire" => "FireBall", "Frost" => "IceBall", "Lightning" => "LightningBall", "Poison" => "SwampBall", "Shadow" => "DeadBall", "Arrow" => "ElementalArrow", "Kunai" => "Kunai", _ => element + "MissileSmall" };
         if (projectile) profile.Projectile = Stage(missile, physical ? .35f : .45f);
         profile.Impact = Stage(family switch
-        { "Melee" => "LightSlashHit", "Arrow" => "LightExplosionTiny", "Kunai" => "ShadowSlashHit", "Poison" => "PoisonExplode", "Portal" => "Portal", "Summon" => "SummonMagicCircle3", "Song" => "RainbowExplode", "Utility" => "MagicCircleRelease", _ => element + "ExplosionSmall" }, physical ? .45f : .65f, true);
+        { "Melee" => "ArcaneSlash", "Arrow" => "LightExplosionTiny", "Kunai" => "ShadowSlashHit", "Poison" => "PoisonExplode", "Portal" => "Portal", "Summon" => "SummonMagicCircle3", "Song" => "RainbowExplode", "Utility" => "MagicCircleRelease", _ => element + "ExplosionSmall" }, physical ? .45f : .65f, true);
         profile.Impact.FitToTarget = true;
         if (family == "Melee")
         {
-            profile.Impact.Scale = .65f;
+            profile.Impact.Scale = .28f;
             profile.Impact.Lifetime = .3f;
             profile.Impact.ScaleWithTarget = false;
             profile.ImpactSeconds = .2f;

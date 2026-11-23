@@ -12,8 +12,25 @@ public class TownAllyManager : MonoBehaviour
         configuration.AllyCatalog.FirstOrDefault(a => !string.IsNullOrEmpty(data.AllyId) ? a.Id == data.AllyId : a.Name == data.AllyName) ??
         throw new InvalidOperationException($"Ally '{data.AllyName}' is missing from town '{configuration.Id}' catalog.");
 
-    /// Deterministic: rolls index into the remaining unrecruited offers (configuration order); each pick is removed before the next roll.
     internal List<TownAlly> GenerateRandomAllies(IReadOnlyList<int> rolls, IEnumerable<string> recruited)
+    {
+        var result = new List<TownAlly>();
+        foreach (var offer in SelectOffers(rolls, recruited))
+        {
+            var ally = Instantiate(offer.Ally, transform);
+            ally.Level = 1;
+            ally.Experience = 0;
+            ally.Attributes = default;
+            ally.HighestLevel = 1;
+            ally.RecruitCost = offer.Cost;
+            ally.RefreshEquipmentVisuals();
+            result.Add(ally);
+        }
+        return result;
+    }
+
+    // Spawning and traveler directions evaluate the same rolls against the current roster.
+    internal IEnumerable<TownRecruitOffer> SelectOffers(IReadOnlyList<int> rolls, IEnumerable<string> recruited)
     {
         var ids = recruited.Where(id => !string.IsNullOrEmpty(id)).ToHashSet(StringComparer.Ordinal);
         var common = Common.InstanceOrNull;
@@ -30,16 +47,13 @@ public class TownAllyManager : MonoBehaviour
             .Select(a => a.AllyName).Where(n => !string.IsNullOrWhiteSpace(n)).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var candidates = configuration.Recruits.Where(r => !ids.Contains(r.Ally.Id) &&
             !savedNames.Contains(r.Ally.Name) && !unavailable.Any(a => SameHero(a, r.Ally))).ToList();
-        var result = new List<TownAlly>();
         foreach (int roll in rolls)
         {
-            if (candidates.Count == 0) break;
+            if (candidates.Count == 0) yield break;
             var offer = candidates[(int)((uint)roll % (uint)candidates.Count)];
             candidates.RemoveAll(candidate => SameHero(candidate.Ally, offer.Ally));
-            var ally = Instantiate(offer.Ally, transform); ally.Level = 1; ally.Experience = 0; ally.Attributes = default; ally.HighestLevel = 1; ally.RecruitCost = offer.Cost; result.Add(ally);
-            ally.RefreshEquipmentVisuals();
+            yield return offer;
         }
-        return result;
     }
 
     internal static bool SameHero(TownAlly a, TownAlly b) => a != null && b != null &&

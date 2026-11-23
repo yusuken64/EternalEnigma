@@ -73,8 +73,10 @@ public sealed class OverworldScene : MonoBehaviour
     private bool restoredTerrain;
     private bool movingValue;
     private bool moving { get => movingValue; set { if (movingValue == value) return; movingValue = value; HudRefresh.Request(HudChange.Travel); } }
+    private const float WalkSeconds = .15f;
     private float nextMove;
-    private OverworldBiome? playingBiome;
+    private OverworldBiome? playingBiome, pendingBiome;
+    private float biomeMusicAt, earliestMusicChange;
 
     // Terrain is built around the player first; the rest streams in and follows this point.
     private Vector2 TerrainFocus => new Vector2(Position.X + .5f, Position.Y + .5f) * creator.twcAsset.cellSize;
@@ -86,12 +88,32 @@ public sealed class OverworldScene : MonoBehaviour
         // Called on every move, so it also keeps the terrain around the player built.
         TerrainStreaming.Focus(TerrainFocus);
         var biome = Map.CurrentGrid?.BiomeAt(Position) ?? OverworldBiome.Grassland;
-        if (playingBiome == biome) return;
+        if (playingBiome == biome) { pendingBiome = null; return; }
+        if (playingBiome.HasValue)
+        {
+            if (pendingBiome != biome)
+            {
+                pendingBiome = biome;
+                biomeMusicAt = Mathf.Max(earliestMusicChange, Time.unscaledTime + 4f);
+            }
+            return;
+        }
+        PlayBiomeMusic(biome);
+    }
+
+    private void PlayBiomeMusic(OverworldBiome biome)
+    {
+        pendingBiome = null;
         playingBiome = biome;
+        earliestMusicChange = Time.unscaledTime + 30f;
         var music = BiomeMusic.FirstOrDefault(entry => entry.Biome == biome);
         var clip = music?.Clip ?? OverworldMusic;
         string track = !string.IsNullOrEmpty(music?.ClipTrack) ? music.ClipTrack : OverworldMusicTrack;
-        if (clip != null || !string.IsNullOrEmpty(track)) Common.Instance.AudioManager?.PlayMusic(clip, track);
+        if (clip == null && string.IsNullOrEmpty(track)) return;
+        var alternate = BiomeMusic.FirstOrDefault(entry => entry.Biome == OverworldBiome.Grassland);
+        if (alternate != null && (clip != null ? clip == alternate.Clip : track == alternate.ClipTrack))
+            alternate = BiomeMusic.FirstOrDefault(entry => entry.Biome == OverworldBiome.Forest);
+        Common.Instance.AudioManager?.PlayScore(clip, track, alternate?.Clip, alternate?.ClipTrack);
     }
 
     private void Start()
@@ -312,20 +334,23 @@ public sealed class OverworldScene : MonoBehaviour
         return route == null ? Enumerable.Empty<Renderer>() : new[] { route.From, route.To }
             .Where(endpoint => waystoneVisuals.ContainsKey(endpoint)).SelectMany(endpoint => waystoneVisuals[endpoint].GetComponentsInChildren<Renderer>());
     }
-    private Vector3 CellVisualOffset => new Vector3(.5f, .5f, 0) * creator.twcAsset.cellSize;
+    internal float CellSize => creator.twcAsset.cellSize;
+    private Vector3 CellVisualOffset => new Vector3(.5f, .5f, 0) * CellSize;
 
     private void Update()
     {
         // Sample while interpolating too, so a release is latched before arrival.
         if (BlocksWalkInput()) { StopHeldWalk(); return; }
         Vector2 move = ReadWalkInput();
-        if (move.sqrMagnitude < .1f) StopHeldWalk();
+        if (move.sqrMagnitude < .1f) { StopHeldWalk(); nextMove = 0; }
         if (moving) return;
         if (MenuUIInputModule.Active?.UI.Submit.WasPressedThisFrame() == true)
         { ClaimRewards(); return; }
         if (move.sqrMagnitude < .1f || Time.time < nextMove) return;
-        nextMove = Time.time + .16f;
-        TryMoveStep(Mathf.Abs(move.x) > .3f ? System.Math.Sign(move.x) : 0, Mathf.Abs(move.y) > .3f ? System.Math.Sign(move.y) : 0, true);
+        var step = GridMovement.InputDirection(move);
+        if (step == Vector3Int.zero) return;
+        nextMove = Time.time + WalkSeconds;
+        TryMoveStep(step.x, step.y, true);
     }
 
     private bool heldWalk;
@@ -335,7 +360,10 @@ public sealed class OverworldScene : MonoBehaviour
 
     private static Vector2 ReadWalkInput()
     {
-        return MenuUIInputModule.Active?.UI.Navigate.ReadValue<Vector2>() ?? Vector2.zero;
+        var module = MenuUIInputModule.Active;
+        if (module == null) return Vector2.zero;
+        var held = module.UI.Navigate.ReadValue<Vector2>();
+        return held.sqrMagnitude > .1f ? held : module.NavigationVector;
     }
 
     private void StopHeldWalk()
@@ -427,13 +455,13 @@ public sealed class OverworldScene : MonoBehaviour
             yield break;
         }
         float elapsed = 0;
-        while (elapsed < .15f)
+        while (elapsed < WalkSeconds)
         {
             if (heldWalk && (BlocksWalkInput() || ReadWalkInput().sqrMagnitude < .1f)) StopHeldWalk();
             elapsed += Time.deltaTime;
             for (int i = 0; i < party.Length; i++)
-                party[i].transform.position = Vector3.Lerp(from[i], to[i], Mathf.Clamp01(elapsed / .15f));
-            yield return null;
+                party[i].transform.position = Vector3.Lerp(from[i], to[i], Mathf.Clamp01(elapsed / WalkSeconds));
+            if (elapsed < WalkSeconds) yield return null;
         }
         if (heldWalk && (BlocksWalkInput() || ReadWalkInput().sqrMagnitude < .1f)) StopHeldWalk();
         for (int i = 0; i < party.Length; i++)
@@ -506,7 +534,7 @@ public sealed class OverworldScene : MonoBehaviour
         var outcome = session.Attempt(action);
         if (outcome == LockOutcome.Opened)
         {
-            Message = "The way is now open!";
+            Message = CampaignRewardNames.OpenedGate(Context, session, action);
             RefreshGates();
             SaveProgress();
             AudioManager.Instance?.PlayCue(SoundCue.GateUnlock);
@@ -699,6 +727,7 @@ public sealed class OverworldScene : MonoBehaviour
     {
         FlushMessage();
         if (!IsReady) return;
+        if (pendingBiome.HasValue && Time.unscaledTime >= biomeMusicAt) PlayBiomeMusic(pendingBiome.Value);
         CameraZoom.Update(ViewCamera);
         FollowCamera();
     }

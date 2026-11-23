@@ -36,6 +36,22 @@ PrefabInstance:
       propertyPath: StartingStats.EXPOnKill
       value: 150
       objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 8d965e467258b1c499b955396b2eb5d6, type: 3}
+      propertyPath: DiagonalFootprintOffset.x
+      value: -0.0000000105549915
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 8d965e467258b1c499b955396b2eb5d6, type: 3}
+      propertyPath: DiagonalFootprintOffset.y
+      value: 0.006568426
+      objectReference: {fileID: 0}
+    - target: {fileID: 3915778176377052476, guid: 8d965e467258b1c499b955396b2eb5d6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.000000026490955
+      objectReference: {fileID: 0}
+    - target: {fileID: 3915778176377052476, guid: 8d965e467258b1c499b955396b2eb5d6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.0065601673
+      objectReference: {fileID: 0}
     - target: {fileID: 5543747752720980080, guid: 8d965e467258b1c499b955396b2eb5d6, type: 3}
       propertyPath: m_Name
       value: ChestMonster
@@ -121,3 +137,5 @@ MonoBehaviour:
   WarningTurns: 1
   CooldownTurns: 3
   EffectTurns: 2
+  SplashRadiusOverride: 0
+  RecoveryTurns: 0

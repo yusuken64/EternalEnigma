@@ -21,9 +21,11 @@ public static class EncounterFloorGenerator
             EncounterKind.Prison when number == encounter.FloorCount => DungeonObjectiveKind.RecoverPossessions,
             _ => DungeonObjectiveKind.ReachExit };
         int size = kind == EncounterKind.LostWoods ? 49 + 4 * location.Tier : kind == EncounterKind.OvertakenCity ? 48 : 28;
-        return new DungeonFloorOptions(CampaignContext.LocationSeed(campaignSeed, location.Id, number), size, size,
+        var options = new DungeonFloorOptions(CampaignContext.LocationSeed(campaignSeed, location.Id, number), size, size,
             enemyCount: encounter.IsPuzzle ? 0 : 6 + 2 * location.Tier, goldCount: 3, itemCount: 3, trapCount: 3, gatheringCount: 0,
             biome: biome, tier: location.Tier, encounter: kind, objective: new DungeonObjectiveDefinition(objective), encounterFloor: number, finalEncounterFloor: number == encounter.FloorCount);
+        return options.FinalEncounterFloor && !encounter.IsPuzzle && kind != EncounterKind.Bridge
+            ? options.WithEndBoss(location.Tier) : options;
     }
 
     public static DungeonFloor Generate(DungeonFloorOptions options)
@@ -112,14 +114,15 @@ public static class EncounterFloorGenerator
             reserved.UnionWith(random.Shuffle(reachable.Keys.Where(p => !reserved.Contains(p) && !route.Contains(p))
                 .OrderBy(p => p.Y).ThenBy(p => p.X)).Take(options.TrapCount));
         }
-        var candidates = random.Shuffle(reachable.Keys.Where(p => !reserved.Contains(p)).OrderBy(p => p.Y).ThenBy(p => p.X));
-        if (kind == EncounterKind.BossArena)
+        if (kind == EncounterKind.BossArena || options.BossFamily != null)
         {
-            var center = new GridPoint(width / 2, height / 2);
+            var center = kind == EncounterKind.BossArena ? new GridPoint(width / 2, height / 2) :
+                BossCatalog.LandingCell(reachable.Keys, start, stairs, p => Open(p) && !reserved.Contains(p));
             objectiveEnemies.Add(new ObjectiveEnemyPlacement("boss", center, options.BossFamily ?? BossCatalog.Select(options.Seed, options.Tier).Family, footprint: 3));
             for (int dx = -1; dx <= 1; dx++) for (int dy = -1; dy <= 1; dy++) reserved.Add(new GridPoint(center.X + dx, center.Y + dy));
         }
-        else if (!options.Objective.AllowsReset)
+        var candidates = random.Shuffle(reachable.Keys.Where(p => !reserved.Contains(p)).OrderBy(p => p.Y).ThenBy(p => p.X));
+        if (kind != EncounterKind.BossArena && !options.Objective.AllowsReset)
         {
             IEnumerable<GridPoint> placements = candidates;
             if (kind == EncounterKind.Ambush) placements = candidates.Where(p => Distance(p, start) >= 4 && Distance(p, start) <= 7).OrderBy(p => Math.Atan2(p.Y - start.Y, p.X - start.X));

@@ -71,6 +71,37 @@ namespace EternalEnigma.Tests
         }
 
         [UnityTest]
+        public IEnumerator ScoreAlternatesAtTheEndAndResumesAnInterruptedTrack()
+        {
+            yield return harness.LoadCommon();
+            Listen();
+            var source = audio.MusicAudioSource;
+            var first = AudioClip.Create("First movement", 22050 * 8, 1, 22050, false);
+            var second = AudioClip.Create("Second movement", 22050 * 8, 1, 22050, false);
+            try
+            {
+                audio.PlayScore(first, null, second, null);
+                yield return harness.WaitUntil(() => source.clip == first && source.isPlaying, "first music track");
+                source.timeSamples = first.samples - first.frequency / 5;
+                yield return harness.WaitUntil(() => source.clip == second && source.isPlaying, "second music track");
+                source.timeSamples = second.frequency * 3;
+                audio.PlayMusic(first);
+                yield return harness.WaitUntil(() => source.clip == first && source.isPlaying, "switched music");
+                audio.PlayMusic(second);
+                yield return harness.WaitUntil(() => source.clip == second && source.isPlaying, "resumed music");
+                Assert.That(source.timeSamples, Is.GreaterThanOrEqualTo(second.frequency * 2));
+            }
+            finally
+            {
+                source.Stop();
+                source.clip = null;
+                audio.StopMusic();
+                Object.Destroy(first);
+                Object.Destroy(second);
+            }
+        }
+
+        [UnityTest]
         public IEnumerator DamageMissBlockAndTrapAudioSurviveDisabledAnimations()
         {
             DungeonPreferences.AnimationOverride = DungeonAnimationMode.NoAnimations;

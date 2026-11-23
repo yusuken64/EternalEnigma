@@ -27,9 +27,25 @@ public class MenuUIInputModule : InputSystemUIInputModule
     private DungeonControls controls;
     private InputAction historyAction;
     private int consumedFrame = -1;
-    private PartyMenu tabMenu;
-    private int tabDirection;
-    private float nextTabRepeat;
+    private readonly Queue<Vector2> navigationPresses = new();
+    private Vector2 heldNavigation;
+    private float nextNavigationRepeat;
+    private int navigationFrame = -1;
+    private Vector2 navigationVector;
+    // World targeting and the EventSystem can update in either order within a frame.
+    internal Vector2 NavigationVector
+    {
+        get
+        {
+            if (navigationFrame != Time.frameCount)
+            {
+                navigationVector = ReadNavigationStep();
+                navigationFrame = Time.frameCount;
+            }
+            return navigationVector;
+        }
+    }
+    internal Vector2 NavigationStep => MenuDirection(NavigationVector);
     private GameObject rememberedSelection;
     private bool gameplayFocusReleased;
     private readonly List<InputActionReference> references = new();
@@ -61,7 +77,9 @@ public class MenuUIInputModule : InputSystemUIInputModule
         ZoomOut = controls.asset.FindAction("Player/ZoomOut", true);
         actionsAsset = controls.asset;
         point = Reference(UI.Point);
-        move = Reference(UI.Navigate);
+        // Navigation is dispatched below. The stock module only remembers the last
+        // value, so a press and release in one input update would erase the press.
+        move = null;
         submit = Reference(UI.Submit);
         cancel = Reference(UI.Cancel);
         leftClick = Reference(UI.Click);
@@ -88,7 +106,9 @@ public class MenuUIInputModule : InputSystemUIInputModule
         if (controls == null) Awake();
         base.OnEnable();
         Active = this;
-        controls?.UI.Enable();
+        UI.Navigate.performed += CaptureNavigation;
+        UI.Navigate.canceled += CaptureNavigation;
+        controls.UI.Enable();
         // The overworld uses UI navigation for movement, so zoom must survive map switches.
         ZoomIn.Enable();
         ZoomOut.Enable();
@@ -96,6 +116,13 @@ public class MenuUIInputModule : InputSystemUIInputModule
 
     protected override void OnDisable()
     {
+        if (controls != null)
+        {
+            UI.Navigate.performed -= CaptureNavigation;
+            UI.Navigate.canceled -= CaptureNavigation;
+        }
+        navigationPresses.Clear();
+        heldNavigation = Vector2.zero;
         base.OnDisable();
         controls?.UI.Disable();
         ZoomIn?.Disable();
@@ -154,6 +181,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
     {
         if (scopes.Exists(s => s.Owner == owner)) return;
         gameplayFocusReleased = false;
+        navigationPresses.Clear();
         NavigationHandler.EnsureDialogPointer(owner, root);
         ConfigureCancelRole(owner);
         RememberSelection();
@@ -201,6 +229,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
         var scope = scopes[index];
         bool wasTop = index == scopes.Count - 1;
         scopes.RemoveAt(index);
+        if (wasTop) navigationPresses.Clear();
         HudRefresh.Request(HudChange.Visibility | HudChange.Party | HudChange.Dungeon | HudChange.Travel);
         if (!wasTop) return;
         AudioManager.Instance?.PlayCue(SoundCue.MenuClose);
@@ -256,35 +285,48 @@ public class MenuUIInputModule : InputSystemUIInputModule
         eventSystem.SetSelectedGameObject(next);
     }
 
-    private void ProcessPartyTabs()
+    private static Vector2 MenuDirection(Vector2 value) => value.sqrMagnitude < .1f ? Vector2.zero :
+        Mathf.Abs(value.x) > Mathf.Abs(value.y) ? Vector2.right * Mathf.Sign(value.x) : Vector2.up * Mathf.Sign(value.y);
+
+    private void CaptureNavigation(InputAction.CallbackContext context)
     {
-        var party=scopes.Count>0?scopes[^1].Owner as PartyMenu:null;
-        var navigation=UI.Navigate.ReadValue<Vector2>();
-        int direction=Mathf.Abs(navigation.x)>Mathf.Abs(navigation.y)?(navigation.x>0?1:-1):0;
-        if(party==null || !party.IsRoot || direction==0)
+        var value = context.ReadValue<Vector2>();
+        var previous = MenuDirection(heldNavigation);
+        var direction = MenuDirection(value);
+        heldNavigation = direction == Vector2.zero ? Vector2.zero : value;
+        if (direction != Vector2.zero && direction != previous) navigationPresses.Enqueue(value);
+    }
+
+    private Vector2 ReadNavigationStep()
+    {
+        if (navigationPresses.Count > 0)
         {
-            tabMenu=null;tabDirection=0;
-            return;
+            nextNavigationRepeat = Time.unscaledTime + moveRepeatDelay;
+            return navigationPresses.Dequeue();
         }
-        if(InputConsumed)return;
-        bool first=party!=tabMenu || direction!=tabDirection;
-        if(first || Time.unscaledTime>=nextTabRepeat)
-        {
-            tabMenu=party;tabDirection=direction;
-            nextTabRepeat=Time.unscaledTime+(first?moveRepeatDelay:moveRepeatRate);
-            party.HudTabs.CycleTab(direction);
-        }
-        // Horizontal input belongs to the tabs even between held-input repeats.
-        ConsumeInput();
+        if (heldNavigation == Vector2.zero || Time.unscaledTime < nextNavigationRepeat) return Vector2.zero;
+        nextNavigationRepeat = Time.unscaledTime + moveRepeatRate;
+        return heldNavigation;
+    }
+
+    private void MoveSelection()
+    {
+        if (InputConsumed || NavigationStep == Vector2.zero || !eventSystem.sendNavigationEvents) return;
+        var selected = eventSystem.currentSelectedGameObject;
+        if (!IsUsable(selected) || !Allows(selected)) return;
+        if (selected.GetComponent<TMP_InputField>()?.isFocused == true ||
+            selected.GetComponent<InputField>()?.isFocused == true) return;
+        ExecuteEvents.Execute(selected, GetAxisEventData(NavigationStep.x, NavigationStep.y, 0.1f), ExecuteEvents.moveHandler);
     }
 
     public override void Process()
     {
         // Only an input-driven selection change is navigation. Arrow presentation,
         // opening dialogs and restoring focus must never produce their own cues.
+        _ = NavigationVector;
         var previous = eventSystem.currentSelectedGameObject;
         bool navigating = !InputConsumed && IsUsable(previous) && Allows(previous) &&
-            (UI.Navigate.ReadValue<Vector2>().sqrMagnitude > .1f || UI.Click.WasPressedThisFrame());
+            (NavigationStep != Vector2.zero || UI.Click.WasPressedThisFrame());
         ProcessInput();
         var selected = eventSystem.currentSelectedGameObject;
         // Single-press controls select on pointer-down, then activate on release
@@ -416,9 +458,15 @@ public class MenuUIInputModule : InputSystemUIInputModule
             }
         }
 
-        ProcessPartyTabs();
+        if (!InputConsumed && NavigationStep.x != 0 && scopes.Count > 0 && scopes[^1].Owner is PartyMenu party &&
+            party.IsRoot && party.HudTabs != null)
+        {
+            party.HudTabs.CycleTab((int)NavigationStep.x);
+            ConsumeInput();
+        }
+
         bool recovering = !IsUsable(eventSystem.currentSelectedGameObject) || !Allows(eventSystem.currentSelectedGameObject);
-        if (recovering && (UI.Navigate.ReadValue<Vector2>().sqrMagnitude > 0.1f || UI.Submit.WasPressedThisFrame()))
+        if (recovering && (NavigationStep != Vector2.zero || UI.Submit.WasPressedThisFrame()))
         {
             RestoreFocus();
             // Recover the highlight without also moving past or activating it.
@@ -427,6 +475,7 @@ public class MenuUIInputModule : InputSystemUIInputModule
                 ConsumeInput();
         }
 
+        MoveSelection();
         bool sendNavigation = eventSystem.sendNavigationEvents;
         if (InputConsumed) eventSystem.sendNavigationEvents = false;
         try { base.Process(); }

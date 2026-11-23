@@ -316,7 +316,8 @@ public HashSet<string> Completed { get; }
             return new DungeonFloorOptions(seed, 20, 20, enemyCount: 0, goldCount: 0, itemCount: 0, trapCount: 0, gatheringCount: 0,
                 biome: biome, tier: tier, encounter: EncounterKind.BossArena,
                 objective: new DungeonObjectiveDefinition(DungeonObjectiveKind.DefeatBoss), bossFamily: "Slime");
-        return DungeonLayoutProfile.Options(seed, biome, tier, floor == start ? DungeonFloorRole.Entry : floor == end ? DungeonFloorRole.Exit : DungeonFloorRole.Regular, layoutVersion, locationId, variant, floor);
+        var options = DungeonLayoutProfile.Options(seed, biome, tier, floor == start ? DungeonFloorRole.Entry : floor == end ? DungeonFloorRole.Exit : DungeonFloorRole.Regular, layoutVersion, locationId, variant, floor);
+        return floor == end ? options.WithEndBoss(tier) : options;
     }
     public DungeonFloor DungeonFloor(string locationId, int floor)
     {

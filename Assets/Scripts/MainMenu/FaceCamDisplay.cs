@@ -1,7 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FaceCamDisplay : MonoBehaviour
 {
@@ -11,6 +9,7 @@ public class FaceCamDisplay : MonoBehaviour
     private bool usingPortrait;
     private Texture liveTexture;
     private Rect liveUvRect;
+    private float liveAspectRatio;
 
     internal void SetFollow(GameObject followObject)
     {
@@ -19,16 +18,24 @@ public class FaceCamDisplay : MonoBehaviour
             Unfollow(currentFollowedObject);
         }
 
-        var image = GetComponentInChildren<UnityEngine.UI.RawImage>(true);
+        var image = GetComponentInChildren<RawImage>(true);
         var portrait = followObject.GetComponentInParent<TownAlly>(true)?.Portrait
             ?? followObject.GetComponentInParent<Ally>(true)?.Portrait;
         if (image != null && portrait != null)
         {
-            if (!usingPortrait) { liveTexture = image.texture; liveUvRect = image.uvRect; }
+            var fitter = image.GetComponent<AspectRatioFitter>();
+            if (!usingPortrait)
+            {
+                liveTexture = image.texture;
+                liveUvRect = image.uvRect;
+                if (fitter != null) liveAspectRatio = fitter.aspectRatio;
+            }
             image.texture = portrait.texture;
             var rect = portrait.textureRect;
             image.uvRect = new Rect(rect.x / portrait.texture.width, rect.y / portrait.texture.height,
                 rect.width / portrait.texture.width, rect.height / portrait.texture.height);
+            // The atlas trims transparent margins, so fit the region actually drawn by the RawImage.
+            if (fitter != null) fitter.aspectRatio = rect.width / rect.height;
             usingPortrait = true;
             currentFollowedObject = followObject;
             return;
@@ -53,8 +60,13 @@ public class FaceCamDisplay : MonoBehaviour
         {
             if (usingPortrait)
             {
-                var image = GetComponentInChildren<UnityEngine.UI.RawImage>(true);
-                if (image != null) { image.texture = liveTexture; image.uvRect = liveUvRect; }
+                var image = GetComponentInChildren<RawImage>(true);
+                if (image != null)
+                {
+                    image.texture = liveTexture;
+                    image.uvRect = liveUvRect;
+                    if (image.TryGetComponent<AspectRatioFitter>(out var fitter)) fitter.aspectRatio = liveAspectRatio;
+                }
                 usingPortrait = false;
                 currentFollowedObject = null;
                 return;

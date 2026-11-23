@@ -35,6 +35,21 @@ namespace EternalEnigma.Tests.CoreIntegration
             }
         }
         [Test]
+        public void AllSignPanelsHaveBluntEnds()
+        {
+            var catalog = BiomeDecorationCatalog.Load();
+            foreach (OverworldBiome biome in Enum.GetValues(typeof(OverworldBiome)))
+            {
+                var mesh = catalog.Get(biome, BiomeDecorationKind.SignPanel).Mesh;
+                foreach (float end in new[] { mesh.bounds.min.x, mesh.bounds.max.x })
+                {
+                    var heights = mesh.vertices.Where(p => Mathf.Abs(p.x - end) < .025f).Select(p => p.z).ToArray();
+                    Assert.That(heights.Max() - heights.Min(), Is.GreaterThan(.13f), biome + " sign tip");
+                }
+            }
+        }
+
+        [Test]
         public void SpacingCrossesChunkBoundariesAndDoesNotConsumeRandom()
         {
             var cells=Enumerable.Range(-35,105).SelectMany(x=>Enumerable.Range(-2,5).Select(y=>new Vector2Int(x,y))).ToArray();var before=UnityEngine.Random.state;
@@ -53,20 +68,57 @@ namespace EternalEnigma.Tests.CoreIntegration
             Assert.That(graph.Nearest(Vector2Int.right,new HashSet<Vector2Int>{Vector2Int.zero},towns).town,Is.EqualTo("east"));
             graph.Connect(new Vector2Int(4,0),new Vector2Int(30,0));Assert.That(graph.Edges.ContainsKey(new Vector2Int(30,0)),Is.False);
         }
-        [Test]
-        public void RealWorldSignsAreDeterministicSupportedAndReachRealTowns()
+        [TestCase(42)]
+        [TestCase(123)]
+        [TestCase(8675309)]
+        public void RealWorldSignsAreDeterministicSupportedAndReachRealTowns(int seed)
         {
-            var context=new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign,42));var grid=context.Grid;var graph=BiomeRoadGraph.From(grid);
-            var towns=grid.TownFootprints.ToDictionary(t=>new Vector2Int(t.Entrance.X,t.Entrance.Y),t=>t.LocationId);
+            var context=new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign,seed));var grid=context.Grid;var graph=BiomeRoadGraph.From(grid);
+            // Trace backward from each destination independently of the sign's forward search.
+            Dictionary<Vector2Int, int> Distances(GridPoint point)
+            {
+                var origin = new Vector2Int(point.X, point.Y);
+                var distance = new Dictionary<Vector2Int, int> { [origin] = 0 };
+                var pending = new Queue<Vector2Int>();
+                pending.Enqueue(origin);
+                while (pending.Count > 0)
+                {
+                    var current = pending.Dequeue();
+                    if (!graph.Edges.TryGetValue(current, out var neighbors)) continue;
+                    foreach (var next in neighbors)
+                        if (distance.TryAdd(next, distance[current] + 1)) pending.Enqueue(next);
+                }
+                return distance;
+            }
+            var distances = grid.Locations.ToDictionary(location => location.Key, location => Distances(location.Value));
             var a=BiomeRoadSigns.Plan(grid);var b=BiomeRoadSigns.Plan(grid);Assert.That(a.Count,Is.GreaterThan(0));Assert.That(a.Select(s=>s.Verge),Is.EqualTo(b.Select(s=>s.Verge)));
             foreach(var s in a){Assert.That(graph.Edges.ContainsKey(s.Verge),Is.False);Assert.That(grid.IsGround(new GridPoint(s.Verge.x,s.Verge.y)),Is.True);
                 Assert.That(grid.Layers[OverworldLayers.Water].At(new GridPoint(s.Verge.x,s.Verge.y)),Is.False);
                 foreach(var layer in new[]{OverworldLayers.Bridges,OverworldLayers.TownFootprints,OverworldLayers.Mountains,OverworldLayers.Trees,OverworldLayers.Locks})
                     Assert.That(grid.Layers[layer].At(new GridPoint(s.Verge.x,s.Verge.y)),Is.False,layer);
                 Assert.That(grid.Locks.All(l=>l.Cells.All(p=>Math.Max(Math.Abs(p.X-s.Verge.x),Math.Abs(p.Y-s.Verge.y))>2)),Is.True);
-                Assert.That(s.Branches.Length,Is.InRange(1,3));foreach(var branch in s.Branches){Assert.That(context.GetTownDisplayName(branch.TownId),Is.Not.Empty);
-                    Assert.That(s.JunctionCells.Contains(branch.FirstCell-branch.Direction),Is.True);
-                    var nearest=graph.Nearest(branch.FirstCell,s.JunctionCells,towns);Assert.That(nearest.town,Is.EqualTo(branch.TownId));Assert.That(nearest.distance,Is.EqualTo(branch.Distance));}}
+                Assert.That((s.Road - s.Verge).sqrMagnitude, Is.EqualTo(1), "Directions start on the road next to the board.");
+                Assert.That(BiomeDecorations.Directions.Count(d => graph.Edges.ContainsKey(s.Verge + d)), Is.EqualTo(1));
+                foreach (var route in s.Routes)
+                {
+                    var distance = distances[route.Key];
+                    Assert.That(distance[s.Road], Is.EqualTo(route.Value.distance), route.Key);
+                    Assert.That(distance[s.Road + route.Value.direction], Is.EqualTo(route.Value.distance - 1), route.Key);
+                }
+                string text = BiomeRoadSigns.Directions(context, s);
+                Assert.That(text, Does.Not.Contain("Guide a fleeing enemy").And.Not.Contain("Lure into trap"));
+                Assert.That(text, Does.Not.Contain("steps"));
+                Assert.That(s.Branches.Length, Is.InRange(1, 2));
+                foreach (var branch in s.Branches)
+                {
+                    var first = s.Road + branch.Direction;
+                    Assert.That(graph.Edges[s.Road], Does.Contain(first));
+                    Assert.That(s.Routes[branch.TownId], Is.EqualTo((branch.Direction, branch.Distance)));
+                    string compass = branch.Direction == Vector2Int.up ? "North" : branch.Direction == Vector2Int.down ? "South" :
+                        branch.Direction == Vector2Int.right ? "East" : "West";
+                    Assert.That(text, Does.Contain(compass + " — " + context.GetTownDisplayName(branch.TownId)));
+                }
+            }
             for(int i=0;i<a.Count;i++)for(int j=0;j<i;j++)Assert.That((a[i].Verge-a[j].Verge).sqrMagnitude,Is.GreaterThanOrEqualTo(36));
             Assert.That(a.GroupBy(s=>(s.Verge.x/32,s.Verge.y/32)).All(g=>g.Count()<=8),Is.True);
         }
@@ -87,6 +139,8 @@ namespace EternalEnigma.Tests.CoreIntegration
             for(int seed=0;seed<16;seed++) {
                 var plan=TownPlanGenerator.Generate(TownLayout.Create(seed,TownServiceCatalog.All,CampaignContext.AuthoredTownBuildings,residentialBuildings:CampaignContext.ResidentialTownBuildings).Options);
                 var posts=BiomeDecorations.TownPosts(plan);Assert.That(posts.Count,Is.LessThanOrEqualTo(24));
+                foreach (var npc in TownNpcPlacement.Generate(plan))
+                    Assert.That(posts.Any(p => p.x == npc.Cell.X && p.y == npc.Cell.Y), Is.False, $"NPC on lamp post in town {seed}");
                 foreach(var p in posts){Assert.That(plan.Layers[TownLayers.Roads][p.x,p.y],Is.False);Assert.That(plan.Layers[TownLayers.Walkable][p.x,p.y],Is.True);Assert.That(plan.BuildingSlots.All(q=>Math.Max(Math.Abs(q.X-p.x),Math.Abs(q.Y-p.y))>2),Is.True);}
                 for(int i=0;i<posts.Count;i++)for(int j=0;j<i;j++)Assert.That((posts[i]-posts[j]).sqrMagnitude,Is.GreaterThanOrEqualTo(16));
             }

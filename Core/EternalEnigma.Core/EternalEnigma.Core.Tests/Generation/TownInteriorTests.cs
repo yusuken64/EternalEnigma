@@ -95,6 +95,26 @@ public class TownInteriorTests
             Assert.Equal(6,variants.Count(v=>v.Item1==kind));
     }
     [Fact]
+    public void OpeningTravelerWaitsBetweenHomeAndBakeryWithoutBlockingTheStreet()
+    {
+        for (int seed = 0; seed < 16; seed++)
+        {
+            var context = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, seed));
+            var plan = context.Town(context.Campaign.StartLocationId);
+            var home = plan.Interiors.Single(i => i.Spec.Kind == TownInteriorKind.Home).Door;
+            var bakery = plan.Interiors.Single(i => i.Spec.Theme == TownShopTheme.Bakery).Door;
+            var people = TownNpcPlacement.Generate(plan);
+            var mochi = people.Single(n => n.Roll == 0).Cell;
+            Assert.InRange(mochi.X, home.X, bakery.X);
+            Assert.InRange(Math.Abs(mochi.Y - home.Y), 0, 3);
+            var blocked = people.Select(n => n.Cell).ToHashSet();
+            var reachable = GridSearch.VisitOrder(home, p => GridSteps.CardinalNeighbors(p, q => plan.IsWalkable(q) && !blocked.Contains(q)));
+            Assert.Contains(bakery, reachable);
+            Assert.Contains(plan.Exit, reachable);
+        }
+    }
+
+    [Fact]
     public void MetadataParticipatesInCacheIdentityAndLegacyRemainsEmpty()
     {
         var a=new TownPlanOptions(1,52,52,new[]{true},detailed:true,interiors:new[]{new TownInteriorSpec(TownInteriorKind.Shop,TownShopTheme.Bakery)});

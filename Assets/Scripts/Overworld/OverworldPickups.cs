@@ -15,17 +15,9 @@ public sealed class OverworldPickups : MonoBehaviour
         foreach(var pickup in world.Context.Grid.Pickups.Where(p=>!world.Context.CollectedPickups.Contains(p.Id)))
         {
             var definition=Definition(world.Context,pickup,Common.Instance.ItemManager);
-            var prefab=definition.DroppedItemPrefab;
-            GameObject go;
-            if(prefab!=null) go=Instantiate(prefab.gameObject,transform);
-            else
-            {
-                go=GameObject.CreatePrimitive(PrimitiveType.Cube);go.transform.SetParent(transform,false);
-                go.GetComponent<Renderer>().material=new Material(Shader.Find("Standard")) {color=pickup.Kind==OverworldPickupKind.Weapon?new Color(.8f,.85f,1):new Color(1,.85f,.25f)};
-                go.AddComponent<EncounterMarkerMaterial>();go.transform.localScale=new Vector3(.5f,.5f,.15f);
-            }
+            var go = Instantiate(definition.ResolveDroppedPrefab().gameObject, transform, false);
             go.name=definition.ItemName+" ["+pickup.Id+"]";
-            go.transform.position=world.CellCenterToWorld(pickup.Position)+Vector3.back*.2f;
+            DungeonPickupFootprint.Place(go.transform, world.CellCenterToWorld(pickup.Position) + Vector3.back * .025f, world.CellSize * .82f);
             foreach(var collider in go.GetComponentsInChildren<Collider>()) Destroy(collider);
             markers.Add(pickup.Id,go);
         }

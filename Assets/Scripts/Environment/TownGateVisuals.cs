@@ -1,5 +1,4 @@
 using EternalEnigma.Core.World;
-using TMPro;
 using UnityEngine;
 
 public static class TownGateVisuals
@@ -28,15 +27,54 @@ public static class TownGateVisuals
             ? Mathf.Abs(x - gate.X) <= 1 && y >= Mathf.Min(gate.Y, marker.Y) && y <= Mathf.Max(gate.Y, marker.Y)
             : Mathf.Abs(y - gate.Y) <= 1 && x >= Mathf.Min(gate.X, marker.X) && x <= Mathf.Max(gate.X, marker.X);
     }
+    // Place the plaque on the gate shoulder with the clearest view from the gameplay camera.
+    private static Vector3 DistrictSignOffset(TownPlan plan, GridPoint marker)
+    {
+        var gate = DistrictGateCell(plan, marker);
+        var wall = Quaternion.Euler(0, 0, DistrictRotation(plan, marker, false));
+        var inset = Mathf.Clamp(Mathf.Abs(marker.X - gate.X) + Mathf.Abs(marker.Y - gate.Y), 1.15f, 3f);
+        var center = new Vector3(gate.X, gate.Y, 0);
+        var inward = wall * Vector3.up;
+        var shoulder = wall * Vector3.right * 2.45f;
+        if (shoulder.y < -.01f) shoulder = -shoulder;
+        int Clearance(Vector3 point)
+        {
+            int x = Mathf.RoundToInt(point.x), y = Mathf.RoundToInt(point.y), score = 0;
+            for (int row = y - 1; row <= y; row++)
+            for (int column = x - 1; column <= x + 1; column++)
+            {
+                var cell = new GridPoint(column, row);
+                if (plan.Contains(cell) && plan.IsWalkable(cell) && !plan.Layers[TownLayers.Buildings].At(cell))
+                    score += column == x && row == y ? 6 : 1;
+            }
+            return score;
+        }
+        var mount = center + inward * inset + shoulder;
+        int best = -1;
+        foreach (float depth in new[] { inset, inset + 1f, Mathf.Max(1f, inset - 1f), inset + 2f })
+        foreach (int side in new[] { 1, -1 })
+        {
+            var candidate = center + inward * depth + shoulder * side;
+            int score = Clearance(candidate);
+            if (score <= best) continue;
+            mount = candidate;
+            best = score;
+        }
+        return mount - new Vector3(marker.X, marker.Y, 0);
+    }
+
     public static void Create(EnvironmentKit kit, OverworldBiome biome, Transform parent,
-        GridPoint cell, float size, string label, bool dungeon, bool onward = false, float rotation = 0, GridPoint? gateCell = null)
+        GridPoint cell, float size, string label, bool dungeon, bool onward = false, float rotation = 0, TownPlan district = null)
     {
         var root = new GameObject(label);
         root.transform.SetParent(parent, false);
         root.transform.localPosition = new Vector3(cell.X + .5f, cell.Y + .5f, 0) * size;
         var gate = kit.Create(dungeon ? "DungeonPortal" : "Gate", biome, root.transform, Vector3.zero, size);
-        if (gateCell is { } frame)
+        if (district != null)
+        {
+            var frame = DistrictGateCell(district, cell);
             gate.transform.localPosition = new Vector3(frame.X - cell.X, frame.Y - cell.Y, 0) * size;
+        }
         gate.transform.localRotation = Quaternion.Euler(0, 0, rotation) * gate.transform.localRotation;
         if (!dungeon)
         {
@@ -52,30 +90,14 @@ public static class TownGateVisuals
             gate.GetComponent<MeshFilter>().sharedMesh = gateMesh;
             gate.AddComponent<EnvironmentMeshOwner>().Meshes.Add(gateMesh);
         }
-        var marker = new GameObject("Gate direction indicator");
-        marker.transform.SetParent(root.transform, false);
-        marker.transform.localRotation = Quaternion.Euler(0, 0, rotation);
-        float direction = dungeon || onward ? 1 : -1;
-        var mesh = new Mesh { name = "Gate arrow" };
-        mesh.vertices = new[] { new Vector3(-.28f, -.08f, -.035f) * size,
-            new Vector3(.28f, -.08f, -.035f) * size,
-            new Vector3(0, direction * .36f, -.035f) * size };
-        mesh.triangles = new[] { 0, 1, 2, 2, 1, 0 };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds();
-        root.AddComponent<EnvironmentMeshOwner>().Meshes.Add(mesh);
-        marker.AddComponent<MeshFilter>().sharedMesh = mesh;
-        var renderer = marker.AddComponent<MeshRenderer>();
-        renderer.sharedMaterial = kit.Paving;
-        var tint = new MaterialPropertyBlock();
-        var color = dungeon || onward ? new Color(1f, .65f, .15f) : new Color(.25f, 1f, .85f);
-        tint.SetColor("_Color", color); tint.SetColor("_BaseColor", color);
-        renderer.SetPropertyBlock(tint);
-        var caption = new GameObject("Gate label").AddComponent<TextMeshPro>();
-        caption.transform.SetParent(root.transform, false);
-        caption.transform.localPosition = new Vector3(0, -.7f, -.12f) * size;
-        caption.text = label; caption.fontSize = 2.2f * size;
-        GameTypography.Apply(caption, GameTextRole.Heading);
-        caption.alignment = TextAlignmentOptions.Center; caption.color = color;
-        caption.rectTransform.sizeDelta = new Vector2(3, .5f) * size;
+        if (dungeon) return; // The entrance building carries the dungeon name and opening status.
+        var mount = new Vector3(2.18f, .04f, 0);
+        var emblem = WorldSign.Emblem.Gate;
+        if (district != null)
+        {
+            mount = DistrictSignOffset(district, cell);
+            emblem = onward ? WorldSign.Emblem.DistrictExit : WorldSign.Emblem.Dungeon;
+        }
+        WorldSign.Create(root.transform, mount, size, emblem, label);
     }
 }

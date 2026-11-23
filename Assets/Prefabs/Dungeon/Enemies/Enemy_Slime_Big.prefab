@@ -217,7 +217,7 @@ Transform:
   m_GameObject: {fileID: 4359564673968629022}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.00000017881393, y: -0.09766039, z: 0}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -392,6 +392,7 @@ MonoBehaviour:
   Animator: {fileID: 3681299977725512890}
   IsBoss: 0
   IsDormant: 0
+  DiagonalFootprintOffset: {x: 0.00000009313226, y: 0.0984475}
 --- !u!114 &2905304713968136797
 MonoBehaviour:
   m_ObjectHideFlags: 0

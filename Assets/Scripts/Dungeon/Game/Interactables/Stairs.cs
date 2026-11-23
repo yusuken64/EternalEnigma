@@ -1,7 +1,19 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Stairs : Interactable
 {
+    [SerializeField] private Transform stairBody;
+
+    internal void Place(TileWorldDungeon dungeon, Vector3Int cell)
+    {
+        Position = cell;
+        transform.position = dungeon.CellToWorld(cell);
+        var center = dungeon.CellCenterToWorld(cell);
+        center.z = DungeonPresentation.GroundPlaneZ;
+        DungeonPickupFootprint.Place(stairBody, center, dungeon.CellSize);
+    }
+
 	internal override List<GameAction> GetInteractionSideEffects(Character character)
 	{
         if (character != Game.Instance.PlayerController.ControlledAlly || !Game.Instance.CheckFloorExit()) return new();

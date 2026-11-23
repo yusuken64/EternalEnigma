@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,13 +81,34 @@ namespace EternalEnigma.Tests
             }
         }
 
-        [UnityTest] public IEnumerator SokobanUsesProductionMovementAndRejectsUnfinishedExit()
+        [UnityTest, Timeout(360000)] public IEnumerator SokobanUsesProductionMovementAndRejectsUnfinishedExit()
         {
             yield return LoadEncounter(EncounterKind.Sokoban);
             var game=harness.Game;var player=harness.Ally;
             Assert.That(game.CurrentDungeon.IsThroneFloor,Is.False);
             Assert.That(game.CurrentDungeon.IsExitFloor,Is.True);
             Assert.That(game.CanExitFloor,Is.False);
+            foreach (var piece in game.CurrentDungeon.Floor.PuzzleObjects)
+            {
+                var marker = game.CurrentDungeon.transform.Find(piece.Id);
+                var renderers = marker.GetComponentsInChildren<MeshRenderer>();
+                Assert.That(renderers.Length, Is.EqualTo(piece.Kind == PuzzleObjectKind.Boulder ? 1 : 2), piece.Id);
+                foreach (var renderer in renderers)
+                {
+                    Assert.That(renderer.sharedMaterial.mainTexture.width, Is.GreaterThanOrEqualTo(256), piece.Id);
+                    Assert.That(renderer.GetComponent<MeshFilter>().sharedMesh.vertexCount, Is.GreaterThan(24), piece.Id);
+                }
+                Assert.That(marker.GetComponentsInChildren<Collider>(), Is.Empty, piece.Id);
+                Assert.That(Vector2.Distance(marker.position, game.CurrentDungeon.CellCenterToWorld(piece.Position.ToCell())),
+                    Is.LessThan(.001f), piece.Id);
+            }
+            var goals = game.CurrentDungeon.Floor.PuzzleObjects.Where(p => p.Kind == PuzzleObjectKind.Goal)
+                .Select(p => game.CurrentDungeon.transform.Find(p.Id).GetComponent<EncounterPuzzlePiece>()).ToArray();
+            Assert.That(goals.Any(g => !g.Pressed), Is.True);
+            yield return harness.WaitUntil(() => !Common.Instance.ScreenTransition.BlocksInput, "puzzle room visible");
+            System.IO.Directory.CreateDirectory("Temp/WorldSigns");
+            ScreenCapture.CaptureScreenshot("Temp/WorldSigns/boulder-puzzle.png");
+            yield return new WaitForSecondsRealtime(.2f);
             Assert.That(Common.Instance.Travel.FinishDungeon(true,game.PlayerController,false),Is.False);
             foreach(var position in game.CurrentDungeon.Floor.SolutionWitness)
             {
@@ -98,6 +120,16 @@ namespace EternalEnigma.Tests
             }
             Assert.That(game.CanExitFloor,Is.True);
             Assert.That(game.Encounter.Puzzle.Complete,Is.True);
+            Assert.That(goals.All(g => g.Pressed), Is.True);
+            foreach (var boulder in game.Encounter.Puzzle.Boulders)
+            {
+                var model = game.CurrentDungeon.transform.Find(boulder.Key).GetComponentInChildren<MeshRenderer>().bounds;
+                Assert.That(Vector2.Distance(model.center, game.CurrentDungeon.CellCenterToWorld(boulder.Value.ToCell())), Is.LessThan(.001f));
+                Assert.That(model.max.z, Is.LessThan(DungeonPresentation.GroundPlaneZ));
+            }
+            yield return null;
+            ScreenCapture.CaptureScreenshot("Temp/WorldSigns/boulder-puzzle-solved.png");
+            yield return new WaitForSecondsRealtime(.2f);
         }
 
         [UnityTest] public IEnumerator LureCompletionRemovesTargetWithoutReplayingItsDestroyedAnimator()
@@ -206,6 +238,16 @@ namespace EternalEnigma.Tests
         {
             yield return LoadEncounter(EncounterKind.LightPattern);
             var game=harness.Game;var player=game.PlayerController;
+            void AssertPlateStates()
+            {
+                foreach (var placement in game.CurrentDungeon.Floor.PuzzleObjects)
+                {
+                    var plate = game.CurrentDungeon.transform.Find(placement.Id).GetComponent<EncounterPuzzlePiece>();
+                    bool expected = placement.Kind == PuzzleObjectKind.LightTarget ? placement.TargetState : game.Encounter.Puzzle.Lights[placement.Id];
+                    Assert.That(plate.Pressed, Is.EqualTo(expected), placement.Id);
+                }
+            }
+            AssertPlateStates();
             string fingerprint=DungeonFloorFingerprint.Compute(game.CurrentDungeon.Floor);
             int gold=player.Gold,experience=harness.Ally.Vitals.Exp;
             var items=player.Inventory.InventoryItems.ToArray();
@@ -221,7 +263,35 @@ namespace EternalEnigma.Tests
             Assert.That(player.Inventory.InventoryItems,Is.EqualTo(items));
             Assert.That(DungeonFloorFingerprint.Compute(game.CurrentDungeon.Floor),Is.EqualTo(fingerprint));
             Assert.That(game.Encounter.Puzzle.Player,Is.EqualTo(game.CurrentDungeon.Floor.Start));
+            AssertPlateStates();
             Assert.That(harness.Ally.Skills.Single(s=>s.SkillName=="Reset Floor").ManaCost,Is.Zero);
+        }
+
+        [UnityTest] public IEnumerator SupplyStashesAndUnassignedKeysHaveTexturedModelsOnTheirCells()
+        {
+            yield return harness.LoadDungeon(new TestScenario());
+            var dungeon = harness.Game.CurrentDungeon;
+            var cells = dungeon.GetWalkableNeighborhoodTiles(harness.Ally.TilemapPosition)
+                .Where(p => p != harness.Ally.TilemapPosition).Distinct().Take(3).ToArray();
+            Assert.That(cells.Length, Is.EqualTo(3));
+            dungeon.SmallKeyPrefab = null;
+            var key = SmallKey.Create(dungeon, cells[0]);
+            EncounterStash.Create(dungeon, cells[1], true);
+            EncounterStash.Create(dungeon, cells[2], false);
+            var pickups = dungeon.Interactables.OfType<EncounterStash>().Where(s => cells.Contains(s.Position))
+                .Cast<Interactable>().Append(key).ToArray();
+            Assert.That(pickups.Length, Is.EqualTo(3));
+            float size = (dungeon.CellToWorld(Vector3Int.right) - dungeon.CellToWorld(Vector3Int.zero)).x;
+            foreach (var pickup in pickups)
+            {
+                var renderers = pickup.GetComponentsInChildren<MeshRenderer>();
+                Assert.That(renderers, Is.Not.Empty);
+                Assert.That(renderers.SelectMany(r => r.sharedMaterials).All(m => m != null && m.mainTexture != null), Is.True, pickup.name);
+                var bounds = renderers[0].bounds;
+                foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
+                Vector2 target = dungeon.CellToWorld(pickup.Position) + new Vector3(size * .5f, size * .5f, 0);
+                Assert.That(Vector2.Distance(bounds.center, target), Is.LessThan(.01f), pickup.name);
+            }
         }
 
         [UnityTest] public IEnumerator PrisonEscrowRetainsOwnersStacksAndOriginalItemsBeforeTemporaryLoot()
@@ -254,6 +324,50 @@ namespace EternalEnigma.Tests
             Resolve(harness.Ally,new DeathAction(enemy,harness.Ally));
             Assert.That(enemy.Vitals.HP,Is.EqualTo(hp));Assert.That(harness.Game.Enemies,Contains.Item(enemy));
             Assert.That(DominateAction.CanDominate(enemy),Is.False);
+        }
+
+        [UnityTest, Timeout(360000)] public IEnumerator SlimeSplashReplaysAnAirborneJumpAndLandsOnItsResolvedTile()
+        {
+            yield return harness.LoadDungeon(new TestScenario());
+            var game = harness.Game;
+            var dungeon = game.CurrentDungeon;
+            var slime = Object.Instantiate(LargeBossBehavior.Prefab("Slime"), dungeon.transform);
+            slime.UpdateCachedStats(); slime.InitialzeVitalsFromStats();
+            harness.PlaceAlly(dungeon.Floor.Stairs.ToCell());
+            var origin = dungeon.Floor.Start.ToCell();
+            Assert.That(SkillMovement.CanOccupy(slime, origin), Is.True);
+            slime.SetPosition(origin);
+            slime.InitializeSpawn();
+            game.Enemies.Add(slime);
+            yield return null;
+            var behavior = slime.GetComponent<LargeBossBehavior>();
+            Resolve(slime, behavior.ChooseAction());
+            Assert.That(behavior.IsTelegraphing, Is.True);
+            var release = behavior.ChooseAction().ExecuteImmediate(slime);
+            var leap = release.OfType<BossPlaceAction>().Single();
+            Assert.That(leap.Visuals.AfterMovement, Is.True, "The splash impact follows the landing.");
+            var start = slime.transform.position;
+            leap.ExecuteImmediate(slime);
+            var landing = dungeon.CellToWorld(slime.TilemapPosition);
+            Assert.That(Vector3.Distance(start,landing), Is.GreaterThan(dungeon.CellSize));
+            Assert.That(slime.transform.position, Is.EqualTo(start));
+            var playback = leap.ExecuteRoutine(slime);
+            Assert.That(playback.MoveNext(), Is.True);
+            var tween = DOTween.TweensByTarget(slime.transform).OfType<Sequence>().Single();
+            tween.Goto(tween.Duration() * .5f, false);
+            var ground = Vector3.Lerp(start, landing, .5f);
+            Assert.That(Vector2.Distance(slime.transform.position, ground), Is.LessThan(.01f));
+            Assert.That(slime.transform.position.z, Is.LessThan(ground.z - dungeon.CellSize));
+            System.IO.Directory.CreateDirectory("Temp/BossGameplay");
+            ScreenCapture.CaptureScreenshot("Temp/BossGameplay/slime-splash-apex.png");
+            yield return new WaitForSecondsRealtime(.12f);
+            tween.Complete();
+            while (playback.MoveNext()) yield return playback.Current;
+            Assert.That(Vector3.Distance(slime.transform.position, landing), Is.LessThan(.001f));
+            slime.transform.position = start;
+            var skipped = leap.ExecuteRoutine(slime, true);
+            Assert.That(skipped.MoveNext(), Is.False);
+            Assert.That(slime.transform.position, Is.EqualTo(landing));
         }
 
         [UnityTest] public IEnumerator EveryBossVariantHasFootprintWarningSpecialAndNormalDeath()

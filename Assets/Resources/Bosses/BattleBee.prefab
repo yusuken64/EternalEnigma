@@ -8,6 +8,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2434745938432335508, guid: 0ee93ba8e6048b540a6d63e917616923, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.012709378
+      objectReference: {fileID: 0}
+    - target: {fileID: 2434745938432335508, guid: 0ee93ba8e6048b540a6d63e917616923, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.12733114
+      objectReference: {fileID: 0}
     - target: {fileID: 3119655136135461553, guid: 0ee93ba8e6048b540a6d63e917616923, type: 3}
       propertyPath: IsBoss
       value: 1
@@ -31,6 +39,14 @@ PrefabInstance:
     - target: {fileID: 3119655136135461553, guid: 0ee93ba8e6048b540a6d63e917616923, type: 3}
       propertyPath: StartingStats.EXPOnKill
       value: 750
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 0ee93ba8e6048b540a6d63e917616923, type: 3}
+      propertyPath: DiagonalFootprintOffset.x
+      value: 0.029127615
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: 0ee93ba8e6048b540a6d63e917616923, type: 3}
+      propertyPath: DiagonalFootprintOffset.y
+      value: 0.271699
       objectReference: {fileID: 0}
     - target: {fileID: 5543747752720980080, guid: 0ee93ba8e6048b540a6d63e917616923, type: 3}
       propertyPath: m_Name
@@ -117,3 +133,5 @@ MonoBehaviour:
   WarningTurns: 1
   CooldownTurns: 3
   EffectTurns: 2
+  SplashRadiusOverride: 0
+  RecoveryTurns: 0

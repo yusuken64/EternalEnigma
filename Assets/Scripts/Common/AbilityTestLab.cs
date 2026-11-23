@@ -545,12 +545,14 @@ public sealed class AbilityTestLab : MonoBehaviour
     public IEnumerator CaptureMeleeImpact()
     {
         if (!Ready || Busy) yield break;
+        var prefab = learned.First(skill => skill.SkillName == "Double Strike").VisualProfile.Impact.Prefab;
         StartCoroutine(CastAbility("Double Strike"));
         float deadline = Time.realtimeSinceStartup + 8;
         while (Time.realtimeSinceStartup < deadline)
         {
             var effect = CombatEffectPlayer.Get().GetComponentsInChildren<ParticleSystem>()
-                .FirstOrDefault(p => p.transform.parent != null && p.transform.parent.name.StartsWith("LightSlashHit") && p.particleCount > 0);
+                .FirstOrDefault(p => p.particleCount > 0 && p.GetComponentsInParent<Transform>()
+                    .Any(parent => parent.name.StartsWith(prefab.name, StringComparison.Ordinal)));
             if (effect != null)
             {
                 System.IO.Directory.CreateDirectory("Temp/AbilityTestLab");
@@ -568,7 +570,7 @@ public sealed class AbilityTestLab : MonoBehaviour
             }
             yield return null;
         }
-        Debug.LogWarning("No LightSlashHit particles detected during Double Strike.");
+        Debug.LogWarning($"No {prefab.name} particles detected during Double Strike.");
     }
 
     public IEnumerator SmokeCheck()

@@ -130,7 +130,7 @@ public sealed class OpeningHomeLesson : MonoBehaviour
             {
                 town.SaveProgress();
                 AudioManager.Instance?.PlayCue(SoundCue.GateUnlock);
-                GameMessages.Post("You used the Home Key. The front door is open!");
+                GameMessages.Post("You used the Home Key. The front door is open! Mochi the Traveler knows the way to the bakery.");
             }
             else
             {

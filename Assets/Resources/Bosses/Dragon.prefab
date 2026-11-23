@@ -32,6 +32,22 @@ PrefabInstance:
       propertyPath: StartingStats.EXPOnKill
       value: 15000
       objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: d5e36bc93af64a04ab1001b4e89581ae, type: 3}
+      propertyPath: DiagonalFootprintOffset.x
+      value: 0.030720606
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119655136135461553, guid: d5e36bc93af64a04ab1001b4e89581ae, type: 3}
+      propertyPath: DiagonalFootprintOffset.y
+      value: -0.43322104
+      objectReference: {fileID: 0}
+    - target: {fileID: 5052715836725381554, guid: d5e36bc93af64a04ab1001b4e89581ae, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.007846302
+      objectReference: {fileID: 0}
+    - target: {fileID: 5052715836725381554, guid: d5e36bc93af64a04ab1001b4e89581ae, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.058207773
+      objectReference: {fileID: 0}
     - target: {fileID: 5543747752720980080, guid: d5e36bc93af64a04ab1001b4e89581ae, type: 3}
       propertyPath: m_Name
       value: Dragon
@@ -117,3 +133,5 @@ MonoBehaviour:
   WarningTurns: 1
   CooldownTurns: 3
   EffectTurns: 2
+  SplashRadiusOverride: 0
+  RecoveryTurns: 0

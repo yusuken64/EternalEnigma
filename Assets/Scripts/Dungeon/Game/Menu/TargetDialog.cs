@@ -26,8 +26,6 @@ namespace JuicyChickenGames.Menu
         private string originalPrompt;
         public Vector3Int Direction { get; private set; }
         public Vector3Int MissileEndpoint { get; private set; }
-        private Vector2 lastMove;
-        private float nextMoveTime;
         private bool pointerReady;
         private bool audioReady;
         internal Vector3Int? TerminalPointerFocus { get; private set; }
@@ -152,8 +150,6 @@ namespace JuicyChickenGames.Menu
             if (tiles.Count > 0) SelectTile(tiles.Contains(selectedTile) ? selectedTile : tiles[0]);
             else if (missileRange > 0) Aim(Dungeon.GetFacingOffset(character.CurrentFacing));
             else if(Targetables.Count > 0) SelectTarget(Targetables[0]); else SelectProp(props[0]);
-            lastMove = Vector2.zero;
-            nextMoveTime = 0;
             pointerReady = false;
             TerminalPointerFocus = null;
             lastPointer = MenuUIInputModule.Active?.UI.Point.ReadValue<Vector2>() ?? Vector2.zero;
@@ -179,8 +175,8 @@ namespace JuicyChickenGames.Menu
             MissileEndpoint = hit.Cell;
             CameraTarget = hit.Character;
             TargetIndicator.SetActive(true);
-            TargetIndicator.transform.position = Game.Instance.CurrentDungeon.CellToWorld(hit.Cell);
-            MenuManager.Instance.TargetArrow.transform.position = Game.Instance.CurrentDungeon.CellToWorld(casterCharacter.TilemapPosition + direction);
+            TargetIndicator.transform.position = Game.Instance.CurrentDungeon.CellCenterToWorld(hit.Cell);
+            MenuManager.Instance.TargetArrow.transform.position = Game.Instance.CurrentDungeon.CellCenterToWorld(casterCharacter.TilemapPosition + direction);
             Game.Instance.PlayerController.CameraController.SetFollowTarget(casterCharacter.transform);
         }
 
@@ -190,7 +186,7 @@ namespace JuicyChickenGames.Menu
             if (audioReady && cell != selectedTile) AudioManager.Instance?.PlayCue(SoundCue.Navigate);
             selectedTile = cell;
             TargetIndicator.SetActive(true);
-            TargetIndicator.transform.position = Game.Instance.CurrentDungeon.CellToWorld(cell);
+            TargetIndicator.transform.position = Game.Instance.CurrentDungeon.CellCenterToWorld(cell);
             MenuManager.Instance.TargetArrow.transform.position = TargetIndicator.transform.position;
         }
         private void SelectProp(DungeonProp prop, bool followCamera = true)
@@ -198,7 +194,7 @@ namespace JuicyChickenGames.Menu
             HudRefresh.Request(HudChange.Dungeon);
             if (audioReady && prop != selectedProp) AudioManager.Instance?.PlayCue(SoundCue.Navigate);
             selectedProp = prop; CameraTarget = null;
-            TargetIndicator.SetActive(true); TargetIndicator.transform.position = Game.Instance.CurrentDungeon.CellToWorld(prop.Position);
+            TargetIndicator.SetActive(true); TargetIndicator.transform.position = Game.Instance.CurrentDungeon.CellCenterToWorld(prop.Position);
             MenuManager.Instance.TargetArrow.transform.position = TargetIndicator.transform.position;
             if (followCamera) Game.Instance.PlayerController.CameraController.SetFollowTarget(prop.transform);
         }
@@ -208,8 +204,8 @@ namespace JuicyChickenGames.Menu
             selectedProp = null;
             CameraTarget = target;
             TargetIndicator.SetActive(true);
-            TargetIndicator.transform.position = target.transform.position;
-            MenuManager.Instance.TargetArrow.transform.position = target.transform.position;
+            TargetIndicator.transform.position = Game.Instance.CurrentDungeon.CellCenterToWorld(target.TilemapPosition);
+            MenuManager.Instance.TargetArrow.transform.position = TargetIndicator.transform.position;
             if (followCamera) Game.Instance.PlayerController.CameraController.SetFollowTarget(target.transform);
         }
 
@@ -301,7 +297,7 @@ namespace JuicyChickenGames.Menu
             var ray = camera.ScreenPointToRay(position);
             var ground = new Plane(Vector3.forward,new Vector3(0,0,DungeonPresentation.GroundPlaneZ));
             if (!ground.Raycast(ray,out float distance)) return false;
-            var cell = targetingFloor.WorldToCell(ray.GetPoint(distance));
+            var cell = targetingFloor.GroundPointToCell(ray.GetPoint(distance));
             if (missileRange > 0)
             {
                 var delta = cell-casterCharacter.TilemapPosition;
@@ -343,23 +339,23 @@ namespace JuicyChickenGames.Menu
                 Owner?.Current != this || AutoplayRunner.BlocksPlayerInput) return;
             RefreshPrompt();
             if (ProcessPointer()) return;
-            var move = Common.Instance.MenuInputHandler.MoveInput;
-            if (move.sqrMagnitude < 0.25f) { lastMove = Vector2.zero; return; }
-            TerminalPointerFocus = null;
+            var module = MenuUIInputModule.Active;
+            if (module == null) return;
             if (missileRange > 0)
             {
-                Aim(new Vector3Int(Mathf.Abs(move.x) > 0.25f ? (int)Mathf.Sign(move.x) : 0,
-                    Mathf.Abs(move.y) > 0.25f ? (int)Mathf.Sign(move.y) : 0));
+                var raw = module.UI.Navigate.ReadValue<Vector2>();
+                var aim = GridMovement.InputDirection(raw.sqrMagnitude > .1f ? raw : module.NavigationVector);
+                if (aim != Vector3Int.zero && aim != Direction) { TerminalPointerFocus = null; Aim(aim); }
                 return;
             }
-            if (lastMove != Vector2.zero && Time.unscaledTime < nextMoveTime) return;
-            var direction = Mathf.Abs(move.x) > Mathf.Abs(move.y)
-                ? new Vector2(Mathf.Sign(move.x), 0) : new Vector2(0, Mathf.Sign(move.y));
+            var direction = module.NavigationStep;
+            if (direction == Vector2.zero) return;
+            TerminalPointerFocus = null;
             if (tiles.Count > 0)
             {
                 var nextCell = selectedTile + new Vector3Int((int)direction.x, (int)direction.y);
                 if (tiles.Contains(nextCell)) SelectTile(nextCell);
-                nextMoveTime = Time.unscaledTime + (lastMove == Vector2.zero ? .3f : .1f); lastMove = move; return;
+                return;
             }
             if (props.Count > 0)
             {
@@ -373,15 +369,13 @@ namespace JuicyChickenGames.Menu
                     var prop = props.FirstOrDefault(p=>p!=null && p.Position==cell);
                     if(prop!=null) SelectProp(prop); else SelectTarget(Targetables.First(c=>c.TilemapPosition==cell));
                 }
-                nextMoveTime=Time.unscaledTime+(lastMove==Vector2.zero?.3f:.1f);lastMove=move;return;
+                return;
             }
             var candidates = Targetables.Where(c => c != null && c != CameraTarget).ToList();
             var next = candidates.Where(c => Vector2.Dot(((Vector2)(Vector3)(c.TilemapPosition - CameraTarget.TilemapPosition)).normalized, direction) > 0.7f)
                 .OrderBy(c => TileWorldDungeon.ChevDistance(c.TilemapPosition, CameraTarget.TilemapPosition)).FirstOrDefault();
             next ??= candidates.OrderBy(c => Vector2.Dot((Vector2)(Vector3)c.TilemapPosition, direction)).FirstOrDefault();
             if (next != null) SelectTarget(next);
-            nextMoveTime = Time.unscaledTime + (lastMove == Vector2.zero ? 0.3f : 0.1f);
-            lastMove = move;
         }
 
         internal void ConfirmTarget()

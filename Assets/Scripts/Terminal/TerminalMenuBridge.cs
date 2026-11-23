@@ -15,8 +15,6 @@ public sealed class TerminalMenuBridge : MonoBehaviour
     private MainMenu mainMenu;
     private TerminalMenuSession session;
     private readonly TerminalMenuStyle style = new();
-    private Vector2 lastMove;
-    private float nextMove;
     private float nextStyle;
     public TerminalMenuModel Model => session?.Model;
 
@@ -53,7 +51,6 @@ public sealed class TerminalMenuBridge : MonoBehaviour
             session = new TerminalMenuSession(root, () => owner != null && root != null &&
                 root.gameObject.activeInHierarchy && (!module.HasDialog ? owner == mainMenu : module.OwnsFocus(owner)),
                 () => AdditionalControls(module));
-            nextMove = 0; lastMove = Vector2.zero;
         }
         RefreshStyle();
 
@@ -78,27 +75,22 @@ public sealed class TerminalMenuBridge : MonoBehaviour
             return false;
         }
         session.Refresh();
-        var move = module.UI.Navigate.ReadValue<Vector2>();
-        if (move.sqrMagnitude < .1f) { lastMove = Vector2.zero; return false; }
+        var move = module.NavigationStep;
         // Horizontal input remains available to party tabs, sliders and native widgets.
-        if (Mathf.Abs(move.x) >= Mathf.Abs(move.y)) { lastMove = Vector2.zero; return false; }
-        if (lastMove == Vector2.zero || Mathf.Sign(lastMove.y) != Mathf.Sign(move.y) || Time.unscaledTime >= nextMove)
+        if (move.y == 0) return false;
+        if (selected == null || !module.Allows(selected.gameObject)) module.RestoreFocus();
+        else
         {
-            if (selected == null || !module.Allows(selected.gameObject)) module.RestoreFocus();
-            else
+            var next = move.y > 0 ? selected.FindSelectableOnUp() : selected.FindSelectableOnDown();
+            if (next != null && module.Allows(next.gameObject) && MenuUIInputModule.IsUsable(next.gameObject) && session.Select(next))
+                next.Select();
+            else if (selected.navigation.mode == Navigation.Mode.Automatic)
             {
-                var next = move.y > 0 ? selected.FindSelectableOnUp() : selected.FindSelectableOnDown();
-                if (next != null && module.Allows(next.gameObject) && MenuUIInputModule.IsUsable(next.gameObject) && session.Select(next))
-                    next.Select();
-                else if (selected.navigation.mode == Navigation.Mode.Automatic)
-                {
-                    session.Model.Move(move.y > 0 ? -1 : 1);
-                    if (session.Selected != null && MenuUIInputModule.IsUsable(session.Selected.gameObject)) session.Selected.Select();
-                }
+                session.Model.Move(move.y > 0 ? -1 : 1);
+                if (session.Selected != null && MenuUIInputModule.IsUsable(session.Selected.gameObject)) session.Selected.Select();
             }
-            nextMove = Time.unscaledTime + (lastMove == Vector2.zero ? .3f : .1f);
         }
-        lastMove = move;
+
         module.ConsumeInput();
         return false;
     }

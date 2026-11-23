@@ -7,7 +7,7 @@ records all 48 model parts, their bounds, and triangle counts. Production FBX
 files are under `Assets/Art/EternalEnigma/BiomeDecorations`.
 
 The eight sets contain a wall fixture, ornament, natural accent, assembled lamp
-post, sign pole and separate arrow panel. Wall and post fixtures share the same
+post, sign pole and separate flat-ended sign panel. Wall and post fixtures share the same
 modeled geometry. Wall props stay within 120 triangles; lamp assemblies and
 sign poles with three panels stay within 240. No imported prefab has a collider,
 navigation obstacle, interaction component, or light.
@@ -50,8 +50,8 @@ ornament per house. Lamp posts use supported road verges, four-cell separation,
 two-cell marker clearance and a 24-per-town cap. Nearby wall fixtures are
 suppressed while ornaments remain eligible.
 
-Static bodies are combined with `EnvironmentBatch`; effects and sign text stay
-separate. The generation output owns a single `Biome decorations` root, including
+`EnvironmentBatch` combines static scenery, including the wooden roadside signs.
+Effects keep their own renderers. The generation output owns a single `Biome decorations` root, including
 its combined meshes. Rebuilding explicitly releases old owned meshes. Overworld
 cache ownership follows the existing generated world. A shared effect budget
 animates at most the nearest 32 camera-visible fixtures; glow uses small meshes,
@@ -62,7 +62,7 @@ avoids the half-cell difference between rendered TWC tile centers and fog querie
 An effect with no supported adjacent floor is omitted. Preview visibility must be
 requested explicitly; gameplay uses current visibility, not explored history.
 The glow scale survives animation and cached-root activation without accumulating
-shrinkage. Sign labels share one camera-frustum calculation per frame.
+shrinkage.
 Production dungeons, including the starting Grassland biome and old saves, now
 use the shared biome presentation. Layout selection/version remains independent.
 The explicit legacy comparison in Environment Playground remains available.
@@ -75,14 +75,12 @@ state and logical masks, including this legacy path.
 
 `BiomeRoadGraph` connects cardinal road neighbors and consecutive non-warp route
 cells. It collapses adjacent junction cells, searches outgoing branches without
-reversing through the junction, and ranks up to three distinct town destinations
+reversing through the junction, and ranks up to two distinct town destinations
 by distance and stable ID. Approaches precede junctions and waymarkers. Signs
 require dry supported verges, six-cell separation and at most eight signs per
 32-cell region. They do not reveal towns or affect travel permissions.
-Panels tilt upward for the production camera. Billboard labels include a
-camera-relative arrow derived from the same outgoing road segment, with bounded
-autosizing and at most two lines. Production-label tests check complete text
-bounds and matching names from the campaign accessor.
+A small wooden sign marks the verge. Interact with it to read compass directions
+to nearby towns and landmarks.
 
 Town names are generated in the Unity-free Core assembly with eight vocabularies
 and an independent hash stream. `CampaignSnapshot.TownNames` and `NamingVersion`

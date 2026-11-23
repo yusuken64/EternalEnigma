@@ -8341,7 +8341,7 @@ Transform:
   m_GameObject: {fileID: 1464425862}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 1.25, y: 1.25, z: -3.52}
+  m_LocalPosition: {x: 0, y: 0, z: -3.52}
   m_LocalScale: {x: 1, y: 2.03, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10747,8 +10747,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39847c1b36905644dafc1ab79c2db260, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MainMenuMusic: {fileID: 8300000, guid: 1bacb8e1ec3231d45b4a19d8d5cd3fbc, type: 3}
-  MainMenuMusicTrack: 
+  MainMenuMusic: {fileID: 8300000, guid: 44161982ed3f6bb47bdd8e9b3ec166df, type: 3}
+  MainMenuMusicTrack:
+  AlternateMusic: {fileID: 8300000, guid: 6147410bc8c2e0242962cc9d94a316a6, type: 3}
+  AlternateMusicTrack:
 --- !u!4 &1780043639
 Transform:
   m_ObjectHideFlags: 0
@@ -12157,11 +12159,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1947218851406781959, guid: 731b56537ed5d0f4e922d95f74ad2f26, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.25
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1947218851406781959, guid: 731b56537ed5d0f4e922d95f74ad2f26, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.25
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1947218851406781959, guid: 731b56537ed5d0f4e922d95f74ad2f26, type: 3}
       propertyPath: m_LocalPosition.z

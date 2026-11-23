@@ -139,6 +139,28 @@ public static class HarnessTestRunner
     public static void RunHeldInputTiming() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
         "EternalEnigma.Tests.DungeonFastWalkTests.AuditRealHeldInputAtThirtySixtyAndOneTwentyFrames");
 
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Windows Gameplay Frame Regressions")]
+    public static void RunWindowsGameplayFrameRegressions() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.OverworldSceneTests.WalkingOntoPickupUpdatesBagWithoutRebuildingPartyCards",
+        "EternalEnigma.Tests.DungeonFramePerformanceTests.HudTextRefreshesOnChangesAndDoesNoIdleFormatting",
+        "EternalEnigma.Tests.DungeonFastWalkTests.HeldModifierRequiresFreshDirectionAtEveryStop",
+        "EternalEnigma.Tests.DungeonFloorTransitionTests.AdvanceWaitsForAnOpaqueFrameBeforeReplacingTheFloor",
+        "EternalEnigma.Tests.ScreenTransitionTests.OpaqueCoverBlocksKeyboardGamepadAndMouseUntilReleased",
+        "EternalEnigma.Tests.OverworldSceneTests.GateUnlockAudioOnlyPlaysForANewUnlock");
+
+    [MenuItem("Tools/Eternal Enigma/Tests/Run Windows Party And Combat Regressions")]
+    public static void RunWindowsPartyAndCombatRegressions() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.TownPassivesAppearOnlyInStatsWithRanksAndDescriptions",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.DungeonPassivesAppearOnlyInStatsWithoutSpendingActions",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.EquipmentConflictsKeepCopiesAndOverworldCommitsSurviveReload",
+        "EternalEnigma.Tests.UnifiedPartyMenuTests.FourHeroesAndLongDescriptionsFitSupportedLayouts",
+        "CoreBugfixTests.RecruitmentDoesNotCopyLeaderEquipmentAndClearAbilitiesSurviveReload",
+        "EternalEnigma.Tests.AllyAiRegressionTests.LastSeenPursuitDoesNotTrackHiddenLeaderAndArrivalStartsWandering",
+        "EternalEnigma.Tests.AllyAiRegressionTests.RangedPositioningUsesValidLeastCostShotsAndTracksVisibleMovement",
+        "EternalEnigma.Tests.AllyAiRegressionTests.ReachableTargetsWinThenRouteCostRetentionAndStableOrdering",
+        "EternalEnigma.Tests.AllyAiRegressionTests.AttackAvailabilityAndDamageScoringAgreeForBlockedShotsAndEmptyAmmo",
+        "EternalEnigma.Tests.SkillRegressionTests.MissileRangeWallsFriendlyBlockersAndEmptyShotsAreRespected");
+
     [MenuItem("Tools/Eternal Enigma/Tests/Run Dungeon FPS Audit")]
     public static void RunDungeonFpsAudit() => Run(TestMode.PlayMode, "EternalEnigma.Tests.PlayMode", "EternalEnigma.Tests.DungeonFramePerformanceTests");
 

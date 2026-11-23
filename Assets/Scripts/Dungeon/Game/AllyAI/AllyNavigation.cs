@@ -11,21 +11,24 @@ internal static class AllyNavigation
         if (ally.AllyStrategy == AllyStrategy.HoldPosition || ally.IsMovementBlocked) return new WaitAction();
         if (ally.AllyStrategy == AllyStrategy.Follow && ally.Awareness.LeaderVisible &&
             AllyCombat.VisibleHostiles(game, ally).Count > 0) return new WaitAction();
-        var routes = new Routes(game, ally);
+        Routes routes = null;
         if (ally.AllyStrategy == AllyStrategy.Aggresive)
         {
-            var combat = CombatStep(game, ally, routes);
-            if (combat != null) return combat;
+            var enemies = AllyCombat.VisibleHostiles(game, ally);
+            if (enemies.Count > 0)
+            {
+                routes = new Routes(game, ally);
+                var combat = CombatStep(game, ally, routes, enemies);
+                if (combat != null) return combat;
+            }
         }
         ally.PursuitTarget = null;
         ally.PursuitPosition = null;
         return FollowOrSearch(game, ally, routes);
     }
 
-    private static GameAction CombatStep(Game game, Ally ally, Routes routes)
+    private static GameAction CombatStep(Game game, Ally ally, Routes routes, List<Character> enemies)
     {
-        var enemies = AllyCombat.VisibleHostiles(game, ally);
-        if (enemies.Count == 0) return null;
         // Only currently visible cells can be prospective firing/attack positions.
         var sight = game.CurrentDungeon.GetVisibleTiles(ally, ally.TilemapPosition);
         var positions = routes.CellsByCost;
@@ -57,21 +60,27 @@ internal static class AllyNavigation
         var memory = ally.Awareness;
         if (ally.AllyStrategy == AllyStrategy.HoldPosition || ally.IsMovementBlocked || memory.Leader == ally)
             return new WaitAction();
-        routes ??= new Routes(game, ally);
         if (memory.LeaderVisible)
         {
+            ally.PursuitPosition = memory.LastSeenLeader;
+            if (TileWorldDungeon.ChevDistance(ally.TilemapPosition, memory.LastSeenLeader.Value) <= 1)
+                return new WaitAction();
+            routes ??= new Routes(game, ally);
             var destination = routes.CellsByCost.Where(p => TileWorldDungeon.ChevDistance(p, memory.LastSeenLeader.Value) <= 1)
                 .Select(p => (Vector3Int?)p).FirstOrDefault();
-            ally.PursuitPosition = memory.LastSeenLeader;
             return Step(ally, destination.HasValue ? routes.Next(destination.Value) : null);
         }
         if (memory.LastSeenLeader.HasValue && !memory.SearchedLastSeen)
         {
             var lastSeen = memory.LastSeenLeader.Value;
-            if (lastSeen != ally.TilemapPosition && routes.Contains(lastSeen))
+            if (lastSeen != ally.TilemapPosition)
             {
-                ally.PursuitPosition = lastSeen;
-                return Step(ally, routes.Next(lastSeen));
+                routes ??= new Routes(game, ally);
+                if (routes.Contains(lastSeen))
+                {
+                    ally.PursuitPosition = lastSeen;
+                    return Step(ally, routes.Next(lastSeen));
+                }
             }
             memory.SearchedLastSeen = true;
         }

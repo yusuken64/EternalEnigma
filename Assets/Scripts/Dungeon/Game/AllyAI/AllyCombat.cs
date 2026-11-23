@@ -49,18 +49,22 @@ internal static class AllyCombat
         var result = new List<Attack>();
         var enemies = visibleEnemies ?? VisibleHostiles(game, ally);
         if (enemies.Count == 0) return result;
-        var sight = game.CurrentDungeon.GetVisibleTiles(ally, origin);
         if (ally.IsRangedAttack(out var projectile))
         {
 			if (ally.GetActionInterupt(new RangedAttackAction())) return result;
             bool bow = ArrowSupply.HasBow(ally);
             if (bow && ArrowSupply.Count(ally) < 1) return result;
+            int range = 10 + ClassPassives.MissileRangeBonus(ally);
+            int penetration = bow ? ArrowSupply.Penetration(ally) : 1;
+            HashSet<Vector3Int> sight = null;
             foreach (var direction in SkillCastOptions.Directions)
             {
-                var line = MissileTargeting.TraceLineFrom(ally, origin, direction,
-                    10 + ClassPassives.MissileRangeBonus(ally), bow ? ArrowSupply.Penetration(ally) : 1);
+                if (!HasTargetOnRay(origin, direction, range, enemies)) continue;
+                var line = MissileTargeting.TraceLineFrom(ally, origin, direction, range, penetration);
+                if (line.Encounters.Count == 0) continue;
+                sight ??= game.CurrentDungeon.GetVisibleTiles(ally, origin);
                 // Penetrating shots must not knowingly hit neutral, disguised or unseen units.
-                if (line.Encounters.Count == 0 || line.Encounters.Any(h => !enemies.Contains(h.Character) ||
+                if (line.Encounters.Any(h => !enemies.Contains(h.Character) ||
                     !DungeonSight.OverlapsVisible(sight, h.Character.ToBounds()))) continue;
                 result.Add(new Attack { Target = line.Encounters[0].Character, Cell = line.Encounters[0].Cell,
                     Direction = direction, Projectile = projectile,
@@ -71,16 +75,33 @@ internal static class AllyCombat
         {
 			if (ally.GetActionInterupt(new AttackAction())) return result;
             var bounds = Character.ToBounds(origin, ally.FootPrint == FootPrint.Size3x3 ? new Vector3Int(5,5,1) : new Vector3Int(3,3,1));
+            HashSet<Vector3Int> sight = null;
             foreach (var enemy in enemies)
             {
-                var cells = new List<Vector3Int>();
-                foreach (var cell in enemy.ToBounds().allPositionsWithin)
-                    if (Character.Contains2D(bounds, cell) && sight.Contains(cell)) cells.Add(cell);
-                if (cells.Count > 0) result.Add(new Attack { Target = enemy, Cell = cells[0],
-                    Value = SkillEstimates.NormalAttackExpected(ally, enemy) });
+                var targetBounds = enemy.ToBounds();
+                if (!bounds.Overlaps2D(targetBounds)) continue;
+                sight ??= game.CurrentDungeon.GetVisibleTiles(ally, origin);
+                foreach (var cell in targetBounds.allPositionsWithin)
+                {
+                    if (!Character.Contains2D(bounds, cell) || !sight.Contains(cell)) continue;
+                    result.Add(new Attack { Target = enemy, Cell = cell, Value = SkillEstimates.NormalAttackExpected(ally, enemy) });
+                    break;
+                }
             }
         }
         return result;
+    }
+
+    private static bool HasTargetOnRay(Vector3Int origin, Vector3Int direction, int range, IReadOnlyList<Character> targets)
+    {
+        for (int i = 0; i < targets.Count; i++)
+            foreach (var cell in targets[i].ToBounds().allPositionsWithin)
+            {
+                var delta = cell - origin;
+                int steps = Mathf.Max(Mathf.Abs(delta.x), Mathf.Abs(delta.y));
+                if (steps > 0 && steps <= range && delta.x == direction.x * steps && delta.y == direction.y * steps) return true;
+            }
+        return false;
     }
 
     internal static Attack ChooseAttack(Game game, Ally ally) => AttacksFrom(game, ally, ally.TilemapPosition)

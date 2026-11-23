@@ -403,7 +403,7 @@ public sealed class OverworldScene : MonoBehaviour
         RefreshBiomeMusic();
         var crossed = Map.CurrentGrid.LockAt(next);
         if (crossed != null && Campaign.Routes.First(r => r.Id == crossed.RouteId).Latches) resolved.Add(crossed.RouteId);
-        SaveProgress();
+        SaveProgress(HudChange.Travel);
         RefreshGates();
         // Each part is a full sentence for the event history. Road signs speak for themselves when read.
         var parts = new List<string>();
@@ -515,7 +515,7 @@ public sealed class OverworldScene : MonoBehaviour
         walkHistory.Add(Position);
         PlaceFollowers();
         RefreshGates(); FollowCamera();
-        SaveProgress();
+        SaveProgress(HudChange.Travel);
         Message = locations.TryGetValue(Position, out var arrived) ? ArrivalText(arrived) : "You step through the warp.";
         AudioManager.Instance?.PlayCue(SoundCue.Teleport);
         return true;
@@ -655,9 +655,9 @@ public sealed class OverworldScene : MonoBehaviour
         }
         PlaceFollowers();
     }
-    private void SaveProgress()
+    private void SaveProgress(HudChange changes = HudChange.Party | HudChange.Resources | HudChange.Travel)
     {
-        HudRefresh.Request(HudChange.Party | HudChange.Resources | HudChange.Travel);
+        HudRefresh.Request(changes);
         if (!Context.IsSandbox) SaveSystem.Capture(Common.Instance);
     }
     public bool SimulateDungeonVictory()

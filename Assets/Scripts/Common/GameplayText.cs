@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 /// <summary>Presentation-only wording. Never use display text as an item, skill or save identifier.</summary>
@@ -9,6 +10,8 @@ public static class GameplayText
     private static readonly Regex Separators = new(@"[\[\]()_]");
     private static readonly Regex Spaces = new(@"[^\S\r\n]+");
     private static readonly Regex CamelWords = new(@"(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])");
+    // Small labels recur across HUD refreshes and combat decisions. Keep long histories and descriptions transient.
+    [ThreadStatic] private static Dictionary<string, string> shortLabels;
 
     public static string Name(string value)
     {
@@ -43,6 +46,13 @@ public static class GameplayText
         using var measurement = new FinalePerformance.Scope("Gameplay text formatting");
         if (string.IsNullOrEmpty(value)) return value ?? "";
         if (resolveInput) value = InputPrompts.Resolve(value);
+        // A new binding or device produces a different input here on the very next call.
+        bool remember = value.Length <= 128;
+        if (remember)
+        {
+            shortLabels ??= new Dictionary<string, string>(StringComparer.Ordinal);
+            if (shortLabels.TryGetValue(value, out var label)) return label;
+        }
         var parts = Markup.Split(value);
         for (int i = 0; i < parts.Length; i += 2)
         {
@@ -59,6 +69,12 @@ public static class GameplayText
             plain = Regex.Replace(plain, @" *\r?\n *", "\n");
             parts[i] = plain;
         }
-        return string.Concat(parts);
+        string formatted = string.Concat(parts);
+        if (remember)
+        {
+            if (shortLabels.Count == 256) shortLabels.Clear();
+            shortLabels[value] = formatted;
+        }
+        return formatted;
     }
 }

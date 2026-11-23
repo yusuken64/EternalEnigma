@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Linq;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
@@ -27,8 +26,8 @@ internal static class MissileTargeting
             var next = cell + direction;
             if (!CanStep(dungeon, cell, direction)) break;
             result.Endpoint = next;
-            if (dungeon.PropAt(next)?.Alive == true || dungeon.PropAt(next)?.BlocksMovement == true) break;
-            var hit = Game.Instance.AllCharacters.FirstOrDefault(c => c != null && c != caster && c.Vitals.HP > 0 && c.OverlapsWith(new BoundsInt(next, Vector3Int.one)));
+            if (BlocksMissile(dungeon, next)) break;
+            var hit = dungeon.LivingOccupant(next, caster);
             if (hit == null || !seen.Add(hit)) continue;
             if (splash) { result.Encounters.Add(new Hit(next, hit)); break; }
             if (hit.Team == caster.Team) continue;
@@ -49,10 +48,15 @@ internal static class MissileTargeting
 
     private static bool CanStep(TileWorldDungeon dungeon, Vector3Int cell, Vector3Int direction)
     {
-        bool Open(Vector3Int side) => dungeon.IsFloorCell(side) &&
-            dungeon.PropAt(side)?.Alive != true && dungeon.PropAt(side)?.BlocksMovement != true;
+        bool Open(Vector3Int side) => dungeon.IsFloorCell(side) && !BlocksMissile(dungeon, side);
         return dungeon.IsFloorCell(cell + direction) && (direction.x == 0 || direction.y == 0 ||
             Open(cell + new Vector3Int(direction.x, 0)) && Open(cell + new Vector3Int(0, direction.y)));
+    }
+
+    private static bool BlocksMissile(TileWorldDungeon dungeon, Vector3Int cell)
+    {
+        var prop = dungeon.PropAt(cell);
+        return prop != null && (prop.Alive || prop.BlocksMovement);
     }
 
     internal static Hit Trace(Character caster, Vector3Int direction, int range)
@@ -65,10 +69,9 @@ internal static class MissileTargeting
             var next = cell + direction;
             if (!CanStep(dungeon, cell, direction)) break;
             cell = next;
-            if (dungeon.PropAt(cell)?.Alive == true || dungeon.PropAt(cell)?.BlocksMovement == true) return new Hit(cell,null);
+            if (BlocksMissile(dungeon, cell)) return new Hit(cell,null);
             // Every living character blocks a shot, regardless of the effect's team filter.
-            var hit = Game.Instance.AllCharacters.FirstOrDefault(c => c != caster && c != null &&
-                c.Vitals.HP > 0 && c.OverlapsWith(new BoundsInt(cell, Vector3Int.one)));
+            var hit = dungeon.LivingOccupant(cell, caster);
             if (hit != null) return new Hit(cell, hit);
         }
         return new Hit(cell, null);

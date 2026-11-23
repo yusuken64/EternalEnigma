@@ -188,7 +188,7 @@ public sealed class PartyMenuLauncher : MonoBehaviour
         if(ready==null || tabs==null)return;
         bool partyOpen=PartyOpen;
         canvas.enabled = TownMenu()?.CoversGameplayHud != true &&
-            !(Game.Instance != null && MenuManager.Instance?.CurrentDialog is JuicyChickenGames.Menu.TargetDialog) &&
+            !(Game.RegisteredInstance != null && MenuManager.Instance?.CurrentDialog is JuicyChickenGames.Menu.TargetDialog) &&
             !(menu?.Owner?.Current is JuicyChickenGames.Menu.TargetDialog);
         // The same HUD buttons sit above the party menu's full-screen input shield.
         canvas.sortingOrder=partyOpen?menu.GetComponent<Canvas>().sortingOrder+1:defaultSortingOrder;

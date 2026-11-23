@@ -101,6 +101,13 @@ public partial class Game : SingletonMonoBehaviour<Game>
             common.CampaignContext.State.PendingDungeon == common.CampaignContext.Campaign.FinalLocationId;
         common.ScreenTransition.HoldClosed(finale ? FinaleRuntime.LoadingTitle(1) : "Loading...");
         yield return ScreenTransition.PresentLoadingScreen();
+#if UNITY_STANDALONE_WIN
+        // Resolve shared effect prefabs while the dungeon entrance cover is still up.
+        _ = CombatVisualCatalog.Instance;
+#if ENABLE_MONO && !UNITY_EDITOR
+        DungeonTurnWarmup.Prepare();
+#endif
+#endif
         common.Travel.SceneReady();
 		ResetGame();
 		StartCoroutine(RevealDungeonWhenReady());

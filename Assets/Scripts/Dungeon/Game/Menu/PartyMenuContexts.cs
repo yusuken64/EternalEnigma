@@ -84,7 +84,7 @@ public abstract class PartyMenuContext : IPartyMenuContext
         var points=actor?.Attributes ?? town.Attributes;int pending=actor?.PendingAttributePoints ?? town.PendingAttributePoints;
         var entries=new List<PartyMenuEntry>();
         void Add(string section,string title,string detail) => entries.Add(new PartyMenuEntry{Section=section,Title=title,Description=detail});
-        string Sources(string key) => actor!=null?StatBreakdown.Describe(actor,key):StatBreakdown.Describe(town,key);
+        var describeStat = actor != null ? StatBreakdown.For(actor) : StatBreakdown.For(town, stats);
         if(pending>0)entries.Add(new PartyMenuEntry{Section="Level",Title=$"Spend an attribute point. {pending} available",Description="Choose strength, intelligence, or agility. Spending is free.",SpendAttribute=true});
         Add("Level",$"Level {level}",$"EXP {exp}. Progress to the next level {LevelSystem.Progress(level,exp)*100:0.#}%.");
         Add("Level",$"EXP {exp}",$"{LevelSystem.ExperienceToNext(level,exp)} EXP to next level.");
@@ -94,20 +94,20 @@ public abstract class PartyMenuContext : IPartyMenuContext
         int hp=actor?.Vitals.HP ?? RecoveryMath.SavedVital(town.Hp,stats.HPMax);
         int mana=actor?.Vitals.Mana ?? RecoveryMath.SavedVital(town.Mana,stats.ManaMax);
         int food=actor?.Vitals.Hunger ?? (town.HasHunger?town.Hunger:stats.HungerMax);
-        Add("Vitals",$"HP {hp}/{stats.HPMax}",Sources("HP"));
-        Add("Vitals",$"Mana {mana}/{stats.ManaMax}",Sources("Mana")+$"\nActions between Mana recovery {stats.ManaRegenThreshold}.");
-        Add("Vitals",$"Food {food}/{stats.HungerMax}",Sources("Food"));
-        Add("Combat",$"Attack {stats.Strength}",Sources("Attack"));
-        Add("Combat",$"Magic Power {stats.MagicPower}",Sources("Magic Power")+"\nEach point increases magic damage and scaled healing by 5%.");
-        Add("Combat",$"Defense {stats.Defense}",Sources("Defense"));
-        Add("Combat",$"Hit {(Math.Max(.05f,Math.Min(1f,.8f+stats.HitBonus)))*100:0.#}%",Sources("Hit")+"\nBaseline chance against zero Evasion. A target's Evasion reduces this chance.");
-        Add("Combat",$"Evasion {stats.Evasion*100:0.#}%",Sources("Evasion"));
-        Add("Combat",$"Crit {stats.CritChance*100:0.#}%",Sources("Crit"));
-        Add("Combat",$"Attacks / turn {stats.AttacksPerTurnMax}",Sources("Attacks"));
-        Add("Combat",$"Actions / turn {stats.ActionsPerTurnMax}",Sources("Actions"));
-        Add("Resistances",$"Fire {stats.FireResistance}",Sources("Fire"));
-        Add("Resistances",$"Ice {stats.IceResistance}",Sources("Ice"));
-        Add("Resistances",$"Lightning {stats.LightningResistance}",Sources("Lightning"));
+        Add("Vitals",$"HP {hp}/{stats.HPMax}",describeStat("HP"));
+        Add("Vitals",$"Mana {mana}/{stats.ManaMax}",describeStat("Mana")+$"\nActions between Mana recovery {stats.ManaRegenThreshold}.");
+        Add("Vitals",$"Food {food}/{stats.HungerMax}",describeStat("Food"));
+        Add("Combat",$"Attack {stats.Strength}",describeStat("Attack"));
+        Add("Combat",$"Magic Power {stats.MagicPower}",describeStat("Magic Power")+"\nEach point increases magic damage and scaled healing by 5%.");
+        Add("Combat",$"Defense {stats.Defense}",describeStat("Defense"));
+        Add("Combat",$"Hit {(Math.Max(.05f,Math.Min(1f,.8f+stats.HitBonus)))*100:0.#}%",describeStat("Hit")+"\nBaseline chance against zero Evasion. A target's Evasion reduces this chance.");
+        Add("Combat",$"Evasion {stats.Evasion*100:0.#}%",describeStat("Evasion"));
+        Add("Combat",$"Crit {stats.CritChance*100:0.#}%",describeStat("Crit"));
+        Add("Combat",$"Attacks / turn {stats.AttacksPerTurnMax}",describeStat("Attacks"));
+        Add("Combat",$"Actions / turn {stats.ActionsPerTurnMax}",describeStat("Actions"));
+        Add("Resistances",$"Fire {stats.FireResistance}",describeStat("Fire"));
+        Add("Resistances",$"Ice {stats.IceResistance}",describeStat("Ice"));
+        Add("Resistances",$"Lightning {stats.LightningResistance}",describeStat("Lightning"));
         entries.AddRange(Skills(hero).Where(skill=>skill!=null && skill.ActivationType==ActivationType.Passive)
             .Select(skill=>new PartyMenuEntry {
                 Skill=skill,Section="Passive skills",Title=$"{skill.DisplayName}  Rank {skill.Rank}",

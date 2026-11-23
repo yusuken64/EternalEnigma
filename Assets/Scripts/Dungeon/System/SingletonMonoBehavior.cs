@@ -4,6 +4,9 @@ public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : Single
 {
     private static T instance;
 
+    // Optional per-frame consumers can check for an awakened scene object without searching for one.
+    internal static T RegisteredInstance => instance != null ? instance : null;
+
     public static T Instance
     {
         get

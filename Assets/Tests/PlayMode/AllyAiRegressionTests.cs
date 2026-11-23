@@ -371,6 +371,11 @@ namespace EternalEnigma.Tests
             Bow(8);
             enemy.SetPosition(new Vector3Int(7,5));
             Assert.That(AllySkillContext.Build(ally,game).NormalAttackValue, Is.Zero, "An off-axis enemy is not an available bow attack.");
+            enemy.FootPrint = FootPrint.Size3x3;
+            Assert.That(AllyCombat.AttacksFrom(game, ally, ally.TilemapPosition).Any(shot => shot.Target == enemy &&
+                shot.Direction == Vector3Int.right && shot.Cell == new Vector3Int(6,4)), Is.True,
+                "The arrow reaches the edge of a large enemy even when its center is off-axis.");
+            enemy.FootPrint = FootPrint.Size1x1;
             ally.ApplyStatusEffect(StatusEffectRegistry.GetByName("Arm Bind"));
             enemy.SetPosition(new Vector3Int(6,4));
             Assert.That(AllySkillContext.Build(ally,game).NormalAttackValue, Is.Zero);

@@ -589,7 +589,12 @@ public class TileWorldDungeon : MonoBehaviour
 	}
 
     internal bool IsFloorCell(Vector3Int cell) => Floor != null && GridMovement.IsWalkable(floorMask, cell);
-    internal DungeonProp PropAt(Vector3Int cell) => Interactables.OfType<DungeonProp>().FirstOrDefault(p => p.Position == cell && !p.Opened);
+    internal DungeonProp PropAt(Vector3Int cell)
+    {
+        foreach (var interactable in Interactables)
+            if (interactable is DungeonProp prop && prop.Position == cell && !prop.Opened) return prop;
+        return null;
+    }
     internal bool IsHazard(Vector3Int cell) => PropAt(cell)?.Definition.Kind == DungeonSceneryKind.Hazard;
     internal IDungeonDamageTarget DamageTargetAt(Vector3Int cell)
     {
@@ -668,19 +673,22 @@ public class TileWorldDungeon : MonoBehaviour
 	}
 
 	internal Character OverlapsAnyOtherCharacter(Character character, BoundsInt boundsInt, bool excludeAllies = false)
-	{
-		var others = Game.Instance.AllCharacters.AsEnumerable()
-			.Where(x => x != character);
+        => FirstOccupant(character, boundsInt, excludeAllies, false);
 
-		if (excludeAllies)
-		{
-			others = others
-				.Where(x => x.Team != character.Team);
-		}
+    internal Character LivingOccupant(Vector3Int cell, Character except)
+        => FirstOccupant(except, new BoundsInt(cell, Vector3Int.one), false, true);
 
-		return others
-			.FirstOrDefault(x => x.OverlapsWith(boundsInt));
-	}
+    private static Character FirstOccupant(Character except, BoundsInt bounds, bool excludeAllies, bool livingOnly)
+    {
+        var game = Game.Instance;
+        // Preserve the same party-first order when more than one actor overlaps the cell.
+        bool Matches(Character candidate) => candidate != null && candidate != except &&
+            (!livingOnly || candidate.Vitals.HP > 0) && (!excludeAllies || candidate.Team != except.Team) &&
+            candidate.OverlapsWith(bounds);
+        foreach (var ally in game.Allies) if (Matches(ally)) return ally;
+        foreach (var enemy in game.Enemies) if (Matches(enemy)) return enemy;
+        return null;
+    }
 }
 
 public class CoordValue<T>

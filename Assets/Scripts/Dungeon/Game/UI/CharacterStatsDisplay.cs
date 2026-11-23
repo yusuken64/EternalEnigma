@@ -62,6 +62,7 @@ public class CharacterStatsDisplay : MonoBehaviour
 
 	internal void UpdateTravelUI(TownAlly hero)
 	{
+		using var measurement = new FinalePerformance.Scope("Travel party vitals");
 		TownActor=hero;
 		var stats=TownUtilityService.StatsFor(hero);
 		int hp=RecoveryMath.SavedVital(hero.Hp,stats.HPMax);

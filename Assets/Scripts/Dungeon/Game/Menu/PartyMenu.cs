@@ -33,6 +33,7 @@ public sealed class PartyMenu : Dialog
     private int heroIndex, selectedIndex;
     private float? listSpacing;
     private float rowWidth, rowViewportHeight;
+    private bool rowsFittedWhileActive;
     private string result;
     public PartyMenuTab Tab { get; private set; }
     private bool UsesTenRowList => Tab==PartyMenuTab.Inventory || Tab==PartyMenuTab.Skills || Tab==PartyMenuTab.Capabilities;
@@ -204,12 +205,16 @@ public sealed class PartyMenu : Dialog
     private void LateUpdate()
     {
         if(!IsRoot)return;
-        if(!Mathf.Approximately(rowWidth,((RectTransform)RowsRoot).rect.width) ||
-            !Mathf.Approximately(rowViewportHeight,scrollView.viewport.rect.height))FitEntryRows();
+        if (RowsNeedFit) FitEntryRows();
         if(Tab==PartyMenuTab.Equipment || Tab==PartyMenuTab.Capabilities || equipmentComparison?.Preview!=null)FitEquipmentDescription();
     }
+    private bool RowsNeedFit => !rowsFittedWhileActive ||
+        !Mathf.Approximately(rowWidth, ((RectTransform)RowsRoot).rect.width) ||
+        !Mathf.Approximately(rowViewportHeight, scrollView.viewport.rect.height);
+
     private void FitEntryRows()
     {
+        rowsFittedWhileActive = gameObject.activeInHierarchy;
         rowWidth=((RectTransform)RowsRoot).rect.width;
         rowViewportHeight=scrollView.viewport.rect.height;
         if(!scrollView.vertical)return;
@@ -420,7 +425,12 @@ public sealed class PartyMenu : Dialog
     }
     internal override void SetFirstSelect()
     {
-        Canvas.ForceUpdateCanvases();FitEntryRows();
+        // Setup may have measured an inactive dialog. A live hero/tab switch already fitted its new rows.
+        if (RowsNeedFit)
+        {
+            Canvas.ForceUpdateCanvases();
+            FitEntryRows();
+        }
         if (rows.Count > 0) rows[Mathf.Clamp(selectedIndex,0,rows.Count-1)].Select();
         else if (Tab == PartyMenuTab.Capabilities && capabilityFilter != null && capabilityFilter.gameObject.activeSelf) capabilityFilter.Button.Select();
         else (Tab == PartyMenuTab.Inventory ? InventoryTab : Tab == PartyMenuTab.Equipment ? EquipmentTab : Tab == PartyMenuTab.Stats ? StatsTab : Tab == PartyMenuTab.Capabilities ? capabilitiesTab : SkillsTab).Select();

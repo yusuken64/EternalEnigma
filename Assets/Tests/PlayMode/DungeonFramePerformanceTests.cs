@@ -69,7 +69,7 @@ namespace EternalEnigma.Tests
             yield return null; yield return null;
             Assert.That(card.ManaDisplay.ValueText.text, Does.Contain($"0/{ally.DisplayedStats.ManaMax}"));
             Assert.That(card.HungerDisplay.ValueText.text, Does.Contain($"3/{ally.DisplayedStats.HungerMax}"));
-            Assert.That(card.NameText.text, Does.Contain($"Lv {ally.DisplayedVitals.Level}"));
+            Assert.That(card.GetComponent<DungeonPartyCard>().LevelText.text, Is.EqualTo($"Lv {ally.DisplayedVitals.Level}"));
 
             var player = harness.Game.PlayerController;
             player.Gold += 7;

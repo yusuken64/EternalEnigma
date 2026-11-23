@@ -29,8 +29,15 @@ public class ScreenTransition : MonoBehaviour
     public bool HasTravelPresentation => travelPresentation != null;
     public bool CameraMotionActive => controlledCamera != null;
     internal static bool ControlsCamera(Camera camera) => camera != null && controlledCamera == camera;
-    public bool BlocksInput => BlockScreen.activeInHierarchy ||
-        Game.Instance?.NewFloorMessage != null && Game.Instance.NewFloorMessage.gameObject.activeInHierarchy;
+    private static bool ShowingFloorMessage
+    {
+        get
+        {
+            var message = Game.RegisteredInstance?.NewFloorMessage;
+            return message != null && message.gameObject.activeInHierarchy;
+        }
+    }
+    public bool BlocksInput => BlockScreen.activeInHierarchy || ShowingFloorMessage;
 
     private void Awake()
     {
@@ -170,7 +177,7 @@ public class ScreenTransition : MonoBehaviour
         }
         // Dungeon entry already has a floor title beneath this cover. Hand the
         // reveal to that label rather than fading two centered titles together.
-        if (Game.Instance?.NewFloorMessage != null && Game.Instance.NewFloorMessage.gameObject.activeInHierarchy)
+        if (ShowingFloorMessage)
             SetDestinationTitle(null);
         sceneRoutine = StartCoroutine(DoOpenRoutine(animationVersion));
     }

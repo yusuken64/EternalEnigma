@@ -25,7 +25,8 @@ public sealed class TravelPartyHud : MonoBehaviour
 
     private void Refresh(HudChange changes)
     {
-        if ((changes & (HudChange.Party | HudChange.Visibility | HudChange.Travel)) == 0) return;
+        // The cards display party state and are independent of travel position.
+        if ((changes & (HudChange.Party | HudChange.Visibility)) == 0) return;
         var common=Common.InstanceOrNull;
         if(town!=null && townMenus==null)townMenus=town.GetComponentInChildren<TownMenuManager>(true);
         if(world!=null && worldMenus==null)worldMenus=world.GetComponent<OverworldMenuManager>();

@@ -27,7 +27,7 @@ internal sealed class DungeonFastWalk
     internal double ElapsedSeconds { get; private set; }
     private bool partyEvent, showingFeedback;
     private double started;
-    internal static DungeonFastWalk Active => Game.Instance?.PlayerController?.FastWalk;
+    internal static DungeonFastWalk Active => Game.RegisteredInstance?.PlayerController?.FastWalk;
     internal static bool SuppressPlayback => Active?.Running == true;
     internal static bool DeferPresentation => Active is { Running: true, showingFeedback: false };
     internal bool ShowsFeedback(GameAction action) => partyEvent && action.InterruptsWalking &&

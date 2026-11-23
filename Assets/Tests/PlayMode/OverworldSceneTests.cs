@@ -29,6 +29,47 @@ namespace EternalEnigma.Tests
         private Mouse mouse;
 
         [UnityTest]
+        public IEnumerator WalkingOntoPickupUpdatesBagWithoutRebuildingPartyCards()
+        {
+            var common = Common.Instance;
+            var context = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, 42));
+            common.CampaignContext = context;
+            context.State.Scene = "Overworld";
+            var approach = (from pickup in context.Grid.Pickups
+                            from cell in OverworldMovement.Neighbors(pickup.Position)
+                            where !context.Grid.Locations.Values.Contains(cell) && context.Gates.IsWalkable(cell, context.Held)
+                                && context.Gates.IsWalkable(pickup.Position, context.Held)
+                                && context.Grid.CanStep(cell, pickup.Position, context.Held, context.Resolved)
+                                && OverworldMovement.CanStep(cell, pickup.Position, p => context.Gates.IsWalkable(p, context.Held))
+                            select (pickup, cell)).First();
+            context.Position = approach.cell;
+            yield return SceneManager.LoadSceneAsync("Overworld", LoadSceneMode.Additive);
+            scene = SceneManager.GetSceneByName("Overworld");
+            var world = Object.FindFirstObjectByType<OverworldScene>();
+            yield return harness.WaitUntil(() => world.IsReady && !common.Travel.IsTransitioning, "overworld pickup approach");
+            yield return null;
+            Canvas.ForceUpdateCanvases();
+            var bag = common.GameSaveData.TownSaveData.InventoryItems;
+            int before = bag.Count;
+            FinalePerformance.Sample[] work;
+            FinalePerformance.Begin();
+            try
+            {
+                Assert.That(world.TryMove(approach.pickup.Position.X - approach.cell.X, approach.pickup.Position.Y - approach.cell.Y), Is.True);
+                yield return harness.WaitUntil(() => !world.IsMoving, "pickup step");
+                Canvas.ForceUpdateCanvases();
+            }
+            finally { work = FinalePerformance.Finish(); }
+            Assert.That(work.Any(s => s.Name == "Travel party vitals"), Is.False);
+            Assert.That(bag.Count, Is.EqualTo(before + 1));
+            Assert.That(world.GetComponentInChildren<ResourceHUD>().BagText.text, Is.EqualTo(GameplayText.Format($"Bag {bag.Count:N0} items")));
+            var card = world.GetComponentInChildren<TravelPartyHud>().PartySlots[0];
+            world.Player.Hp = 1;
+            Canvas.ForceUpdateCanvases();
+            Assert.That(card.HpDisplay.ValueText.text, Does.Contain("1/"));
+        }
+
+        [UnityTest]
         public IEnumerator GateUnlockAudioOnlyPlaysForANewUnlock()
         {
             var context = new CampaignContext(new OverworldLaunchOptions(OverworldLaunchMode.Campaign, 0));

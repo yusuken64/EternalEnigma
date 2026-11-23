@@ -20,36 +20,46 @@ public static class StatBreakdown
         "Fire"=>stats.FireResistance,"Ice"=>stats.IceResistance,"Lightning"=>stats.LightningResistance,
         _=>0
     };
-    public static string Describe(Ally hero,string key)
+    public static string Describe(Ally hero,string key) => For(hero)(key);
+
+    internal static Func<string,string> For(Ally hero)
     {
         var template=HeroStatRules.BaseStats(hero.StartingStats,null,1,default);
         var classStart=hero.PrimaryClass?.StartingStatBonus;
         var growth=HeroClass.Growth(hero.PrimaryClass);
         var attribute=HeroAttributes.ToModification(hero.Attributes);
         int levels=Math.Max(0,hero.Vitals.Level-1);
-        float built=Value(template,key)+Value(classStart,key)+Value(growth,key)*levels+Value(attribute,key);
-        var contributions=new List<(string,float)> {
-            ("Base",Value(template,key)),("Class",Value(classStart,key)),
-            ("Level growth",Value(growth,key)*levels),("Attributes",Value(attribute,key))};
-        float extra=Value(hero.BaseStats,key)-built;
-        if(Math.Abs(extra)>.0001f)contributions.Add(("Other bonuses",extra));
-        contributions.AddRange(StatPreview.Parts(hero,hero.Equipment.Current()).Select(p=>(p.Source,Value(p.Value,key))));
-        return Format(key,Value(hero.FinalStats,key),contributions);
+        var parts=StatPreview.Parts(hero,hero.Equipment.Current()).ToArray();
+        var final=hero.FinalStats;
+        var baseStats=hero.BaseStats;
+        return key =>
+        {
+            float built=Value(template,key)+Value(classStart,key)+Value(growth,key)*levels+Value(attribute,key);
+            var contributions=new List<(string,float)> {
+                ("Base",Value(template,key)),("Class",Value(classStart,key)),
+                ("Level growth",Value(growth,key)*levels),("Attributes",Value(attribute,key))};
+            float extra=Value(baseStats,key)-built;
+            if(Math.Abs(extra)>.0001f)contributions.Add(("Other bonuses",extra));
+            contributions.AddRange(parts.Select(p=>(p.Source,Value(p.Value,key))));
+            return Format(key,Value(final,key),contributions);
+        };
     }
-    public static string Describe(TownAlly hero,string key)
+    public static string Describe(TownAlly hero,string key) => For(hero,TownUtilityService.StatsFor(hero))(key);
+
+    internal static Func<string,string> For(TownAlly hero,Stats final)
     {
         var template=GamePresentationProfile.Current?.AllyTemplate?.StartingStats;
         var baseStats=HeroStatRules.BaseStats(template,hero.PrimaryClass,hero.Level,hero.Attributes);
-        var final=TownUtilityService.StatsFor(hero);
+        var starting=HeroStatRules.BaseStats(template,null,1,default);
+        var classStart=hero.PrimaryClass?.StartingStatBonus;
+        var growth=HeroClass.Growth(hero.PrimaryClass);
+        int levels=Math.Max(0,hero.Level-1);
+        var attribute=HeroAttributes.ToModification(hero.Attributes);
         var gear=hero.Equipment.Current().Modification;
-        var contributions=new List<(string,float)> {
-            ("Base",Value(HeroStatRules.BaseStats(template,null,1,default),key)),
-            ("Class",Value(hero.PrimaryClass?.StartingStatBonus,key)),
-            ("Level growth",Value(HeroClass.Growth(hero.PrimaryClass),key)*Math.Max(0,hero.Level-1)),
-            ("Attributes",Value(HeroAttributes.ToModification(hero.Attributes),key)),
-            ("Equipment",Value(gear,key)),
-            ("Passives and conditions",Value(final,key)-Value(baseStats,key)-Value(gear,key))};
-        return Format(key,Value(final,key),contributions);
+        return key => Format(key,Value(final,key),new (string,float)[] {
+            ("Base",Value(starting,key)),("Class",Value(classStart,key)),
+            ("Level growth",Value(growth,key)*levels),("Attributes",Value(attribute,key)),
+            ("Equipment",Value(gear,key)),("Passives and conditions",Value(final,key)-Value(baseStats,key)-Value(gear,key))});
     }
     private static string Format(string key,float total,IEnumerable<(string Source,float Amount)> sources)
     {
